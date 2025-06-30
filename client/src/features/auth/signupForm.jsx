@@ -13,17 +13,25 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
 
 const SignupCard = ({ toggleSigninForm }) => {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Form submitted:", data);
-    registerForm(data);
+  const onSubmit = async (data) => {
+    try {
+      await registerForm(data);
+      console.log("User registered successfully!");
+      navigate("/login"); // ✅ Redirect to login page
+    } catch (error) {
+      console.error("Signup failed:", error.message || error);
+    }
   };
 
   return (
@@ -66,7 +74,7 @@ const SignupCard = ({ toggleSigninForm }) => {
                     message: "Invalid email format",
                   },
                 })}
-                placeholder="m@example.com"
+                placeholder="evil_corp@example.com"
               />
               {errors.email && (
                 <p className="text-red-500 text-sm">{errors.email.message}</p>
@@ -87,7 +95,9 @@ const SignupCard = ({ toggleSigninForm }) => {
                 })}
               />
               {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
