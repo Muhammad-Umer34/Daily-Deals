@@ -1,14 +1,14 @@
-import { useEffect } from 'react';
-import axios from 'axios';
+
+import AuthPage from './features/auth/authPage';
 
 function App() {
-  useEffect(() => {
-    axios.get('http://localhost:5000/')
-      .then(res => console.log(res.data))
-      .catch(err => console.error('API Error:', err));
-  }, []);
+ return (
+  <div className='dark bg-zinc-900 min-h-screen min-w-full flex items-center justify-center'>
+   <AuthPage/>
+  </div>
 
-  return <h1 className="text-3xl text-green-600">Daily Deals Store</h1>;
+ )
 }
 
 export default App;
+

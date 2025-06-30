@@ -1,15 +1,25 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
+const authRouter = require('./routes/authRoutes'); 
+const userRouter = require('./routes/userRoutes');
+
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
-app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Welcome to Daily Deals API!');
-});
+app.use(express.json());
+app.use(cookieParser());
+
+app.use(cors({
+  origin: "http://localhost:5173", 
+  credentials: true               
+}));
+
+app.use('/api/auth', authRouter);
+app.use('/api/user',userRouter);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
