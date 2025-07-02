@@ -1,5 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { check, validationResult } = require("express-validator");
+
 require("dotenv").config();
 
 const User = require("../models/user");
@@ -7,31 +9,40 @@ const User = require("../models/user");
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 exports.postRegister = async (req, res, next) => {
+
   try {
-    const { name, email, password, userType } = req.body;
+    console.log("Request body is ", req.body);
+
+    const { name, email, password, userType, brand_logo,storeOwner } = req.body;
+    console.log(brand_logo);
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await new User({
+
+    const user = new User({
       name,
       email,
       password: hashedPassword,
       userType,
+      brand_logo: userType === "storeOwner" ? brand_logo : null,
+      storeOwner: userType === "storeOwner" ? name : null,
     });
-    await user
-      .save()
-      .then(() => {
-        res
-          .status(201)
-          .json({ message: "User created successfully", user});
-      })
-      .catch((error) => {
-        if (error.code === 11000) {
-          res.status(400).json({ message: "Email already exists" });
-        } else {
-          res.status(500).json({ message: "Internal server error" });
-        }
-      });
+
+
+    console.log("User to be saved:", user);
+
+    await user.save();
+
+    res.status(201).json({
+      message: "User created successfully",
+      user,
+    });
   } catch (error) {
-    next(error);
+    if (error.code === 11000) {
+      res.status(400).json({ message: "Email already exists" });
+    } else {
+      console.error("Server Error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
 };
 
@@ -44,8 +55,8 @@ exports.postLogin = async (req, res, next) => {
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (isPasswordValid) {
-      const accessToken = jwt.sign({ id: user.id, email: user.email, userType: user.userType },process.env.ACCESS_TOKEN_SECRET,{expiresIn:'30m'});
-      const refreshToken = jwt.sign({ id: user.id, email: user.email, userType: user.userType },process.env.REFRESH_TOKEN_SECRET,{expiresIn:'7d'});
+      const accessToken = jwt.sign({id: user.id, email: user.email, userType: user.userType},process.env.ACCESS_TOKEN_SECRET,{expiresIn:'30m'});
+      const refreshToken = jwt.sign({id: user.id, email: user.email, userType: user.userType},process.env.REFRESH_TOKEN_SECRET,{expiresIn:'7d'});
       console.log(accessToken);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,

@@ -1,8 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { loginForm } from "./authAPI";
-import { authActions } from "./authSlices";
+import { customerregisterForm } from "./authAPI";
 import {
   Card,
   CardAction,
@@ -14,11 +13,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useDispatch } from "react-redux";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const SigninCard = () => {
-  const dispatch = useDispatch(); 
+const UserSignupCard = () => {
   const Navigate = useNavigate();
 
   const {
@@ -29,18 +26,11 @@ const SigninCard = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await loginForm(data);
-      console.log(response);
-      await dispatch(
-        authActions.login({
-          user: response.user,
-          accessToken: response.accessToken,
-        })
-      );
-      Navigate("/");
-
+      await customerregisterForm(data);
+      console.log("User registered successfully!");
+      Navigate("/login");
     } catch (error) {
-      console.error("Login failed:", error.message || error);
+      console.error("Signup failed:", error.message || error);
     }
   };
 
@@ -48,13 +38,11 @@ const SigninCard = () => {
     <div className="px-4 sm:px-6 md:px-8 w-full">
       <Card className="w-full max-w-sm mx-auto mt-10">
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
+          <CardTitle>Signup</CardTitle>
+          <CardDescription>Register as customer</CardDescription>
           <CardAction>
-            <Button variant="link" onClick={() => Navigate("/signup")}>
-              Sign Up
+            <Button variant="link" onClick={() => Navigate("/login")}>
+              Sign In
             </Button>
           </CardAction>
         </CardHeader>
@@ -63,12 +51,29 @@ const SigninCard = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  {...register("name", { required: "Name is required" })}
+                  placeholder="Muhammad Umer"
+                />
+                {errors.name && (
+                  <p className="text-red-500 text-sm">{errors.name.message}</p>
+                )}
+              </div>
+
+              <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  {...register("email", { required: "Email is required" })}
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^\S+@\S+$/i,
+                      message: "Invalid email format",
+                    },
+                  })}
+                  placeholder="evil_corp@example.com"
                 />
                 {errors.email && (
                   <p className="text-red-500 text-sm">{errors.email.message}</p>
@@ -76,19 +81,17 @@ const SigninCard = () => {
               </div>
 
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
-                  {...register("password", { required: "Password is required" })}
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 6,
+                      message: "Password must be at least 6 characters",
+                    },
+                  })}
                 />
                 {errors.password && (
                   <p className="text-red-500 text-sm">
@@ -96,9 +99,8 @@ const SigninCard = () => {
                   </p>
                 )}
               </div>
-
               <Button type="submit" className="w-full">
-                Login
+                Sign Up
               </Button>
             </div>
           </form>
@@ -108,10 +110,17 @@ const SigninCard = () => {
           <Button variant="outline" className="w-full">
             Login with Google
           </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => Navigate("/brand-signup")}
+          >
+            Register as a Brand
+          </Button>
         </CardFooter>
       </Card>
     </div>
   );
 };
 
-export default SigninCard;
+export default UserSignupCard;
