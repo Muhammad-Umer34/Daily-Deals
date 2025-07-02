@@ -16,13 +16,12 @@ const StoreSignupCard = () => {
     getValues,
   } = useForm();
 
- const onSubmit = async (data) => {
-  await storeregisterForm(data);
-  console.log("Store registered successfully!");
-  console.log("Selected File:", data);
-  navigate("/login");
-};
-
+  const onSubmit = async (data) => {
+    await storeregisterForm(data);
+    console.log("Store registered successfully!");
+    console.log("Selected File:", data);
+    navigate("/login");
+  };
 
   return (
     <div className="w-full h-auto flex flex-col lg:flex-row bg-black">
@@ -68,18 +67,18 @@ const StoreSignupCard = () => {
                 <span className="text-red-500">{errors.email.message}</span>
               )}
             </div>
-            
+
             <div className="grid gap-2">
               <Label htmlFor="brand_logo" className="text-white">
                 Upload Brand Logo
               </Label>
-             <InputFileUpload
-  id="brand_logo"
-  accept="image/*"
-  {...register("brand_logo", {
-    required: "Brand logo is required",
-  })}
-/>
+              <InputFileUpload
+                id="brand_logo"
+                accept="image/*"
+                {...register("brand_logo", {
+                  required: "Brand logo is required",
+                })}
+              />
 
               {errors.brand_logo && (
                 <span className="text-red-500">
@@ -101,9 +100,7 @@ const StoreSignupCard = () => {
                 })}
               />
               {errors.ownerName && (
-                <span className="text-red-500">
-                  {errors.ownerName.message}
-                </span>
+                <span className="text-red-500">{errors.ownerName.message}</span>
               )}
             </div>
 
@@ -118,9 +115,7 @@ const StoreSignupCard = () => {
                 {...register("password", { required: "Password is required" })}
               />
               {errors.password && (
-                <span className="text-red-500">
-                  {errors.password.message}
-                </span>
+                <span className="text-red-500">{errors.password.message}</span>
               )}
             </div>
 

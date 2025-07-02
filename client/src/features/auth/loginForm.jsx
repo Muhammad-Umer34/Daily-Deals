@@ -37,8 +37,11 @@ const SigninCard = () => {
           accessToken: response.accessToken,
         })
       );
-      Navigate("/");
-
+      if(response.user.userType == "storeOwner") {
+        Navigate("/store");
+      } else if(response.user.userType == "customer") {
+        Navigate("/customer");
+      }
     } catch (error) {
       console.error("Login failed:", error.message || error);
     }

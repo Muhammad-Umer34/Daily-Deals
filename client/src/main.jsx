@@ -10,6 +10,8 @@ import App from "./App.jsx";
 import SigninCard from "./features/auth/loginForm.jsx";
 import UserSignupCard from "./features/auth/userSignupForm.jsx";
 import StoreSignupCard from "./features/auth/store.jsx";
+import {StoreHome} from "./pages/storeOwner/home.jsx";
+import {CustomerHome}from "./pages/customers/home.jsx";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +21,8 @@ const router = createBrowserRouter([
       { path: "login", element: <SigninCard/> },
       { path: "signup", element: <UserSignupCard /> },
       {path: "brand-signup", element: <StoreSignupCard /> },
+      {path: "store", element: <StoreHome/> },
+      {path: "customer", element:<CustomerHome /> },
     ],
   },
 ]);
