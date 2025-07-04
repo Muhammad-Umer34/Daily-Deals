@@ -1,12 +1,14 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
 import InputFileUpload from "../../components/ui/upload-button";
-import { storeregisterForm } from "./authAPI";
 
+import { storeregisterForm } from "./authAPI";
 const StoreSignupCard = () => {
   const navigate = useNavigate();
   const {

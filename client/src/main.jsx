@@ -2,28 +2,39 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import appStore from "../store";
-import "./index.css";
 
-// Components
+import appStore from "./store.js";
+import "./index.css";
 import App from "./App.jsx";
 import SigninCard from "./features/auth/loginForm.jsx";
 import UserSignupCard from "./features/auth/userSignupForm.jsx";
 import StoreSignupCard from "./features/auth/store.jsx";
-import {StoreHome} from "./pages/storeOwner/home.jsx";
+import StoreHome from "./pages/storeOwner/dashboard.jsx";
 import {CustomerHome}from "./pages/customers/home.jsx";
+import ResponsiveDrawer from "./components/ui/admin/sidebar.jsx";
+import AddProduct from "./pages/storeOwner/addProduct.jsx";
+
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
-      { path: "login", element: <SigninCard/> },
-      { path: "signup", element: <UserSignupCard /> },
-      {path: "brand-signup", element: <StoreSignupCard /> },
-      {path: "store", element: <StoreHome/> },
-      {path: "customer", element:<CustomerHome /> },
+      {path: "customer", element:<CustomerHome/> },
     ],
+  },
+  {
+    path: "/login",
+    element: <SigninCard />,
+  },
+      {path: "store", element: <ResponsiveDrawer />,children: [ {path:"",element:<AddProduct/>}]},
+  {
+    path: "/signup",
+    element: <UserSignupCard />,
+  },
+  {
+    path: "/brand-signup",
+    element: <StoreSignupCard />,
   },
 ]);
 
