@@ -34,7 +34,7 @@ const StoreSignupCard = () => {
           className="object-cover w-full h-full"
         />
       </div>
-      <div className="ww-full lg:w-1/2 flex items-center justify-center p-4">
+      <div className="ww-full lg:w-1/2 flex items-center justify-center p-4 text-white">
         <form
           onSubmit={handleSubmit(onSubmit)}
           method="POST"

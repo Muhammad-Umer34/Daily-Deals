@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 
 const authRouter = require('./routes/authRoutes'); 
 const userRouter = require('./routes/userRoutes');
+const storeRouter = require('./routes/storeRoutes');
 
 require('dotenv').config();
 
@@ -20,18 +21,11 @@ app.use(cors({
 }));
 
 
-app.use((req, res, next) => {
-  console.log("METHOD:", req.method);
-  console.log("URL:", req.originalUrl);
-  console.log("HEADERS:", req.headers);
-  console.log("BODY:", req.body);
-  console.log("QUERY:", req.query);
-  next();
-});
 
 console.log("Server is running in", process.env.NODE_ENV, "mode");
 app.use('/api/auth', authRouter);
 app.use('/api/user',userRouter);
+app.use('/api/store',storeRouter);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {

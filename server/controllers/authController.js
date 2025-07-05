@@ -193,6 +193,8 @@ exports.postLogin = async (req, res) => {
           name: user.name || user.ownerName,
           email: user.email,
           userType: user.userType,
+          brand_name: user.brand_name || null,
+          brand_logo: user.brand_logo || null,
         },
         accessToken,
       });
