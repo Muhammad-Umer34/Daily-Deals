@@ -4,6 +4,7 @@ const initialState = {
   selectedField: "Dashboard"
 };
 
+
 const uiSlice = createSlice({
   name: "ui",
   initialState,
@@ -12,7 +13,7 @@ const uiSlice = createSlice({
       state.selectedField = action.payload;
     }
   }
-});
-
+},
+);
 export const uiActions = uiSlice.actions;
 export default uiSlice;

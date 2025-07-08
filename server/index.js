@@ -10,7 +10,10 @@ const storeRouter = require('./routes/storeRoutes');
 require('dotenv').config();
 
 const app = express();
-
+const checkingInAdmin = (req, res, next) => {
+  console.log("Admin middleware is checking in", req.body);
+  next();
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 app.use(cookieParser());
@@ -20,9 +23,6 @@ app.use(cors({
   credentials: true               
 }));
 
-
-
-console.log("Server is running in", process.env.NODE_ENV, "mode");
 app.use('/api/auth', authRouter);
 app.use('/api/user',userRouter);
 app.use('/api/store',storeRouter);

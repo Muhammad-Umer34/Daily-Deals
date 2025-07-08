@@ -7,10 +7,10 @@ import { useState } from "react";
 
 import { postProduct } from "../../features/admin/adminApi";
 import { useSelector } from "react-redux";
-
-
+import { useNavigate } from "react-router-dom";
 
 const AddProduct = () => {
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
   const {
@@ -40,6 +40,7 @@ const AddProduct = () => {
   const onSubmit = (data) => {
     console.log("Product data submitted:", data);
     postProduct(data,user, accessToken);
+    navigate("/myProducts");
   };
 
   return (

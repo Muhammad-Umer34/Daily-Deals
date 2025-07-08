@@ -1,13 +1,12 @@
-const verifyStoreOwner = (req,res,next)=>{
-  const user = req.body.user;
-  if(user.userType == "storeOwner")
-  {
-    next();
+const verifyStoreOwner = (req, res, next) => {
+  const userTypeFromBody = req.body?.user?.userType;
+  const userTypeFromQuery = req.query?.userType;
+
+  if (userTypeFromBody === "storeOwner" || userTypeFromQuery === "storeOwner") {
+    return next();
   }
-  else
-  {
-    res.status(401).json({message: "You are not Store Owner "});
-  }
-}
+
+  return res.status(401).json({ message: "You are not a Store Owner" });
+};
 
 module.exports = verifyStoreOwner;

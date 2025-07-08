@@ -24,10 +24,12 @@ import { HiOutlineClipboardList } from "react-icons/hi";
 import { RiBarChart2Line } from "react-icons/ri";
 
 import { useSelector, useDispatch } from 'react-redux';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { uiActions } from '../../../features/admin/uiSlice';
 
 import AddProduct from '../../../pages/storeOwner/addProduct';
-
+import MyProducts from '../../../pages/storeOwner/myProducts';
+import EditProduct from '../../../pages/storeOwner/editProduct';
 
 const drawerWidth = 240;
 
@@ -39,13 +41,18 @@ const appBarBg = "#fff";
 const appBarText = "#23262F";
 
 function ResponsiveDrawer(props) {
+  const navigate=useNavigate();
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
 
   const selectedField = useSelector((state) => state.ui.selectedField);
-  const dispatch = useDispatch();
+  // const user = useSelector((state) => state.auth.user);
+  // if (!user) {
+  //    navigate("/login"); 
+  // }
 
+  const dispatch = useDispatch();
   const handleDrawerClose = () => {
     setIsClosing(true);
     setMobileOpen(false);
@@ -194,6 +201,8 @@ function ResponsiveDrawer(props) {
       >
         <Toolbar />
         <Typography >
+          {selectedField === 'My Products' && <MyProducts/>}
+          {selectedField === 'editProduct' && <EditProduct/>}
           {selectedField === 'Add Product' ? (
             <AddProduct />
           ) : (

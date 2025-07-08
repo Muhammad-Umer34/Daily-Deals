@@ -1,7 +1,7 @@
 const { check, validationResult } = require("express-validator");
 const productSchema = require('../models/store').default; 
 
-const postProductController = [
+exports.postProductController = [
   check('name')
     .notEmpty()
     .withMessage('Product name is required')
@@ -74,4 +74,47 @@ const postProductController = [
   }
 ];
 
-module.exports = { postProductController };
+exports.getProductsController = async (req, res) => {
+  try {
+    const products = await productSchema.find({ storeId: req.query?.storeId });
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.deleteProductController = async (req, res) => {
+  const productId = req.params.id;
+  try {
+    const product = await productSchema.findByIdAndDelete(productId);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.status(200).json({ message: 'Product deleted successfully' });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+
+exports.updateProductController = async (req, res) => {
+  const productId = req.params.id;
+  console.log("Backend recieve", req.body);
+  const { name, description, price, quantity, category, images, size, color } = req.body;
+  try {
+    const product = await productSchema.findByIdAndUpdate(
+      productId,
+      { name, description, price, stock: quantity, category, images, size, color },
+      { new: true }
+    );
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.status(200).json({ message: 'Product updated successfully', product });
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
