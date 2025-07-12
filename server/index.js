@@ -24,7 +24,7 @@ app.use(cors({
 }));
 
 app.use('/api/auth', authRouter);
-app.use('/api/user',userRouter);
+app.use('/api/customer',userRouter);
 app.use('/api/store',storeRouter);
 
 mongoose.connect(process.env.MONGO_URI)

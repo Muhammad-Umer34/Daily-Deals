@@ -64,7 +64,9 @@ exports.postProductController = [
         brand_logo: req.body.user.brand_logo || '',
         reviewsCount: 0,
         views: 0,
-        purchasedCount: 0
+        purchasedCount: 0,
+        ratings: 0,
+        isAvailable: true,
       });
       res.status(201).json({ message: 'Product created successfully', product });
     } catch (error) {

@@ -83,7 +83,15 @@ const productSchema = new mongoose.Schema({
   purchasedCount: {
     type: Number,
     default: 0,
-  }
+  },
+  ratings: {
+    type: Number,
+    default: 0,
+  },
+  isAvailable: {
+    type: Boolean,
+    default: true,
+  },
 }, {
   timestamps: true,
 });

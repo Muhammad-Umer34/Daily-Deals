@@ -5,7 +5,6 @@ const verifyStoreOwner = (req, res, next) => {
   if (userTypeFromBody === "storeOwner" || userTypeFromQuery === "storeOwner") {
     return next();
   }
-
   return res.status(401).json({ message: "You are not a Store Owner" });
 };
 

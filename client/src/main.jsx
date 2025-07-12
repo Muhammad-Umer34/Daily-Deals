@@ -10,9 +10,10 @@ import SigninCard from "./features/auth/loginForm.jsx";
 import UserSignupCard from "./features/auth/userSignupForm.jsx";
 import StoreSignupCard from "./features/auth/store.jsx";
 import StoreHome from "./pages/storeOwner/dashboard.jsx";
-import {CustomerHome}from "./pages/customers/home.jsx";
+import CustomerHome from "./pages/customers/home.jsx";
 import ResponsiveDrawer from "./components/ui/admin/sidebar.jsx";
 import AddProduct from "./pages/storeOwner/addProduct.jsx";
+import ProductDetailPage from "./pages/customers/productDetailPage.jsx";
 
 
 const router = createBrowserRouter([
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
     path: "/brand-signup",
     element: <StoreSignupCard />,
   },
+  {
+    path:"/customer/:id",
+    element : <ProductDetailPage />
+  }
 ]);
 
 createRoot(document.getElementById("root")).render(
