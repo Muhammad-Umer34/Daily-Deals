@@ -1,5 +1,6 @@
 const productSchema = require('../models/store').default; 
 const Cart = require('../models/cart').default; 
+const Wishlist = require('../models/wishlist').default;
 exports.getAllProductForCustomer = async (req, res) => {
   try {
     const products = await productSchema.find({});
@@ -47,3 +48,41 @@ exports.postCart = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+exports.postWishlist = async (req,res)=>{
+  console.log("Recieved Request Body in Wishlist : ",req.body);
+  const productId = req.params.pId;
+  const userId = req.params.uId;
+  try {
+    const wishlistItem = new Wishlist({
+      productId,
+      userId
+    });
+
+    await wishlistItem.save();
+
+    res.status(201).json({ message: "Product added to wishlist successfully", wishlistItem });
+  } catch (error) {
+    console.error("Error adding product to wishlist:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+exports.deleteWishlist = async (req,res)=>
+{
+    console.log("Recieved Request Body in Wishlist : ",req.body);
+  const productId = req.params.id;
+  const userId = req.body.userId;
+
+  try {
+    const wishlistItem = await Wishlist.findOneAndDelete({ productId, userId });
+    if (!wishlistItem) {
+      return res.status(404).json({ message: "Wishlist item not found" });
+    }
+    res.status(200).json({ message: "Product removed from wishlist successfully" });
+  } catch (error) {
+    console.error("Error removing product from wishlist:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

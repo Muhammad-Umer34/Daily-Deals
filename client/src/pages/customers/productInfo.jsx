@@ -4,6 +4,7 @@ import { ImageCarousel } from "./carouselComponent";
 import ReviewBox from "./review";
 import { useSelector } from "react-redux";
 import { addToCart } from "../../features/customer/customerApi";
+import WishList from "./wishlist";
 
 
 const ProductDetailPage = ({ product }) => {
@@ -151,17 +152,7 @@ const ProductDetailPage = ({ product }) => {
             >
               Add to Cart
             </button>
-            <button
-              onClick={handleLike}
-              className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center hover:border-black"
-              aria-label="Add to Wishlist"
-            >
-              <FaHeart
-                className={`text-xl ${
-                  liked ? "text-red-500" : "text-gray-400"
-                } transition`}
-              />
-            </button>
+            <WishList product={product} />
           </div>
 
           {/* Rating Section */}
