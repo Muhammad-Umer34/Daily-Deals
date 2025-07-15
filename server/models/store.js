@@ -88,6 +88,10 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  averageRating:{
+    type:Number,
+    default : 0 ,
+  },
   isAvailable: {
     type: Boolean,
     default: true,

@@ -5,21 +5,27 @@ import ReviewBox from "./review";
 import { useSelector } from "react-redux";
 import { addToCart } from "../../features/customer/customerApi";
 import WishList from "./wishlist";
+import { useNavigate } from "react-router-dom";
 
 
 const ProductDetailPage = ({ product }) => {
     const user = useSelector((state) => state.auth.user);
     console.log("User in ProductDetailPage:", user);
     const accessToken = useSelector((state) => state.auth.accessToken);
+    const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [liked, setLiked] = useState(false);
+  const [avrgRating , setAvrgRating] = useState(0);
+  const [reviewsCount, setReviewsCount] = useState(0);
 
   useEffect(() => {
     if (product) {
       setSelectedColor(product.color?.[0] || "");
       setSelectedSize(product.size?.[0] || "");
+      setAvrgRating(product.averageRating || 0);
+      setReviewsCount(product.reviewsCount || 0);
     }
   }, [product]);
 
@@ -45,6 +51,7 @@ const ProductDetailPage = ({ product }) => {
     addToCart(cartItem, accessToken)
       .then((response) => {
     console.log("Added to cart:", cartItem);
+    navigate("/customer/cart");
       })
       .catch((error) => {
         console.error("Failed to add to cart:", error);
@@ -158,9 +165,9 @@ const ProductDetailPage = ({ product }) => {
           {/* Rating Section */}
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <FaStar className="text-yellow-400 mr-1" />
-            <span>{product.ratings} / 5</span>
+            <span>{avrgRating} / 5</span>
             <span className="ml-2 text-gray-400">
-              ({product.reviewsCount} reviews)
+              ({reviewsCount} reviews)
             </span>
           </div>
         </div>

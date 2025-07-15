@@ -66,7 +66,6 @@ export const removeFromWishList = async (productId, accessToken, userId) => {
 };
 
 export const addToWishList = async (productId, accessToken, userId) => {
-  console.log("Adding product to wishlist:", productId,userId,accessToken);
   const token = accessToken;
   try {
     const response = await axios.post(
@@ -81,6 +80,90 @@ export const addToWishList = async (productId, accessToken, userId) => {
     return response.data;
   } catch (error) {
     console.error("Error adding product to wishlist:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const checkWishList = async (productId, accessToken, userId) => {
+  const token = accessToken || '';
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/wishlist/${productId}/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error checking wishlist:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+export const postReview = async (productId, reviewData, accessToken) => {
+  const token = accessToken || '';
+  try {
+    const response = await axios.post(`${BASE_URL}/review/${productId}`, reviewData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error posting review:", error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const getAllReviews = async (productId, accessToken, userId) => {
+  const token = accessToken || '';
+  try {
+    const response = await axios.get(`${BASE_URL}/review/${productId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { userId }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching review:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+export const getCardItems = async (userId,accessToken)=>
+{
+  const token = accessToken || '';
+  try {
+    const response = await axios.get(`${BASE_URL}/cart`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { userId }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching cart items:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+export const deleteCartItem = async (itemId, accessToken, userId) => {
+  const token = accessToken || '';
+  try {
+    const response = await axios.delete(`${BASE_URL}/cart/${itemId}`, {  
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: { userId }, 
+    });
+    return response.data;
+  } catch (error) {
+    console.log("Error deleting cart item:", error.response?.data || error.message);
     throw error;
   }
 };

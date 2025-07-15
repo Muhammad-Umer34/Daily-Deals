@@ -14,6 +14,7 @@ import CustomerHome from "./pages/customers/home.jsx";
 import ResponsiveDrawer from "./components/ui/admin/sidebar.jsx";
 import AddProduct from "./pages/storeOwner/addProduct.jsx";
 import ProductDetailPage from "./pages/customers/productDetailPage.jsx";
+import CartPage from "./pages/customers/cart.jsx";
 
 
 const router = createBrowserRouter([
@@ -40,9 +41,12 @@ const router = createBrowserRouter([
   {
     path:"/customer/:id",
     element : <ProductDetailPage />
+  },
+  {
+    path :"/customer/cart",
+    element : <CartPage/>
   }
 ]);
-
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={appStore}>

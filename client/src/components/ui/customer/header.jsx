@@ -8,8 +8,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import FadeMenu from "./menu.jsx";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import {useNavigate} from "react-router-dom"
 
 const CustomerHeader = () => {
+  const navigate = useNavigate();
   const [flagUrl, setFlagUrl] = useState(null);
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
   const onLgScreens = ["Profile","Logout"];
@@ -89,7 +91,7 @@ const CustomerHeader = () => {
               <AvatarImage src={flagUrl || "/images/4706264.jpg"} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
-            <FaCartShopping className="text-gray-600 hover:text-blue-600 cursor-pointer text-xl" />
+            <FaCartShopping onClick={()=>{navigate('/customer/cart')}} className="text-gray-600 hover:text-blue-600 cursor-pointer text-xl" />
             <CiHeart className="text-gray-600 hover:text-red-500 cursor-pointer text-2xl" />
           </>
         )}

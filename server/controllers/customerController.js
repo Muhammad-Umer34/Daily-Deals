@@ -1,6 +1,8 @@
-const productSchema = require('../models/store').default; 
-const Cart = require('../models/cart').default; 
-const Wishlist = require('../models/wishlist').default;
+const productSchema = require("../models/store").default;
+const Cart = require("../models/cart").default;
+const Wishlist = require("../models/wishlist").default;
+const Review = require("../models/review").default;
+const Product = require("../models/store").default;
 exports.getAllProductForCustomer = async (req, res) => {
   try {
     const products = await productSchema.find({});
@@ -9,7 +11,7 @@ exports.getAllProductForCustomer = async (req, res) => {
     console.error("Error fetching products:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 exports.getProduct = async (req, res) => {
   const productId = req.params.id;
   try {
@@ -22,11 +24,12 @@ exports.getProduct = async (req, res) => {
     console.error("Error fetching product:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
 exports.postCart = async (req, res) => {
   console.log("Received cart data:", req.body);
-  const { productId, userId, name, image, price, quantity, color, size } = req.body;
+  const { productId, userId, name, image, price, quantity, color, size } =
+    req.body;
 
   try {
     const cartItem = new Cart({
@@ -37,41 +40,42 @@ exports.postCart = async (req, res) => {
       price,
       quantity,
       color,
-      size   
+      size,
     });
 
     await cartItem.save();
 
-    res.status(201).json({ message: "Product added to cart successfully", cartItem });
+    res
+      .status(201)
+      .json({ message: "Product added to cart successfully", cartItem });
   } catch (error) {
     console.error("Error adding product to cart:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-
-exports.postWishlist = async (req,res)=>{
-  console.log("Recieved Request Body in Wishlist : ",req.body);
+exports.postWishlist = async (req, res) => {
   const productId = req.params.pId;
   const userId = req.params.uId;
   try {
     const wishlistItem = new Wishlist({
       productId,
-      userId
+      userId,
     });
-
     await wishlistItem.save();
-
-    res.status(201).json({ message: "Product added to wishlist successfully", wishlistItem });
+    res
+      .status(201)
+      .json({
+        message: "Product added to wishlist successfully",
+        wishlistItem,
+      });
   } catch (error) {
     console.error("Error adding product to wishlist:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
-exports.deleteWishlist = async (req,res)=>
-{
-    console.log("Recieved Request Body in Wishlist : ",req.body);
+exports.deleteWishlist = async (req, res) => {
   const productId = req.params.id;
   const userId = req.body.userId;
 
@@ -80,9 +84,122 @@ exports.deleteWishlist = async (req,res)=>
     if (!wishlistItem) {
       return res.status(404).json({ message: "Wishlist item not found" });
     }
-    res.status(200).json({ message: "Product removed from wishlist successfully" });
+    res
+      .status(200)
+      .json({ message: "Product removed from wishlist successfully" });
   } catch (error) {
     console.error("Error removing product from wishlist:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getWishlist = async (req, res) => {
+  const productId = req.params.pId;
+  const userId = req.params.uId;
+
+  console.log("Fetching wishlist for user:", userId, "and product:", productId);
+
+  try {
+    const wishlistItem = await Wishlist.find({ productId, userId });
+    if (!wishlistItem || wishlistItem.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Wishlist item not found", exists: false });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Product exists with this user", exists: true });
+  } catch (error) {
+    console.error("Error fetching wishlist item:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.postReview = async (req, res) => {
+  console.log("Received review data:", req.body);
+  const productId = req.params.pId;
+  const { rating, comment, user } = req.body;
+  try {
+    const review = new Review({
+      productId,
+      userId: user.id,
+      userName: user.name,
+      userProfilePhoto: user.profilePhoto,
+      rating,
+      comment,
+    });
+    await review.save();
+    await Product.findByIdAndUpdate(
+      productId,
+      {
+        $inc: { reviewsCount: 1 },
+      },
+      { new: true }
+    );
+    const averageRating = await Review.aggregate([
+      { $match: { productId } },
+      { $group: { _id: null, averageRating: { $avg: "$rating" } } },
+    ]);
+    console.log("Average rating:", averageRating);
+    await Product.findByIdAndUpdate(
+      productId,
+      { averageRating: averageRating[0]?.averageRating || 0 },
+      { new: true }
+    );
+
+    res.status(201).json({ message: "Review added successfully", review });
+  } catch (error) {
+    console.error("Error adding review:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+exports.getReview = async (req, res) => {
+  const productId = req.params.pId;
+  try {
+    const reviews = await Review.find({ productId })
+    if (!reviews || reviews.length === 0) {
+      return res.status(404).json({ message: "No reviews found for this product" });
+    }
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+exports.getCart = async (req,res)=>
+{
+  const userId = req.query.userId;
+  try 
+  {
+    const cartItems = await Cart.find({userId});
+    if (!cartItems || cartItems.length === 0) {
+      return res.status(404).json({ message: "No items found in cart" });
+    }
+    res.status(200).json(cartItems);
+  }
+  catch (error) {
+    console.error("Error fetching cart items:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+exports.deleteCartItem = async (req,res)=>
+{
+  const itemId = req.params.id;
+  const userId = req.body.userId;
+ try {
+    const cartItem = await Cart.findOneAndDelete({ _id: itemId, userId });
+    if (!cartItem) {
+      return res.status(404).json({ message: "Cart item not found" });
+    }
+    res.status(200).json({ message: "Cart item deleted successfully" });
+  }
+  catch (error) {
+    console.error("Error deleting cart item:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

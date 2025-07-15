@@ -1,5 +1,5 @@
 const express = require('express');
-const {getAllProductForCustomer,getProduct,postCart,postWishlist,deleteWishlist} = require('../controllers/customerController');
+const {getAllProductForCustomer,getProduct,postCart,postWishlist,deleteWishlist,getWishlist, postReview,getReview,getCart,deleteCartItem} = require('../controllers/customerController');
 
 const verifyLoggedIn = require('../middlewares/authMiddleware')
 
@@ -9,4 +9,10 @@ userRouter.get('/product/:id',verifyLoggedIn,getProduct);
 userRouter.post('/cart',verifyLoggedIn,postCart);
 userRouter.post('/wishlist/:pId/:uId',verifyLoggedIn,postWishlist);
 userRouter.delete('/wishlist/:id',verifyLoggedIn,deleteWishlist);
+userRouter.get('/wishlist/:pId/:uId',verifyLoggedIn,getWishlist);
+userRouter.post('/review/:pId',verifyLoggedIn,postReview);
+userRouter.get('/review/:pId',verifyLoggedIn,getReview);
+userRouter.get('/cart',verifyLoggedIn,getCart);
+userRouter.delete('/cart/:id',verifyLoggedIn,deleteCartItem);
+
 module.exports = userRouter;

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { FaHeart, FaStar, FaMinus, FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { addToWishList,removeFromWishList } from "../../features/customer/customerApi";
+import { addToWishList,removeFromWishList,checkWishList } from "../../features/customer/customerApi";
+import {useEffect} from "react";
 const WishList = ({product})=>
 {
     const user = useSelector((state) => state.auth.user);
@@ -19,6 +20,19 @@ const WishList = ({product})=>
           addToWishList(product._id,accessToken,user.id);
       }
      }
+     useEffect(()=>{
+      const cf = ()=>
+      {
+        if(product && user)
+        {
+          checkWishList(product._id,accessToken,user.id)
+          .then((response) => {
+            setLiked(response.exists);
+          })
+        }
+      }
+      cf();
+    },[product, user, accessToken]); 
       
   return (
           <button
