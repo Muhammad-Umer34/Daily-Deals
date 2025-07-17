@@ -1,106 +1,82 @@
-import Input from "@mui/material/Input";
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import { FaCartShopping } from "react-icons/fa6";
-import { CiHeart } from "react-icons/ci";
+import { FaUserCircle, FaShoppingCart } from 'react-icons/fa';
+import { BiSearch } from 'react-icons/bi';
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useSelector, useDispatch } from 'react-redux';
+import { activeActions } from '../../../features/customer/activeSlice';
+import HeaderDropdown from './headerDropdown';
 
-import { useEffect, useState } from "react";
-import axios from "axios";
-import FadeMenu from "./menu.jsx";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import {useNavigate} from "react-router-dom"
+export default function Header() {
+  const dispatch = useDispatch();
+  const activeField = useSelector((state) => state.active.activeField);
+  const [search, setSearch] = useState('');
 
-const CustomerHeader = () => {
-  const navigate = useNavigate();
-  const [flagUrl, setFlagUrl] = useState(null);
-  const isLargeScreen = useMediaQuery("(min-width: 1024px)");
-  const onLgScreens = ["Profile","Logout"];
-  const onMdScreens = ["Profile", "Logout", "Cart", "Wishlist"];
+  const navDropdownItems = {
+    Home: ['New Arrivals', 'Best Sellers', 'Trending Now'],
+    Men: ['T-Shirts', 'Shirts', 'Jeans', 'Jackets', 'Shoes'],
+    Women: ['Dresses', 'Tops', 'Skirts', 'Shoes', 'Accessories'],
+    Kids: ['Boys Clothing', 'Girls Clothing', 'Baby Wear'],
+    Categories: ['Casual Wear', 'Formal Wear', 'Sportswear', 'Accessories'],
+  };
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          const apikey = "e7191120cf654ead8ed67bf53c4bbbcc";
-          axios
-            .get(
-              `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apikey}`
-            )
-            .then((response) => {
-              const country = response.data.results[0]?.components?.country;
-              if (country) {
-                axios
-                  .get(`https://restcountries.com/v3.1/name/${country}`)
-                  .then((response) => {
-                    const countryData = response.data[0];
-                    if (countryData?.flags?.svg) {
-                      setFlagUrl(countryData.flags.svg);
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Error fetching country data:", error);
-                  });
-              }
-            })
-            .catch((error) => {
-              console.error("Error fetching location data:", error);
-            });
-        },
-        (error) => {
-          console.error("Error getting location:", error.message);
-        }
-      );
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-    }
-  }, []);
+  const handleOnChangeField = (field) => {
+    dispatch(activeActions.changeField(field));
+  };
+
+  const navLinks = ["Home", "Men", "Women", "Kids", "Categories"];
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-2 bg-white shadow-sm border-b border-gray-100">
-      {/* Logo (only on large screens) */}
-      {isLargeScreen && (
-        <div className="flex items-center">
-          <img
-            src="images/daily_deals.png"
-            alt="Daily Deals"
-            className="h-8 w-auto"
-          />
-        </div>
-      )}
-
-      {/* Search Bar */}
-      <div className="flex items-center bg-gray-100 rounded-md px-2 py-1 flex-1 mx-6 max-w-2xl">
-        <Input
-          type="text"
-          id="searchBar"
-          disableUnderline
-          placeholder="Search products..."
-          className="bg-transparent outline-none text-gray-700 w-full"
-        />
-        <FaMagnifyingGlass className="ml-2 text-gray-500" />
+    <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-md px-6 py-3 flex items-center justify-between">
+      <div className="text-2xl font-bold text-blue-600">
+        <img src="/images/daily_deals.png" alt="Daily Deals Logo" className="h-8" />
       </div>
 
-      {/* Right Section */}
+      <nav className="hidden md:flex gap-6 font-medium text-sm">
+        {navLinks.map((link) => (
+          <div key={link} className="relative group">
+            <button
+              onClick={() => handleOnChangeField(link)}
+              className={`${
+                activeField === link ? 'text-black font-semibold' : 'text-gray-400'
+              } transition-colors duration-200 cursor-pointer`}
+            >
+              {link}
+            </button>
+            <HeaderDropdown items={navDropdownItems[link]} />
+          </div>
+        ))}
+      </nav>
+
+      {/* Right: Search + Icons */}
       <div className="flex items-center gap-4">
-        {/* Show these only on large screens */}
-        {isLargeScreen && (
-          <>
-            <Avatar>
-              <AvatarImage src={flagUrl || "/images/4706264.jpg"} />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-            <FaCartShopping onClick={()=>{navigate('/customer/cart')}} className="text-gray-600 hover:text-blue-600 cursor-pointer text-xl" />
-            <CiHeart className="text-gray-600 hover:text-red-500 cursor-pointer text-2xl" />
-          </>
-        )}
+        {/* Search Bar */}
+        <div className="relative hidden sm:block">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search..."
+            className="border border-gray-300 rounded-full pl-4 pr-8 py-1 text-sm 
+             focus:outline-none focus:border-blue-500 focus:shadow-md 
+             transition-all duration-300 w-32 focus:w-52"
+          />
+          <BiSearch className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500" />
+        </div>
 
-        {/* FadeMenu with dynamic items */}
-        <FadeMenu menuItems={isLargeScreen ? onLgScreens : onMdScreens} />
+        {/* Flag (Avatar) */}
+        <div className="w-5 h-5">
+          <Avatar className="w-full h-full">
+            <AvatarImage src="/images/pakistan.png" />
+            <AvatarFallback>PK</AvatarFallback>
+          </Avatar>
+        </div>
+
+        {/* Cart Icon */}
+        <FaShoppingCart size={20} className="text-gray-700" />
+
+        {/* Profile Icon */}
+        <FaUserCircle size={22} className="text-gray-700" />
       </div>
-    </div>
+    </header>
   );
-};
-
-export default CustomerHeader;
+}
