@@ -4,7 +4,7 @@ const Separator = ({ name }) => {
       <h1 className={`${name === "Shop By Category" ? "text-3xl" : "text-2xl"} text-black font-extrabold`}>
         {name}
       </h1>
-      {name !== "Shop By Category" && name !== "Dress Styles" ? (
+      {name !== "Shop By Category" && name !== "Dress Styles"  && name !== "Shop By Gender"  ? (
         <button className="text-gray-700 hover:text-blue-600 transition cursor-pointer">View All</button>
       ) : null}
     </div>

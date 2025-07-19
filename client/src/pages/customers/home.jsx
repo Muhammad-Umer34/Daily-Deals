@@ -3,6 +3,7 @@ import ShowProducts from "./showProducts";
 import HeroSection from "../../components/ui/customer/heroSection";
 import Separator from "../../components/ui/customer/separator";
 import DisplayCategories from "./displayCategories";
+import Footer from "./footer";
 
 const CustomerHome = () => {
   return (
@@ -15,7 +16,10 @@ const CustomerHome = () => {
       <ShowProducts/>
       <Separator name = "Shop By Category"/>
       <Separator name = "Dress Styles"/>
-      <DisplayCategories/>
+      <DisplayCategories name = "Dress Styles"/>
+      <Separator name = "Shop By Gender"/>
+      <DisplayCategories name="Shop By Gender"/>
+      <Footer/>
 
       {/* Add more sections/components below as needed */}
     </div>

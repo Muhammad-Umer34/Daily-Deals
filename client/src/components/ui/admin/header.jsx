@@ -14,7 +14,6 @@ function ResponsiveAppBar() {
         border-b border-gray-200
       `}
     >
-      {/* Hamburger: visible only on small/medium screens */}
       <div className="flex-1 flex md:flex-none lg:hidden">
         <CiMenuBurger className="text-2xl text-gray-800" />
       </div>

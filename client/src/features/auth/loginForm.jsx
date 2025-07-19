@@ -40,7 +40,7 @@ const SigninCard = () => {
       if(response.user.userType == "storeOwner") {
         Navigate("/store");
       } else if(response.user.userType == "customer") {
-        Navigate("/customer");
+        Navigate("/home");
       }
     } catch (error) {
       console.error("Login failed:", error.message || error);

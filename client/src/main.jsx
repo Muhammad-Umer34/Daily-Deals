@@ -15,6 +15,8 @@ import ResponsiveDrawer from "./components/ui/admin/sidebar.jsx";
 import AddProduct from "./pages/storeOwner/addProduct.jsx";
 import ProductDetailPage from "./pages/customers/productDetailPage.jsx";
 import CartPage from "./pages/customers/cart.jsx";
+import CategoryCard from "./pages/customers/categoriesCard.jsx";
+import CategoryProductPage from "./pages/customers/categoryProductsPage.jsx";
 
 
 const router = createBrowserRouter([
@@ -22,7 +24,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
-      {path: "customer", element:<CustomerHome/> },
+      {path: "home", element:<CustomerHome/> },
     ],
   },
   {
@@ -38,9 +40,10 @@ const router = createBrowserRouter([
     path: "/brand-signup",
     element: <StoreSignupCard />,
   },
+  
   {
-    path:"/customer/:id",
-    element : <ProductDetailPage />
+    path:"/home/:category",
+    element:<CategoryProductPage/>,
   },
   {
     path :"/customer/cart",

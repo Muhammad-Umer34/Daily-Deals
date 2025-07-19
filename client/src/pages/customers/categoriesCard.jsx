@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 const CategoryCard = ({ category }) => {
-  const defaultImage = "/default-category.jpg"; 
+  const defaultImage = "/default-category.jpg";
   const imageUrl = category.image || defaultImage;
   console.log("Category Image URL:", imageUrl);
 
@@ -13,7 +13,11 @@ const CategoryCard = ({ category }) => {
           alt={category.name}
           className="h-full w-full object-cover"
         />
-        
+        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2">
+          <h2 className="text-white text-xl font-bold text-center">
+            {category.name}
+          </h2>
+        </div>
       </div>
       <div className="flex items-center justify-between px-4 py-3">
         <span className="text-gray-500 text-sm">0 products</span>

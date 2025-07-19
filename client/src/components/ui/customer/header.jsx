@@ -5,8 +5,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSelector, useDispatch } from 'react-redux';
 import { activeActions } from '../../../features/customer/activeSlice';
 import HeaderDropdown from './headerDropdown';
+import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const activeField = useSelector((state) => state.active.activeField);
   const [search, setSearch] = useState('');
@@ -21,6 +23,14 @@ export default function Header() {
 
   const handleOnChangeField = (field) => {
     dispatch(activeActions.changeField(field));
+    if(field!=='Home' || field !== 'home')
+    {
+       navigate(`/home/${field.toLowerCase()}`);
+    }
+    else{
+ navigate("/home");
+    }
+    
   };
 
   const navLinks = ["Home", "Men", "Women", "Kids", "Categories"];
