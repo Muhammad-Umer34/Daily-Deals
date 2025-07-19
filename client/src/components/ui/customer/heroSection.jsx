@@ -11,7 +11,7 @@ export default function HeroSection() {
           comfortable. From statement pieces to everyday basics – redefine your
           wardrobe with confidence and flair.
         </p>
-        <button className="px-6 py-3 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition-colors duration-300">
+        <button className="px-6 py-3 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition-colors duration-300 cursor-pointer">
           Shop the Collection
         </button>
       </div>
