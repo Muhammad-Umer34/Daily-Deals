@@ -31,6 +31,12 @@ exports.postProductController = [
   check('category')
     .notEmpty()
     .withMessage('Category is required'),
+  check('subcategory')
+  .notEmpty()
+  .withMessage('SubCategory is required'),
+   check('genre')
+  .notEmpty()
+  .withMessage('Genre is required'),
   check('images')
     .custom((value, { req }) => {
       if (!req.body.images || !Array.isArray(req.body.images) || req.body.images.length === 0) {
@@ -40,6 +46,7 @@ exports.postProductController = [
     }),
 
   async (req, res) => {
+    console.log("Recieved Request Body:",req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log("Validation errors:", errors.array());
@@ -67,6 +74,9 @@ exports.postProductController = [
         purchasedCount: 0,
         ratings: 0,
         isAvailable: true,
+        subcategory:req.body.subcategory,
+        genre:req.body.genre,
+
       });
       res.status(201).json({ message: 'Product created successfully', product });
     } catch (error) {

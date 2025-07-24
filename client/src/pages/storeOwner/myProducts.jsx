@@ -57,7 +57,8 @@ const MyProducts = () => {
   
 const handleChange = (e) => {
   const val = e.target.value;
-  const productArray = [...products]; // Make a copy to avoid mutating original state
+  const productArray = [...products]; 
+  
 
   switch (val) {
     case "stock_desc":

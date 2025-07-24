@@ -98,6 +98,9 @@ const productSchema = new mongoose.Schema({
   },
 }, {
   timestamps: true,
-});
+  strict:false,
+},
+
+);
 
 export default mongoose.model('Product', productSchema);
