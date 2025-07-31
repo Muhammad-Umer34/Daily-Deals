@@ -37,6 +37,9 @@ exports.postProductController = [
    check('genre')
   .notEmpty()
   .withMessage('Genre is required'),
+  check('material')
+  .notEmpty()
+  .withMessage('Material is required'),
   check('images')
     .custom((value, { req }) => {
       if (!req.body.images || !Array.isArray(req.body.images) || req.body.images.length === 0) {
@@ -62,7 +65,7 @@ exports.postProductController = [
         description,
         price,
         stock: quantity,
-        category,
+        category:category.toLowerCase(),
         images,
         size,
         color,
@@ -74,8 +77,9 @@ exports.postProductController = [
         purchasedCount: 0,
         ratings: 0,
         isAvailable: true,
-        subcategory:req.body.subcategory,
-        genre:req.body.genre,
+        subcategory:req.body.subcategory.toLowerCase,
+        genre:req.body.genre.toLowerCase(),
+        material:req.body.material,
 
       });
       res.status(201).json({ message: 'Product created successfully', product });

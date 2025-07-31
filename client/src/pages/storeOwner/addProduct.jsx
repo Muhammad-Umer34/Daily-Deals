@@ -24,8 +24,26 @@ const AddProduct = () => {
 
   const sizes = ["S", "M", "L", "XL", "XXL"];
   const colors = [
-    "Red", "Blue", "Black", "White", "Green", "Yellow", "Purple", "Orange", "Gray", "Pink",
-    "Maroon", "Navy", "Teal", "Brown", "Olive", "Beige", "Cyan", "Lime", "Gold", "Silver",
+    "Red",
+    "Blue",
+    "Black",
+    "White",
+    "Green",
+    "Yellow",
+    "Purple",
+    "Orange",
+    "Gray",
+    "Pink",
+    "Maroon",
+    "Navy",
+    "Teal",
+    "Brown",
+    "Olive",
+    "Beige",
+    "Cyan",
+    "Lime",
+    "Gold",
+    "Silver",
   ];
 
   const [selectedSizes, setSelectedSizes] = useState([]);
@@ -51,22 +69,37 @@ const AddProduct = () => {
         <h2 className="text-3xl font-bold mb-8 text-center text-gray-800 tracking-tight">
           Add Product
         </h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full max-w-4xl mx-auto">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6 w-full max-w-4xl mx-auto"
+        >
           {/* Product Name */}
           <div>
-            <Label htmlFor="name" className="text-base font-semibold text-gray-700">Product Name</Label>
+            <Label
+              htmlFor="name"
+              className="text-base font-semibold text-gray-700"
+            >
+              Product Name
+            </Label>
             <Input
               id="name"
               placeholder="Product name"
               {...register("name", { required: "Product name is required" })}
               className="mt-2"
             />
-            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+            {errors.name && (
+              <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
+            )}
           </div>
 
           {/* Description */}
           <div>
-            <Label htmlFor="description" className="text-base font-semibold text-gray-700">Description</Label>
+            <Label
+              htmlFor="description"
+              className="text-base font-semibold text-gray-700"
+            >
+              Description
+            </Label>
             <Textarea
               id="description"
               placeholder="Product Description"
@@ -76,13 +109,22 @@ const AddProduct = () => {
               })}
               className="mt-2"
             />
-            {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
+            {errors.description && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.description.message}
+              </p>
+            )}
           </div>
 
           {/* Price & Quantity */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="price" className="text-base font-semibold text-gray-700">Price (PKR)</Label>
+              <Label
+                htmlFor="price"
+                className="text-base font-semibold text-gray-700"
+              >
+                Price (PKR)
+              </Label>
               <Input
                 id="price"
                 type="number"
@@ -93,10 +135,19 @@ const AddProduct = () => {
                 })}
                 className="mt-2"
               />
-              {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
+              {errors.price && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.price.message}
+                </p>
+              )}
             </div>
             <div>
-              <Label htmlFor="quantity" className="text-base font-semibold text-gray-700">Quantity</Label>
+              <Label
+                htmlFor="quantity"
+                className="text-base font-semibold text-gray-700"
+              >
+                Quantity
+              </Label>
               <Input
                 id="quantity"
                 type="number"
@@ -107,16 +158,25 @@ const AddProduct = () => {
                 })}
                 className="mt-2"
               />
-              {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>}
+              {errors.quantity && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.quantity.message}
+                </p>
+              )}
             </div>
           </div>
 
           {/* Genre */}
           <div>
-            <Label className="text-base font-semibold text-gray-700">Target Genre</Label>
+            <Label className="text-base font-semibold text-gray-700">
+              Target Genre
+            </Label>
             <div className="flex flex-wrap gap-4 mt-2">
               {["Kids", "Men", "Women", "Unisex"].map((genre) => (
-                <label key={genre} className="flex items-center gap-2 text-gray-700">
+                <label
+                  key={genre}
+                  className="flex items-center gap-2 text-gray-700"
+                >
                   <input
                     type="radio"
                     value={genre}
@@ -127,29 +187,32 @@ const AddProduct = () => {
                 </label>
               ))}
             </div>
-            {errors.genre && <p className="text-red-500 text-xs mt-1">{errors.genre.message}</p>}
-          </div>
-
-          {/* Subcategory */}
-          <div>
-            <Label htmlFor="subcategory" className="text-base font-semibold text-gray-700">Subcategory</Label>
-            <Input
-              id="subcategory"
-              placeholder="e.g. Shirts, Jackets, Baby Wear"
-              {...register("subcategory", { required: "Subcategory is required" })}
-              className="mt-2"
-            />
-            {errors.subcategory && <p className="text-red-500 text-xs mt-1">{errors.subcategory.message}</p>}
+            {errors.genre && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.genre.message}
+              </p>
+            )}
           </div>
 
           {/* Category */}
           <div>
-            <Label className="text-base font-semibold text-gray-700">Category</Label>
+            <Label className="text-base font-semibold text-gray-700">
+              Category
+            </Label>
             <div className="flex flex-wrap gap-4 mt-2">
               {[
-                "Casual", "Gymwear", "Formal", "Party", "Loungewear", "Sportswear", "Beachwear",
+                "Casual",
+                "Gymwear",
+                "Formal",
+                "Party",
+                "Loungewear",
+                "Sportswear",
+                "Beachwear",
               ].map((category) => (
-                <label key={category} className="flex items-center gap-2 text-gray-700">
+                <label
+                  key={category}
+                  className="flex items-center gap-2 text-gray-700"
+                >
                   <input
                     type="radio"
                     value={category}
@@ -160,33 +223,101 @@ const AddProduct = () => {
                 </label>
               ))}
             </div>
-            {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category.message}</p>}
+            {errors.category && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.category.message}
+              </p>
+            )}
+          </div>
+
+          {/* Subcategory */}
+          <div>
+            <Label
+              htmlFor="subcategory"
+              className="text-base font-semibold text-gray-700"
+            >
+              Subcategory
+            </Label>
+            <Input
+              id="subcategory"
+              placeholder="e.g. Shirts, Jackets, Baby Wear"
+              {...register("subcategory", {
+                required: "Subcategory is required",
+              })}
+              className="mt-2"
+            />
+            {errors.subcategory && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.subcategory.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <Label
+              htmlFor="material"
+              className="text-base font-semibold text-gray-700"
+            >
+              Subcategory
+            </Label>
+            <Input
+              id="material"
+              placeholder="e.g. Cotton, Denim, Leather"
+              {...register("material", { required: "Material is Required" })}
+              className="mt-2"
+            />
+            {errors.material && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.material.message}
+              </p>
+            )}
           </div>
 
           {/* Image Upload */}
           <div>
-            <Label htmlFor="images" className="text-base font-semibold text-gray-700">Product Images</Label>
+            <Label
+              htmlFor="images"
+              className="text-base font-semibold text-gray-700"
+            >
+              Product Images
+            </Label>
             <Input
               id="images"
               type="file"
               multiple
               accept="image/*"
-              {...register("images", { required: "At least one image is required" })}
+              {...register("images", {
+                required: "At least one image is required",
+              })}
               className="mt-2"
             />
-            {errors.images && <p className="text-red-500 text-xs mt-1">{errors.images.message}</p>}
+            {errors.images && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.images.message}
+              </p>
+            )}
           </div>
 
           {/* Sizes */}
           <div>
-            <Label className="text-base font-semibold text-gray-700">Available Sizes</Label>
+            <Label className="text-base font-semibold text-gray-700">
+              Available Sizes
+            </Label>
             <div className="flex flex-wrap gap-3 mt-2">
               {sizes.map((size) => (
-                <label key={size} className="flex items-center gap-2 text-gray-700">
+                <label
+                  key={size}
+                  className="flex items-center gap-2 text-gray-700"
+                >
                   <Checkbox
                     checked={selectedSizes.includes(size)}
                     onCheckedChange={() =>
-                      toggleSelection(size, selectedSizes, setSelectedSizes, "sizes")
+                      toggleSelection(
+                        size,
+                        selectedSizes,
+                        setSelectedSizes,
+                        "sizes"
+                      )
                     }
                   />
                   {size}
@@ -197,14 +328,24 @@ const AddProduct = () => {
 
           {/* Colors */}
           <div>
-            <Label className="text-base font-semibold text-gray-700">Available Colors</Label>
+            <Label className="text-base font-semibold text-gray-700">
+              Available Colors
+            </Label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
               {colors.map((color) => (
-                <label key={color} className="flex items-center gap-2 text-gray-700">
+                <label
+                  key={color}
+                  className="flex items-center gap-2 text-gray-700"
+                >
                   <Checkbox
                     checked={selectedColors.includes(color)}
                     onCheckedChange={() =>
-                      toggleSelection(color, selectedColors, setSelectedColors, "colors")
+                      toggleSelection(
+                        color,
+                        selectedColors,
+                        setSelectedColors,
+                        "colors"
+                      )
                     }
                   />
                   {color}

@@ -203,3 +203,19 @@ exports.deleteCartItem = async (req,res)=>
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+exports.getProductsByCategory = async(req,res)=>
+{
+  const genre = req.params.genre;
+  console.log("Genre is :", genre);
+  try {
+    const products = await productSchema.find({genre:genre});
+    console.log(products);
+    return res.status(200).json(products);
+  }
+  catch(error)
+  {
+      console.error("Error deleting cart item:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

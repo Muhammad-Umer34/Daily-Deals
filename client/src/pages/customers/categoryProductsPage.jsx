@@ -1,13 +1,37 @@
 import { BreadcrumbWithCustomSeparator } from "./breadCrumbs";
 import Header from "../../components/ui/customer/header";
 import ItemCatalog from "./itemCatalog";
+import { useLocation } from "react-router-dom";
+import { getProductByCategory } from "../../features/customer/customerApi";
+import { useEffect } from "react";
+import Filters from "./Filters";
+import { useDispatch } from "react-redux";
+import { userProductActions } from "../../features/customer/productsSlice";
+import LayoutWithFilters from "./FilterandProducts";
+import Footer from "./footer";
 
 const CategoryProductPage = () => {
+  const dispatch = useDispatch ();
+  const location = useLocation();
+  const category = location.pathname.split("/").pop();
+  let prod = null;
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const products = await getProductByCategory(category);
+        dispatch(userProductActions.setProducts(products))
+        console.log(products); 
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+    fetchProducts();
+  }, [category]);
+
   return (
     <div className="flex flex-col min-h-screen w-full bg-white">
       <Header />
-
-      {/* Breadcrumb wrapper */}
       <div
         className="w-full px-2 sm:px-6"
         style={{ marginTop: "calc(8vh + 16px)" }}
@@ -18,6 +42,9 @@ const CategoryProductPage = () => {
       </div>
 
       <ItemCatalog />
+      <LayoutWithFilters/>
+      <div className="mt-10"></div>
+      <Footer/>
     </div>
   );
 };

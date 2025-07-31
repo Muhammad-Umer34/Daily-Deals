@@ -11,7 +11,7 @@ require('dotenv').config();
 
 const app = express();
 const checkingInAdmin = (req, res, next) => {
-  console.log("Admin middleware is checking in", req.body);
+  console.log("Admin middleware is checking in", req);
   next();
 }
 app.use(express.json());
@@ -22,6 +22,7 @@ app.use(cors({
   origin: "http://localhost:5173", 
   credentials: true               
 }));
+
 
 app.use('/api/auth', authRouter);
 app.use('/api/customer',userRouter);

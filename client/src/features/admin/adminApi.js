@@ -37,6 +37,7 @@ export const postProduct = async (productData,user,accessToken) => {
     user:user,
     subcategory : productData.subcategory,
     genre:productData.genre,
+    material:productData.material,
   };
   const token = accessToken || user?.accessToken; 
   try {

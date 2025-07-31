@@ -4,7 +4,7 @@ const initialState = {
   products:[],
   FilteredProducts:[],
 }
-const productSlice = createSlice(
+const userProductSlice = createSlice(
   {
     name:"products",
     initialState,
@@ -22,7 +22,6 @@ const productSlice = createSlice(
     }
   }
 )
-console.log("productSlice", productSlice);
-console.log("productSlice.actions", productSlice.actions);
-export const productActions = productSlice.actions;
-export default productSlice;
+
+export const userProductActions = userProductSlice.actions;
+export default userProductSlice;

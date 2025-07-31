@@ -5,18 +5,15 @@ const ItemCatalog = () => {
       className="w-full flex flex-row items-center mt-5 py-4"
       style={{ marginLeft: "5%", marginRight: "5%" }}
     >
-      {/* Left: Filters */}
-      <div className="flex items-center" style={{ width: "15%" }}>
+      <div className="flex items-center" style={{ width: "20%" }}>
         <h1 className="font-bold text-gray-800 text-xl">Filters</h1>
       </div>
 
-      {/* Gap between divs */}
       <div style={{ width: "5%" }}></div>
 
-      {/* Right: New Arrivals, Showing, Sort */}
       <div
         className="flex flex-row items-center justify-between gap-6 text-sm text-gray-600"
-        style={{ width: "70%" }}
+        style={{ width: "65%" }}
       >
         <h1 className="text-2xl font-bold text-gray-900">New Arrivals</h1>
         <div className="flex flex-row items-center gap-6">

@@ -167,3 +167,14 @@ export const deleteCartItem = async (itemId, accessToken, userId) => {
     throw error;
   }
 };
+
+export const getProductByCategory = async (category)=>
+{
+  try {
+    const response = await axios.get(`${BASE_URL}/category/products/${category}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching products by category:", error.response?.data || error.message);
+    throw error;
+  }
+}
