@@ -1,4 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
+import { useSelector } from 'react-redux';
 
 const initialState = {
   size:null,
@@ -26,7 +27,7 @@ const filterSlice = createSlice({
       state.brand = action.payload;
     },
      setRating(state,action){
-      state.size = action.payload;
+      state.rating = action.payload;
     },
     setMaterial(state,action)
     {
@@ -39,7 +40,13 @@ const filterSlice = createSlice({
     },
     resetFilters(state,action)
     {
-      return initialState;
+      return {
+        ...initialState,
+        price: {
+          min: action.payload?.min ?? initialState.price.min,
+          max: action.payload?.max ?? initialState.price.max,
+        },
+      };
     }
   }
 })

@@ -3,12 +3,18 @@ import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import { useDispatch } from "react-redux";
 import { filterActions } from "../../../features/customer/filterSlice";
+import { useEffect } from "react";
 
 function valuetext(value) {
   return `${value}`;
 }
 
 export default function RangeSlider({ min = 0, max = 100 }) {
+  console.log(min, max);
+  useEffect(() => {
+    dispatch(filterActions.setPrice({ min, max }));
+  }, [min, max]);
+
   const dispatch = useDispatch();
   const [value, setValue] = React.useState([min, max]);
 

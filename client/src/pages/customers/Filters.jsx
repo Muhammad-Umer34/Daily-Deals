@@ -8,48 +8,56 @@ import { useMemo } from "react";
 
 const Filters = () => {
   const dispatch = useDispatch();
+  let m = 0;
 
   const products = useSelector((state) => state.userProducts.products || []);
+  products.forEach((product) => {
+    if (product.price > m) {
+      m = product.price;
+    }
+  });
   const selectedFilters = useSelector((state) => state.filter || {});
 
   const ResetFilters = () => {
     console.log("Resetting filters...");
-    dispatch(filterActions.resetFilters());
-    dispatch(userProductActions.setFilteredProducts(products)); // Show all again
+    dispatch(filterActions.resetFilters({min:0,max:m}));
+    dispatch(userProductActions.setFilteredProducts(products));
   };
+const applyFilters = () => {
+  if (!Array.isArray(products)) {
+    console.error("Products is not an array:", products);
+    return;
+  }
 
-  const applyFilters = () => {
-    if (!Array.isArray(products)) {
-      console.error("Products is not an array:", products);
-      return;
-    }
+  const {
+    size,
+    color,
+    brand,
+    material,
+    rating,
+    price: { min = 0, max = Infinity } = {},
+  } = selectedFilters;
 
-    const {
-      size,
-      color,
-      brand,
-      rating,
-      price: { min = 0, max = Infinity } = {},
-    } = selectedFilters;
+  const minVal = Number(min) || 0;
+  const maxVal = Number(max) || Infinity;
 
-    const minVal = Number(min) || 0;
-    const maxVal = Number(max) || Infinity;
+  console.log("Applying filters:", selectedFilters);
 
-    console.log("Applying filters:", selectedFilters);
+  const filtered = products.filter((product) => {
 
-    const filtered = products.filter((product) => {
-      if (size && !product.size?.includes(size)) return false;
-      if (color && product.color !== color) return false;
-      if (brand && product.brand !== brand) return false;
-      if (rating && Number(product.rating) !== Number(rating)) return false;
+    if (size && !product.size?.includes(size)) return false;
+    if (color && !product.color?.includes(color)) return false;
+    if (brand && product.brand !== brand) return false;
+    if (material && product.material !== material) return false;
+    if (rating && Number(product.averageRating) !== Number(rating)) return false;
 
-      const productPrice = Number(product.price);
-      return productPrice >= minVal && productPrice <= maxVal;
-    });
+    const productPrice = Number(product.price);
+    return productPrice >= minVal && productPrice <= maxVal;
+  });
 
-    console.log("Final filtered products:", filtered);
-    dispatch(userProductActions.setFilteredProducts(filtered));
-  };
+  dispatch(userProductActions.setFilteredProducts(filtered));
+};
+
 
   const { size, color, brand, material, max } = useMemo(() => {
     const sizeSet = new Set();
@@ -59,7 +67,10 @@ const Filters = () => {
     let maxPrice = 0;
 
     products.forEach((product) => {
-      if (product.price > maxPrice) maxPrice = product.price;
+      if (product.price > maxPrice) {maxPrice = product.price;
+        console.log("Max Price is : ",maxPrice);
+      }
+      
 
       (Array.isArray(product.size) ? product.size : [product.size || ""])
         .filter(Boolean)
