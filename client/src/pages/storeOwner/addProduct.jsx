@@ -258,7 +258,7 @@ const AddProduct = () => {
               htmlFor="material"
               className="text-base font-semibold text-gray-700"
             >
-              Subcategory
+              Material
             </Label>
             <Input
               id="material"

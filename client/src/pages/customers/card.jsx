@@ -7,6 +7,7 @@ import {
   checkWishList,
 } from "../../features/customer/customerApi";
 import { useSelector } from "react-redux";
+import WishList from "./wishlist";
 
 const ProductCard = ({ product }) => {
   const user = useSelector((state) => state.auth.user);
@@ -30,6 +31,8 @@ const ProductCard = ({ product }) => {
       removeFromWishList(product._id, accessToken, user.id);
     } else {
       setLiked(true);
+      console.log("product is : ", product);
+      console.log("user is : ", user);
       addToWishList(product._id, accessToken, user.id);
     }
   };
@@ -40,7 +43,7 @@ const ProductCard = ({ product }) => {
       : "/images/placeholder.png";
 
   const handleOnClick = () => {
-    navigate(`/customer/${product._id}`);
+    navigate(`/home/${product.category}/${product.subcategory}/${product._id}`);
   };
 
 return (

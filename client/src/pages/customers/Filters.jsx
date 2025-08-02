@@ -54,7 +54,6 @@ const applyFilters = () => {
     const productPrice = Number(product.price);
     return productPrice >= minVal && productPrice <= maxVal;
   });
-
   dispatch(userProductActions.setFilteredProducts(filtered));
 };
 

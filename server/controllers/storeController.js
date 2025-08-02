@@ -77,11 +77,12 @@ exports.postProductController = [
         purchasedCount: 0,
         ratings: 0,
         isAvailable: true,
-        subcategory:req.body.subcategory.toLowerCase,
+        subcategory:req.body.subcategory.toLowerCase(),
         genre:req.body.genre.toLowerCase(),
         material:req.body.material,
 
       });
+      console.log("Product that is going in database is : ",product);
       res.status(201).json({ message: 'Product created successfully', product });
     } catch (error) {
       console.error("Error creating product:", error);

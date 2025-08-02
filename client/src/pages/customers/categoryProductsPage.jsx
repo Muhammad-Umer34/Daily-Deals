@@ -11,23 +11,25 @@ import LayoutWithFilters from "./FilterandProducts";
 import Footer from "./footer";
 
 const CategoryProductPage = () => {
-  const dispatch = useDispatch ();
+  const dispatch = useDispatch();
   const location = useLocation();
   const category = location.pathname.split("/").pop();
-  let prod = null;
 
   useEffect(() => {
+    dispatch(userProductActions.setCategory(category));
+
     const fetchProducts = async () => {
       try {
         const products = await getProductByCategory(category);
-        dispatch(userProductActions.setProducts(products))
-        console.log(products); 
+        dispatch(userProductActions.setProducts(products));
+        console.log(products);
       } catch (error) {
         console.error("Failed to fetch products:", error);
       }
     };
+
     fetchProducts();
-  }, [category]);
+  }, [category, dispatch]);
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-white">
@@ -42,9 +44,9 @@ const CategoryProductPage = () => {
       </div>
 
       <ItemCatalog />
-      <LayoutWithFilters/>
+      <LayoutWithFilters />
       <div className="mt-10"></div>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

@@ -48,6 +48,10 @@ const router = createBrowserRouter([
   {
     path :"/customer/cart",
     element : <CartPage/>
+  },
+  {
+    path : "/home/:category/:subcategory/:id",
+    element : <ProductDetailPage></ProductDetailPage>
   }
 ]);
 createRoot(document.getElementById("root")).render(

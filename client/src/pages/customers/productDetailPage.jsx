@@ -1,20 +1,20 @@
 import { useParams } from "react-router-dom";
 import { getProduct } from "../../features/customer/customerApi";
-import { ImageCarousel } from "./carouselComponent";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import ProductInfo from "./productInfo";
+import Header from "../../components/ui/customer/header";
+import { BreadcrumbWithCustomSeparator } from "./breadCrumbs";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await getProduct(id,accessToken);
+        const response = await getProduct(id, accessToken);
         setProduct(response);
       } catch (error) {
         console.error("Failed to fetch product details:", error);
@@ -32,10 +32,12 @@ const ProductDetailPage = () => {
   }
 
   return (
-    <div className="p-4">
-      <ProductInfo product={product} />
-      {/* <ImageCarousel images={product.images || []} /> */}
-      {/* Add more product info here as needed */}
+    <div className="relative">
+      <Header />
+      {/* Adjust padding-top based on Header height */}
+      <div className="pt-[80px] px-4">
+        <ProductInfo product={product} />
+      </div>
     </div>
   );
 };

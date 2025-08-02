@@ -10,7 +10,6 @@ function valuetext(value) {
 }
 
 export default function RangeSlider({ min = 0, max = 100 }) {
-  console.log(min, max);
   useEffect(() => {
     dispatch(filterActions.setPrice({ min, max }));
   }, [min, max]);
