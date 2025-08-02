@@ -1,9 +1,53 @@
-import { useSelector } from "react-redux"
-const ProfileForm = ()=>{
-const user = useSelector((state)=>state.auth.user);
-const accessToken = useSelector((state) => state.auth.accessToken);
-return (
-  
-)
-}
+import { useSelector, useDispatch } from "react-redux";
+import Header from "../../components/ui/customer/header";
+import { BreadcrumbWithCustomSeparator } from "./breadCrumbs";
+import { navActions } from "../../features/customer/navSlice";
+
+// ICONS
+import { FiUser, FiShoppingCart, FiHeart, FiClock, FiLogOut } from "react-icons/fi";
+
+const tabItems = [
+  { name: 'Profile Information', icon: <FiUser size={16} /> },
+  { name: 'Cart', icon: <FiShoppingCart size={16} /> },
+  { name: 'WishList', icon: <FiHeart size={16} /> },
+  { name: 'Order History', icon: <FiClock size={16} /> },
+  { name: 'Sign Out', icon: <FiLogOut size={16} />, isDanger: true },
+];
+
+const ProfileForm = () => {
+  const dispatch = useDispatch();
+  const active = useSelector((state) => state.navActive.active);
+
+  const handleOnClick = (value) => {
+    dispatch(navActions.setActive(value));
+  };
+
+  return (
+    <>
+      <Header />
+      <div className="mt-[100px] px-10">
+        <BreadcrumbWithCustomSeparator />
+        <div className="border-b border-gray-300 mt-6 px-[10%]">
+          <div className="flex justify-between">
+            {tabItems.map(({ name, icon, isDanger }) => (
+              <button
+                key={name}
+                onClick={() => handleOnClick(name)}
+                className={`flex items-center gap-2 py-4 text-sm font-medium relative cursor-pointer px-4
+                  ${name === active ? 'after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-black' : ''}
+                  ${isDanger ? 'text-red-500 hover:text-red-600' : 'text-gray-800 hover:text-black'}`}
+              >
+                <span className={`flex items-center ${isDanger ? 'text-red-500' : ''}`}>
+                  {icon}
+                </span>
+                {name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
 export default ProfileForm;

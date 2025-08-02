@@ -82,10 +82,10 @@ export default function Header() {
         </div>
 
         {/* Cart Icon */}
-        <FaShoppingCart size={20} className="text-gray-700" />
+        <FaShoppingCart size={20} className="text-gray-700 cursor-pointer" />
 
         {/* Profile Icon */}
-        <FaUserCircle size={22} className="text-gray-700" />
+        <FaUserCircle size={22} className="text-gray-700 cursor-pointer" onClick={()=>navigate("/home/profile")} />
       </div>
     </header>
   );
