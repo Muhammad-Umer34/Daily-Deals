@@ -4,10 +4,15 @@ const wishlistSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  productId: {
+  productId:{
     type: String,
     required: true,
   },
+  product: {
+    type: Object,
+    required: true,
+  },
+  
   createdAt: {
     type: Date,
     default: Date.now,

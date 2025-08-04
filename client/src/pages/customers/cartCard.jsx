@@ -1,9 +1,20 @@
-import { FaTrash, FaHeart, FaSearch } from "react-icons/fa";
+import { FaTrash, FaHeart, FaPlus, FaMinus } from "react-icons/fa";
+import { useState } from "react";
+import { updateCartQuantity } from "../../features/customer/customerApi";
+import { useSelector } from "react-redux";
 
 const CartItem = ({ item, onRemove }) => {
+  const [quantity, setQuantity] = useState(item.quantity);
+  const user = useSelector((state) => state.auth.user);
+  const accessToken = useSelector((state) => state.auth.accessToken);
+
+  const updateQuantity = async (newQuantity)=>
+  {
+    console.log(item._id,user.id,accessToken,newQuantity);
+    await updateCartQuantity(item.productId,user.id,accessToken,newQuantity);
+  }
   return (
     <div className="border rounded-lg p-4 shadow mb-4 bg-white w-full flex flex-col md:flex-row gap-4">
-      {/* Image */}
       <div className="w-full md:w-auto flex justify-center md:justify-start">
         <img
           src={item.image}
@@ -12,7 +23,6 @@ const CartItem = ({ item, onRemove }) => {
         />
       </div>
 
-      {/* Product Info */}
       <div className="flex-1 flex flex-col justify-between">
         <div>
           <h4 className="font-medium text-base md:text-lg mb-1 line-clamp-2">
@@ -28,18 +38,38 @@ const CartItem = ({ item, onRemove }) => {
           </div>
         </div>
 
-        {/* Bottom section: Price, Qty, Icons */}
         <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-          <p className="font-bold text-lg">Rs. {item.price}</p>
+          <p className="font-bold text-lg">Rs. {item.price * quantity}</p>
 
           <div className="flex items-center gap-4 text-sm text-gray-700">
-            <span>
-              Qty: <strong>{item.quantity}</strong>
-            </span>
+            <div className="flex items-center gap-3">
+              <button
+                className="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center text-gray-700 shadow hover:bg-gray-200 transition cursor-pointer"
+                onClick={async () => {
+                  if (quantity >= 1) {
+                    setQuantity(quantity - 1);
+                    await updateQuantity(quantity -1 );
+                  }
+                }}
+              >
+                <FaMinus size={10} />
+              </button>
 
-            <button className="hover:text-black text-gray-500">
-              <FaSearch />
-            </button>
+              <strong className="text-sm font-medium w-6 text-center">
+                {quantity}
+              </strong>
+
+              <button
+                className="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center text-gray-700 shadow hover:bg-gray-200 transition cursor-pointer"
+                onClick={async () => {
+                  setQuantity(quantity + 1);
+                 await updateQuantity(quantity +1);
+                }}
+              >
+                <FaPlus size={10} />
+              </button>
+            </div>
+
             <button className="hover:text-red-500 text-gray-500">
               <FaHeart />
             </button>

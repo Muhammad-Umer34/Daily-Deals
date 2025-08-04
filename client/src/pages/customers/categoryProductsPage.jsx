@@ -22,7 +22,6 @@ const CategoryProductPage = () => {
       try {
         const products = await getProductByCategory(category);
         dispatch(userProductActions.setProducts(products));
-        console.log(products);
       } catch (error) {
         console.error("Failed to fetch products:", error);
       }

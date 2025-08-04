@@ -3,8 +3,9 @@ import Header from "../../components/ui/customer/header";
 import { BreadcrumbWithCustomSeparator } from "./breadCrumbs";
 import { navActions } from "../../features/customer/navSlice";
 
-// ICONS
 import { FiUser, FiShoppingCart, FiHeart, FiClock, FiLogOut } from "react-icons/fi";
+import CartPage from "./cart";
+import DisplayWishlist from "./displayWishlist";
 
 const tabItems = [
   { name: 'Profile Information', icon: <FiUser size={16} /> },
@@ -46,6 +47,8 @@ const ProfileForm = () => {
           </div>
         </div>
       </div>
+      {active === 'Cart' && <CartPage/>}
+      {active === 'WishList' && <DisplayWishlist/>}
     </>
   );
 };

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 const CategoryCard = ({ category }) => {
   const defaultImage = "/default-category.jpg";
   const imageUrl = category.image || defaultImage;
-  console.log("Category Image URL:", imageUrl);
+
 
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 w-[300px] min-w-[240px] mx-auto">

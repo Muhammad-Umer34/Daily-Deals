@@ -6,18 +6,19 @@ import { useSelector } from "react-redux";
 import { addToCart } from "../../features/customer/customerApi";
 import WishList from "./wishlist";
 import { useNavigate } from "react-router-dom";
-
+import { useDispatch } from "react-redux";
+import { navActions } from "../../features/customer/navSlice";
 
 const ProductDetailPage = ({ product }) => {
-    const user = useSelector((state) => state.auth.user);
-    console.log("User in ProductDetailPage:", user);
-    const accessToken = useSelector((state) => state.auth.accessToken);
-    const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const accessToken = useSelector((state) => state.auth.accessToken);
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [liked, setLiked] = useState(false);
-  const [avrgRating , setAvrgRating] = useState(0);
+  const [avrgRating, setAvrgRating] = useState(0);
   const [reviewsCount, setReviewsCount] = useState(0);
 
   useEffect(() => {
@@ -40,28 +41,30 @@ const ProductDetailPage = ({ product }) => {
     }
     const cartItem = {
       productId: product._id,
-      userId:user.id,
+      userId: user.id,
       name: product.name,
       image: product.images?.[0],
       price: product.price,
       quantity,
-      color:selectedColor,
-      size:selectedSize,
+      color: selectedColor,
+      size: selectedSize,
     };
     addToCart(cartItem, accessToken)
       .then((response) => {
-    console.log("Added to cart:", cartItem);
-    navigate("/customer/cart");
+        console.log("Added to cart:", cartItem);
+        dispatch(navActions.setActive("Cart"))
+        navigate("/home/profile");
       })
       .catch((error) => {
         console.error("Failed to add to cart:", error);
         alert("Failed to add product to cart. Please try again.");
-      }
-    );
+      });
   };
 
   if (!product) {
-    return <p className="text-center mt-20 text-gray-500">Product not available</p>;
+    return (
+      <p className="text-center mt-20 text-gray-500">Product not available</p>
+    );
   }
 
   return (
@@ -77,7 +80,11 @@ const ProductDetailPage = ({ product }) => {
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold">{product.name}</h1>
             {product.brand_logo && (
-              <img src={product.brand_logo} alt="Brand" className="h-20 w-auto" />
+              <img
+                src={product.brand_logo}
+                alt="Brand"
+                className="h-20 w-auto"
+              />
             )}
           </div>
 
@@ -166,15 +173,13 @@ const ProductDetailPage = ({ product }) => {
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <FaStar className="text-yellow-400 mr-1" />
             <span>{avrgRating} / 5</span>
-            <span className="ml-2 text-gray-400">
-              ({reviewsCount} reviews)
-            </span>
+            <span className="ml-2 text-gray-400">({reviewsCount} reviews)</span>
           </div>
         </div>
       </div>
 
       {/* Review Section (placeholder) */}
-     <ReviewBox product={product} />
+      <ReviewBox product={product} />
     </div>
   );
 };

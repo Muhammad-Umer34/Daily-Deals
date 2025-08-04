@@ -32,7 +32,7 @@ const CartPage = () => {
     }
   };
 
-  // Calculate total price
+
   const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   return (
@@ -44,7 +44,10 @@ const CartPage = () => {
             {/* Cart Items */}
             <div className="flex-1 space-y-4">
               {cartItems.map((item) => (
-                <CartItem key={item._id} item={item} onRemove={onRemove} 
+                <CartItem
+                  key={item._id}
+                  item={item}
+                  onRemove={onRemove}
                   imageClassName="w-32 h-32 md:w-40 md:h-40 object-cover rounded-xl bg-gray-100"
                 />
               ))}
@@ -58,13 +61,13 @@ const CartPage = () => {
               </div>
               <div className="flex justify-between text-gray-700 font-medium">
                 <span>Total:</span>
-                <span className="text-blue-600 font-bold text-lg">Rs {total.toLocaleString("en-PK")}</span>
+                <span className="text-black font-bold text-lg">Rs {total.toLocaleString("en-PK")}</span>
               </div>
               <button
-                className="mt-4 w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                className="mt-4 w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition"
                 disabled={cartItems.length === 0}
               >
-                Proceed to Checkout
+                Proceed to Checkout &gt;
               </button>
             </div>
           </div>
@@ -73,8 +76,8 @@ const CartPage = () => {
             <img src="/images/empty_cart.svg" alt="Empty Cart" className="w-40 mb-6 opacity-80" />
             <p className="text-lg text-gray-500 mb-2">Your cart is empty.</p>
             <a
-              href="/"
-              className="inline-block mt-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+              href="/home"
+              className="inline-block mt-2 px-6 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition"
             >
               Continue Shopping
             </a>

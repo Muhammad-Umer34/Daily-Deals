@@ -31,9 +31,8 @@ const ProductCard = ({ product }) => {
       removeFromWishList(product._id, accessToken, user.id);
     } else {
       setLiked(true);
-      console.log("product is : ", product);
-      console.log("user is : ", user);
-      addToWishList(product._id, accessToken, user.id);
+
+      addToWishList(product, accessToken, user.id);
     }
   };
 

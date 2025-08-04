@@ -13,7 +13,6 @@ const ShowProducts = () => {
     const fetchProducts = async () => {
       try {
         const fetchedProducts = await getProductsForCustomer(user, accessToken);
-        console.log("Fetched products:", fetchedProducts);
         setProducts(fetchedProducts); 
       } catch (error) {
         console.error("Failed to fetch products:", error);

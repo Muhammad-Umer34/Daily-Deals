@@ -67,7 +67,6 @@ const applyFilters = () => {
 
     products.forEach((product) => {
       if (product.price > maxPrice) {maxPrice = product.price;
-        console.log("Max Price is : ",maxPrice);
       }
       
 

@@ -55,20 +55,21 @@ exports.postCart = async (req, res) => {
 };
 
 exports.postWishlist = async (req, res) => {
-  const productId = req.params.pId;
+  console.log(req.body);
+  const product = req.body.product;
   const userId = req.params.uId;
+  const productId = req.params.pId;
   try {
     const wishlistItem = new Wishlist({
       productId,
+      product,
       userId,
     });
     await wishlistItem.save();
-    res
-      .status(201)
-      .json({
-        message: "Product added to wishlist successfully",
-        wishlistItem,
-      });
+    res.status(201).json({
+      message: "Product added to wishlist successfully",
+      wishlistItem,
+    });
   } catch (error) {
     console.error("Error adding product to wishlist:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -78,7 +79,7 @@ exports.postWishlist = async (req, res) => {
 exports.deleteWishlist = async (req, res) => {
   const productId = req.params.id;
   const userId = req.body.userId;
-
+  console.log("In delete controller ");
   try {
     const wishlistItem = await Wishlist.findOneAndDelete({ productId, userId });
     if (!wishlistItem) {
@@ -93,17 +94,24 @@ exports.deleteWishlist = async (req, res) => {
   }
 };
 
-exports.getWishlist = async (req, res) => {
-  const productId = req.params.pId;
-  const userId = req.params.uId;
+const mongoose = require("mongoose");
 
-  console.log("Fetching wishlist for user:", userId, "and product:", productId);
+exports.getWishlist = async (req, res) => {
+  const { pId, uId } = req.params;
+
+  if (!pId || !uId) {
+    return res.status(400).json({ message: "Missing product or user ID" });
+  }
 
   try {
-    const wishlistItem = await Wishlist.find({ productId, userId });
-    if (!wishlistItem || wishlistItem.length === 0) {
+    const productId = new mongoose.Types.ObjectId(pId);
+    const userId = new mongoose.Types.ObjectId(uId);
+
+    const exists = await Wishlist.exists({ productId, userId });
+
+    if (!exists) {
       return res
-        .status(404)
+        .status(200)
         .json({ message: "Wishlist item not found", exists: false });
     }
 
@@ -111,7 +119,7 @@ exports.getWishlist = async (req, res) => {
       .status(200)
       .json({ message: "Product exists with this user", exists: true });
   } catch (error) {
-    console.error("Error fetching wishlist item:", error);
+    console.error("Error fetching wishlist item:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -155,67 +163,100 @@ exports.postReview = async (req, res) => {
   }
 };
 
-
 exports.getReview = async (req, res) => {
   const productId = req.params.pId;
   try {
-    const reviews = await Review.find({ productId })
+    const reviews = await Review.find({ productId });
     if (!reviews || reviews.length === 0) {
-      return res.status(404).json({ message: "No reviews found for this product" });
+      return res
+        .status(404)
+        .json({ message: "No reviews found for this product" });
     }
     res.status(200).json(reviews);
   } catch (error) {
     console.error("Error fetching reviews:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
-exports.getCart = async (req,res)=>
-{
+exports.getCart = async (req, res) => {
   const userId = req.query.userId;
-  try 
-  {
-    const cartItems = await Cart.find({userId});
+  try {
+    const cartItems = await Cart.find({ userId });
     if (!cartItems || cartItems.length === 0) {
       return res.status(404).json({ message: "No items found in cart" });
     }
     res.status(200).json(cartItems);
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error fetching cart items:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
-exports.deleteCartItem = async (req,res)=>
-{
+exports.deleteCartItem = async (req, res) => {
   const itemId = req.params.id;
   const userId = req.body.userId;
- try {
+  try {
     const cartItem = await Cart.findOneAndDelete({ _id: itemId, userId });
     if (!cartItem) {
       return res.status(404).json({ message: "Cart item not found" });
     }
     res.status(200).json({ message: "Cart item deleted successfully" });
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error deleting cart item:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
-exports.getProductsByCategory = async(req,res)=>
-{
+exports.getProductsByCategory = async (req, res) => {
   const genre = req.params.genre;
   console.log("Genre is :", genre);
   try {
-    const products = await productSchema.find({genre:genre});
+    const products = await productSchema.find({ genre: genre });
     console.log(products);
     return res.status(200).json(products);
+  } catch (error) {
+    console.error("Error deleting cart item:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.updateQuantity = async (req, res) => {
+  const productId = req.params.productId?.toString();
+  const userId = req.body.user?.toString();
+  const quantity = req.body.quantity;
+  try {
+    const cartItem = await Cart.findOneAndUpdate(
+      { productId, userId },
+      { $set: { quantity } },
+      { new: true }
+    );
+
+    if (!cartItem) {
+      return res.status(404).json({ message: "Cart item not found" });
+    }
+
+    res.status(200).json(cartItem);
+  } catch (error) {
+    console.error("Error updating cart item:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+exports.getUserWishlist = async (req,res)=>{
+  const userId = req.params.uId;
+  try{
+    const wishlistItems = await Wishlist.find({userId});
+    if(!wishlistItems || wishlistItems.length === 0)
+    {
+      return res.status(404).json({message:"No items found in wishlist"});
+    }
+    res.status(200).json(wishlistItems);
   }
   catch(error)
   {
-      console.error("Error deleting cart item:", error);
+    console.error("Error fetching wishlist items:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
