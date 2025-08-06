@@ -1,42 +1,48 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { getUserWishlist } from "../../features/customer/customerApi";
+import WishListItem from "./wishlistItem";
 import { useSelector } from "react-redux";
-import { getUserWishList } from "../apiCalls/wishlist";
-import WishListItem from "./WishListItem";
 
 export default function DisplayWishlist() {
-  const user = useSelector((state) => state.user.user);
-  const accessToken = useSelector((state) => state.user.accessToken);
   const [items, setItems] = useState([]);
-
+  const user = useSelector((state) => state.auth.user);
+  const accessToken = useSelector((state) => state.auth.accessToken);
+  function onDelete (itemId){
+      const filteredItems = items.filter((item) => item._id !== itemId);
+      setItems(filteredItems);
+  }
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
-        const response = await getUserWishList(user.id, accessToken);
-        if (response.exist) {
-          setItems(response.items);
-        } else {
-          setItems([]);
-        }
-      } catch (err) {
-        console.error("Error fetching wishlist:", err);
+        const result = await getUserWishlist(user.id,accessToken);
+        setItems(result);
+        console.log(result);
+      } catch (error) {
+        console.error("Failed to fetch wishlist:", error);
       }
     };
-
     fetchWishlist();
-  }, [user.id, accessToken]);
-
-  const handleDelete = (id) => {
-    setItems((prev) => prev.filter((item) => item._id !== id));
-  };
+  }, []);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+    <div className="mt-8 mx-60">
+      <div>
+        <h1 className="text-2xl font-bold mb-6">My Wishlist</h1>
+      </div>
+
+      <div className="flex justify-between mb-6 px-4 font-bold text-xl">
+        <div className="w-1/2">Product</div>
+        <div className="w-1/2 flex justify-between">
+          <div>Price</div>
+          <div>Status</div>
+          <div>Action</div>
+        </div>
+      </div>
+
       {items.length > 0 ? (
-        items.map((item) => (
-          <WishListItem key={item._id} item={item} onDelete={handleDelete} />
-        ))
+        items.map((item) => <WishListItem key={item._id} item={item} onDelete={onDelete} />)
       ) : (
-        <div className="text-center text-gray-500 col-span-full">No items in wishlist.</div>
+        <div className="text-center text-gray-500 mt-10">No items in wishlist.</div>
       )}
     </div>
   );

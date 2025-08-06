@@ -4,7 +4,8 @@ import { useSelector } from "react-redux";
 import { removeFromWishList } from "../../features/customer/customerApi";
 import { useState } from "react";
 
-export default function WishListItem({ item }) {
+export default function WishListItem({ item,onDelete }) {
+  console.log(item);
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function WishListItem({ item }) {
 
   const handleRemoveFromCart = async ()=>{
      await  removeFromWishList(product._id, accessToken, user.id);
+     onDelete(item._id);
   }
   return (
     <div className="flex justify-between items-center border p-4 rounded-lg shadow-sm mb-4">
