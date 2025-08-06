@@ -54,6 +54,8 @@ exports.customerPostRegister = [
         email,
         password: hashedPassword,
         userType: userType || "customer",
+        address: [],
+        phoneNumber: [],
       });
 
       await newUser.save();
@@ -195,6 +197,8 @@ exports.postLogin = async (req, res) => {
           userType: user.userType,
           brand_name: user.brand_name || null,
           brand_logo: user.brand_logo || null,
+          address: user.address || null,
+          phoneNumber: user.phoneNumber || null,
         },
         accessToken,
       });

@@ -6,6 +6,8 @@ import { navActions } from "../../features/customer/navSlice";
 import { FiUser, FiShoppingCart, FiHeart, FiClock, FiLogOut } from "react-icons/fi";
 import CartPage from "./cart";
 import DisplayWishlist from "./displayWishlist";
+import GetOrShowInfo from "./gettingInfo";
+
 
 const tabItems = [
   { name: 'Profile Information', icon: <FiUser size={16} /> },
@@ -49,6 +51,7 @@ const ProfileForm = () => {
       </div>
       {active === 'Cart' && <CartPage/>}
       {active === 'WishList' && <DisplayWishlist/>}
+      {active === 'Profile Information' && <GetOrShowInfo/>}
     </>
   );
 };

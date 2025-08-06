@@ -3,6 +3,9 @@ const Cart = require("../models/cart").default;
 const Wishlist = require("../models/wishlist").default;
 const Review = require("../models/review").default;
 const Product = require("../models/store").default;
+const User = require("../models/user");
+
+
 exports.getAllProductForCustomer = async (req, res) => {
   try {
     const products = await productSchema.find({});
@@ -94,7 +97,7 @@ exports.deleteWishlist = async (req, res) => {
   }
 };
 
-const mongoose = require("mongoose");
+
 
 exports.getWishlist = async (req, res) => {
   const { pId, uId } = req.params;
@@ -260,3 +263,29 @@ exports.getUserWishlist = async (req,res)=>{
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+
+
+exports.updateUserInfo = async (req, res) => {
+  const userId = req.params.id;
+  const { name, email, address, phoneNumber } = req.body;
+
+  console.log("From Controller:", { name, email, address, phoneNumber }, userId);
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { name, email, address, phoneNumber }, 
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Error updating user info:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

@@ -256,3 +256,21 @@ export const getUserWishlist = async (userId, accessToken) => {
     throw error;
   }
 };
+
+export const updateUserInfo = async (user, accessToken) => {
+  try {
+    const userId = user.id;
+    console.log("From Customer Api : ",user);
+    const response = await axios.put(`${BASE_URL}/user/${userId}`, user, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update user info:", error);
+    throw error;
+  }
+};

@@ -1,5 +1,5 @@
 const express = require('express');
-const {getAllProductForCustomer,getProduct,postCart,postWishlist,deleteWishlist,getWishlist, postReview,getReview,getCart,deleteCartItem,getProductsByCategory,updateQuantity,getUserWishlist} = require('../controllers/customerController');
+const {getAllProductForCustomer,getProduct,postCart,postWishlist,deleteWishlist,getWishlist, postReview,getReview,getCart,deleteCartItem,getProductsByCategory,updateQuantity,getUserWishlist,updateUserInfo} = require('../controllers/customerController');
 
 const verifyLoggedIn = require('../middlewares/authMiddleware')
 
@@ -17,6 +17,7 @@ userRouter.get('/cart',verifyLoggedIn,getCart);
 userRouter.delete('/cart/:id',verifyLoggedIn,deleteCartItem);
 userRouter.get('/category/products/:genre', getProductsByCategory);
 userRouter.put('/cart/:productId',verifyLoggedIn,updateQuantity)
+userRouter.put('/user/:id',verifyLoggedIn,updateUserInfo);
 
 
 module.exports = userRouter;

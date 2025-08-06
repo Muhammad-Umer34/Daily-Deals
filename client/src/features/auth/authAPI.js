@@ -11,6 +11,8 @@ export const customerregisterForm = async (userObj) => {
     name: userObj.name,
     password: userObj.password,
     userType: "customer",
+    address:null,
+    phoneNumber:null,
   };
 
   try {
