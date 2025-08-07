@@ -6,16 +6,17 @@ import { useDispatch } from "react-redux";
 import { updateUserInfo } from "../../features/customer/customerApi";
 import { authActions } from "../../features/auth/authSlices";
 import EditInfo from "./editInfo";
+import AddAddress from "./addNewAdress";
 
 const GetOrShowInfo = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
   const [editForm, setEditForm] = useState(false);
-  
+  const [addAddressForm , setAddAddressForm] = useState(false);
   console.log("user:", user);
 
-  // Fixed logic to check if user has complete info
+
   const showForm = !(
     user?.address && 
     user.address.length > 0 && 
@@ -43,8 +44,6 @@ const GetOrShowInfo = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form data:", formData);
-
-    // Add validation
     if (!formData.fullName.trim()) {
       alert("Please enter your full name");
       return;
@@ -88,10 +87,16 @@ const GetOrShowInfo = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-8 mt-12 bg-white shadow-xl rounded-xl border border-gray-100 relative">
-      {/* Modal for Edit Form */}
+       {addAddressForm && (
+        <div className="fixed inset-0 flex items-center justify-center p-4 z-100 shadow-lg" style={{zIndex: 100}}>
+          <div className="max-w-xl w-full max-h-screen overflow-y-auto">
+            <AddAddress setAddAddressForm={setAddAddressForm} />
+          </div>
+        </div>
+      )}
       {editForm && (
         <div className="fixed inset-0 flex items-center justify-center p-4 z-100" style={{zIndex: 100}}>
-          <div className="max-w-3xl w-full max-h-screen overflow-y-auto">
+          <div className="max-w-xl w-full max-h-screen overflow-y-auto">
             <EditInfo onClose={() => setEditForm(false)} />
           </div>
         </div>
@@ -268,7 +273,7 @@ const GetOrShowInfo = () => {
                 Shipping Address
               </h3>
               <button 
-                onClick={() => setEditForm(true)}
+                onClick={()=>{ setAddAddressForm(true)}}
                 className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 flex items-center gap-2 text-sm font-medium shadow-md hover:shadow-lg"
               >
                 <FaPlus className="text-sm" />

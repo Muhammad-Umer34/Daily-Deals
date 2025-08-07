@@ -10,9 +10,6 @@ const EditInfo = ({ onClose }) => {
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
   
-  console.log("user:", user);
-  console.log("Edit Info get Called");
-
   const [formData, setFormData] = useState({
     fullName: user?.name || "",
     email: user?.email || "",
@@ -70,7 +67,6 @@ const EditInfo = ({ onClose }) => {
         dispatch(authActions.updateUser(updatedUser));
         alert("Profile updated successfully!");
         
-        // Close the edit form after successful update
         if (onClose) {
           onClose();
         }
@@ -88,8 +84,7 @@ const EditInfo = ({ onClose }) => {
   };
 
   return (
-    <div className="w-full p-4 bg-white shadow-2xl rounded-lg border border-gray-200 relative">
-      {/* Close button for modal */}
+    <div className="w-full p-4 bg-white shadow-4xl rounded-lg border border-gray-200 relative">
       <button
         onClick={onClose}
         className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors duration-200 z-10"

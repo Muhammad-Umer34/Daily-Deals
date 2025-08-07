@@ -64,7 +64,7 @@ const CartPage = () => {
                 <span className="text-black font-bold text-lg">Rs {total.toLocaleString("en-PK")}</span>
               </div>
               <button
-                className="mt-4 w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition"
+                className="mt-4 w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition cursor-pointer"
                 disabled={cartItems.length === 0}
               >
                 Proceed to Checkout &gt;
