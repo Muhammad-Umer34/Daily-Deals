@@ -2,10 +2,13 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { IoClose } from "react-icons/io5";
 import { updateUserInfo } from "../../features/customer/customerApi";
+import { useDispatch } from "react-redux";
+import { authActions } from "../../features/auth/authSlices";
 
 const AddAddress = ({setAddAddressForm}) => {
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -32,7 +35,8 @@ const AddAddress = ({setAddAddressForm}) => {
     try {
       await updateUserInfo(updatedUser, accessToken);
       reset();
-      setAddAddressForm(false)
+      setAddAddressForm(false);
+      dispatch(authActions.updateUser(updatedUser));
     } catch (error) {
       console.error("❌ Failed to update user info:", error);
     }

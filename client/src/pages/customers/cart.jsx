@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import CartItem from "./cartCard";
 import { deleteCartItem, getCardItems } from "../../features/customer/customerApi";
+import { useNavigate } from "react-router-dom";
 
 const CartPage = () => {
+  const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
   const accessToken = useSelector((state) => state.auth.accessToken);
   const user = useSelector((state) => state.auth.user);
@@ -65,6 +67,7 @@ const CartPage = () => {
               </div>
               <button
                 className="mt-4 w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition cursor-pointer"
+                onClick={()=>{navigate("/home/cart/checkout")}}
                 disabled={cartItems.length === 0}
               >
                 Proceed to Checkout &gt;

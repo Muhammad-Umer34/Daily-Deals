@@ -18,6 +18,9 @@ import CartPage from "./pages/customers/cart.jsx";
 import CategoryCard from "./pages/customers/categoriesCard.jsx";
 import CategoryProductPage from "./pages/customers/categoryProductsPage.jsx";
 import ProfileForm from "./pages/customers/profileInfo.jsx";
+import CheckOut from "./pages/customers/checkout.jsx";
+
+
 
 
 const router = createBrowserRouter([
@@ -57,6 +60,10 @@ const router = createBrowserRouter([
   {
     path : "/home/profile",
     element : <ProfileForm/>
+  },
+  {
+    path : "/home/cart/checkout",
+    element : <CheckOut/>
   }
 ]);
 createRoot(document.getElementById("root")).render(

@@ -274,3 +274,35 @@ export const updateUserInfo = async (user, accessToken) => {
     throw error;
   }
 };
+
+
+export const postOrder = async (accessToken,orderData)=>
+{
+  try{
+    const response = await axios.post(`${BASE_URL}/order`,orderData,{
+      headers:{
+        Authorization : `Bearer ${accessToken}`
+      }
+    })
+   console.log(response.data);
+  }
+  catch(error){
+    console.log(error);
+    throw error;
+  }
+}
+
+export const deleteUserCart = async (accessToken,userId)=>{
+  try{
+    const response = await axios.delete(`${BASE_URL}/delete/cart/${userId}`,{
+      headers:{
+        Authorization : `Bearer ${accessToken}`
+      }
+    })
+    return response.data;
+  }
+  catch(error){
+    console.log(error);
+    throw error;
+  }
+}

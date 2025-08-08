@@ -4,6 +4,7 @@ const Wishlist = require("../models/wishlist").default;
 const Review = require("../models/review").default;
 const Product = require("../models/store").default;
 const User = require("../models/user");
+const Order = require("../models/order.js");
 const mongoose = require("mongoose");
 
 
@@ -98,7 +99,6 @@ exports.deleteWishlist = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 
 exports.getWishlist = async (req, res) => {
@@ -267,7 +267,6 @@ exports.getUserWishlist = async (req,res)=>{
 }
 
 
-
 exports.updateUserInfo = async (req, res) => {
   const userId = req.params.id;
   const { name, email, address, phoneNumber } = req.body;
@@ -291,3 +290,44 @@ exports.updateUserInfo = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.postOrder = async(req,res)=>{
+  const {items,totalPrice,shippingAddress,paymentMethod,phoneNumber,orderStatus,paymentStatus,expectedDeliveryDate,userId} = req.body;
+  const newOrder = new Order ({
+    items,
+    totalPrice,
+    shippingAddress,
+    paymentMethod,
+    phoneNumber,
+    orderStatus,
+    paymentStatus,
+    expectedDeliveryDate,
+    userId
+  })
+  try{
+    const savedOrder = await newOrder.save();
+    res.status(201).json(savedOrder);
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({message:"Internal server error"});
+  }
+}
+
+exports.deleteUserCart = async(req,res)=>{
+  console.log("In delete controller ");
+  console.log(req.params);
+  const userId = req.params.userId;
+  try{
+    const deletedCart = await Cart.deleteMany({userId});
+    if(!deletedCart)
+    {
+      return res.status(404).json({message:"Cart not found"});
+    }
+    res.status(200).json({message:"Cart deleted successfully"});
+  }
+  catch(error){
+    console.log(erorr);
+    res.status(500).json({message:"Internal server error"});
+  }
+}
