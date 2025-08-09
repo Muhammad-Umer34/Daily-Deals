@@ -7,8 +7,6 @@ const User = require("../models/user");
 const Order = require("../models/order.js");
 const mongoose = require("mongoose");
 
-
-
 exports.getAllProductForCustomer = async (req, res) => {
   try {
     const products = await productSchema.find({});
@@ -99,7 +97,6 @@ exports.deleteWishlist = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 exports.getWishlist = async (req, res) => {
   const { pId, uId } = req.params;
@@ -248,35 +245,34 @@ exports.updateQuantity = async (req, res) => {
   }
 };
 
-
-exports.getUserWishlist = async (req,res)=>{
+exports.getUserWishlist = async (req, res) => {
   const userId = req.params.uId;
-  try{
-    const wishlistItems = await Wishlist.find({userId});
-    if(!wishlistItems || wishlistItems.length === 0)
-    {
-      return res.status(404).json({message:"No items found in wishlist"});
+  try {
+    const wishlistItems = await Wishlist.find({ userId });
+    if (!wishlistItems || wishlistItems.length === 0) {
+      return res.status(404).json({ message: "No items found in wishlist" });
     }
     res.status(200).json(wishlistItems);
-  }
-  catch(error)
-  {
+  } catch (error) {
     console.error("Error fetching wishlist items:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-}
-
+};
 
 exports.updateUserInfo = async (req, res) => {
   const userId = req.params.id;
   const { name, email, address, phoneNumber } = req.body;
 
-  console.log("From Controller:", { name, email, address, phoneNumber }, userId);
+  console.log(
+    "From Controller:",
+    { name, email, address, phoneNumber },
+    userId
+  );
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { name, email, address, phoneNumber }, 
+      { name, email, address, phoneNumber },
       { new: true, runValidators: true }
     );
 
@@ -291,9 +287,8 @@ exports.updateUserInfo = async (req, res) => {
   }
 };
 
-exports.postOrder = async(req,res)=>{
-  const {items,totalPrice,shippingAddress,paymentMethod,phoneNumber,orderStatus,paymentStatus,expectedDeliveryDate,userId} = req.body;
-  const newOrder = new Order ({
+exports.postOrder = async (req, res) => {
+  const {
     items,
     totalPrice,
     shippingAddress,
@@ -302,32 +297,50 @@ exports.postOrder = async(req,res)=>{
     orderStatus,
     paymentStatus,
     expectedDeliveryDate,
-    userId
-  })
-  try{
+    userId,
+  } = req.body;
+  const newOrder = new Order({
+    items,
+    totalPrice,
+    shippingAddress,
+    paymentMethod,
+    phoneNumber,
+    orderStatus,
+    paymentStatus,
+    expectedDeliveryDate,
+    userId,
+  });
+  try {
     const savedOrder = await newOrder.save();
     res.status(201).json(savedOrder);
-  }
-  catch(error){
+  } catch (error) {
     console.log(error);
-    res.status(500).json({message:"Internal server error"});
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
-exports.deleteUserCart = async(req,res)=>{
+exports.deleteUserCart = async (req, res) => {
   console.log("In delete controller ");
   console.log(req.params);
   const userId = req.params.userId;
-  try{
-    const deletedCart = await Cart.deleteMany({userId});
-    if(!deletedCart)
-    {
-      return res.status(404).json({message:"Cart not found"});
+  try {
+    const deletedCart = await Cart.deleteMany({ userId });
+    if (!deletedCart) {
+      return res.status(404).json({ message: "Cart not found" });
     }
-    res.status(200).json({message:"Cart deleted successfully"});
-  }
-  catch(error){
+    res.status(200).json({ message: "Cart deleted successfully" });
+  } catch (error) {
     console.log(erorr);
-    res.status(500).json({message:"Internal server error"});
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+};
+
+exports.getAllOrders = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const orders = await Order.find({ userId });
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

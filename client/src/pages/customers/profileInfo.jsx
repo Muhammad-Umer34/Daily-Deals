@@ -7,6 +7,7 @@ import { FiUser, FiShoppingCart, FiHeart, FiClock, FiLogOut } from "react-icons/
 import CartPage from "./cart";
 import DisplayWishlist from "./displayWishlist";
 import GetOrShowInfo from "./gettingInfo";
+import OrderHistory from "./orderHistory";
 
 
 const tabItems = [
@@ -52,6 +53,7 @@ const ProfileForm = () => {
       {active === 'Cart' && <CartPage/>}
       {active === 'WishList' && <DisplayWishlist/>}
       {active === 'Profile Information' && <GetOrShowInfo/>}
+      {active === 'Order History' && <OrderHistory/>}
     </>
   );
 };

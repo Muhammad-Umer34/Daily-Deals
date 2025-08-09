@@ -1,5 +1,5 @@
 const express = require('express');
-const {getAllProductForCustomer,getProduct,postCart,postWishlist,deleteWishlist,getWishlist, postReview,getReview,getCart,deleteCartItem,getProductsByCategory,updateQuantity,getUserWishlist,updateUserInfo,postOrder,deleteUserCart} = require('../controllers/customerController');
+const {getAllProductForCustomer,getProduct,postCart,postWishlist,deleteWishlist,getWishlist, postReview,getReview,getCart,deleteCartItem,getProductsByCategory,updateQuantity,getUserWishlist,updateUserInfo,postOrder,deleteUserCart,getAllOrders} = require('../controllers/customerController');
 
 const verifyLoggedIn = require('../middlewares/authMiddleware')
 
@@ -20,6 +20,7 @@ userRouter.put('/cart/:productId',verifyLoggedIn,updateQuantity)
 userRouter.put('/user/:id',verifyLoggedIn,updateUserInfo);
 userRouter.post('/order',verifyLoggedIn,postOrder)
 userRouter.delete('/delete/cart/:userId',verifyLoggedIn,deleteUserCart);
+userRouter.get('/order/:userId',verifyLoggedIn,getAllOrders);
 
 
 module.exports = userRouter;

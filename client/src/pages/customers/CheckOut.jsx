@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import { BreadcrumbWithCustomSeparator } from "./breadCrumbs";
 import { getCardItems } from "../../features/customer/customerApi";
@@ -8,6 +9,7 @@ import { postOrder } from "../../features/customer/customerApi";
 import { deleteUserCart } from "../../features/customer/customerApi";
 
 const CheckOut = () => {
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
   const [cart, setCart] = useState([]);
@@ -63,16 +65,16 @@ const CheckOut = () => {
       shippingAddress: data.useNewAddress ? data.newAddress : data.savedAddress,
       paymentMethod: data.paymentMethod,
       phoneNumber: data.phoneNumber,
-      orderStatus: "pending",
-      paymentStatus: "pending",
+      orderStatus: "Pending",
+      paymentStatus: "Pending",
       expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       userId: user.id,
     };
     console.log("✅ Order Data:", orderData);
-    await postOrder(accessToken, orderData);
+    const order = await postOrder(accessToken, orderData);
     await deleteUserCart(accessToken, user.id);
     setCart([]);
-    alert("Order placed successfully!");
+    navigate('/home/order-confirmation',{state:{order:order}});
     reset();
   };
 

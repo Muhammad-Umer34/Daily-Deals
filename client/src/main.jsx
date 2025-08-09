@@ -18,7 +18,8 @@ import CartPage from "./pages/customers/cart.jsx";
 import CategoryCard from "./pages/customers/categoriesCard.jsx";
 import CategoryProductPage from "./pages/customers/categoryProductsPage.jsx";
 import ProfileForm from "./pages/customers/profileInfo.jsx";
-import CheckOut from "./pages/customers/checkout.jsx";
+import CheckOut from "./pages/customers/CheckOut.jsx";
+import OrderConfirmation from "./pages/customers/order-confirmation.jsx";
 
 
 
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
   {
     path : "/home/cart/checkout",
     element : <CheckOut/>
+  },
+  {
+    path:"/home/order-confirmation",
+    element:<OrderConfirmation/>
   }
 ]);
 createRoot(document.getElementById("root")).render(

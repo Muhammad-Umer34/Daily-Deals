@@ -284,7 +284,7 @@ export const postOrder = async (accessToken,orderData)=>
         Authorization : `Bearer ${accessToken}`
       }
     })
-   console.log(response.data);
+   return response.data;
   }
   catch(error){
     console.log(error);
@@ -295,6 +295,21 @@ export const postOrder = async (accessToken,orderData)=>
 export const deleteUserCart = async (accessToken,userId)=>{
   try{
     const response = await axios.delete(`${BASE_URL}/delete/cart/${userId}`,{
+      headers:{
+        Authorization : `Bearer ${accessToken}`
+      }
+    })
+    return response.data;
+  }
+  catch(error){
+    console.log(error);
+    throw error;
+  }
+}
+
+export const getAllOrders = async (accessToken,userId)=>{
+  try{
+    const response = await axios.get(`${BASE_URL}/order/${userId}`,{
       headers:{
         Authorization : `Bearer ${accessToken}`
       }
