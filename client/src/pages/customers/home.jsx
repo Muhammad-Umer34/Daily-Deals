@@ -4,6 +4,7 @@ import HeroSection from "../../components/ui/customer/heroSection";
 import Separator from "../../components/ui/customer/separator";
 import DisplayCategories from "./displayCategories";
 import Footer from "./footer";
+import { getTopSellingProducts } from "../../features/customer/customerApi";
 
 const CustomerHome = () => {
   return (

@@ -51,7 +51,6 @@ const ProductDetailPage = ({ product }) => {
     };
     addToCart(cartItem, accessToken)
       .then((response) => {
-        console.log("Added to cart:", cartItem);
         dispatch(navActions.setActive("Cart"))
         navigate("/home/profile");
       })

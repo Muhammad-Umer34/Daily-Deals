@@ -344,3 +344,76 @@ exports.getAllOrders = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.increaseOrderViews = async (req, res) => {
+  const productId = req.params.productId;
+
+  try {
+    const updatedProduct = await productSchema.findByIdAndUpdate(
+      productId,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({
+      message: "Views count updated successfully",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.increasePurchasedCount = async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    let quantity = req.body.quantity;
+
+    console.log("Received:", productId, quantity);
+
+    quantity = Number(quantity);
+    if (isNaN(quantity) || quantity <= 0) {
+      return res.status(400).json({ message: "Invalid quantity" });
+    }
+
+    const updatedProduct = await productSchema.findByIdAndUpdate(
+      productId,
+      { $inc: { purchasedCount: quantity } },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({
+      message: "Purchased count updated successfully",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    console.error("Error updating purchased count:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getTopSellingProducts = async (req, res) => {
+  try {
+    const topProducts = await productSchema
+      .find()
+      .sort({ purchasedCount: -1 }) 
+      .limit(4);
+
+    res.status(200).json({
+      message: "Top selling products fetched successfully",
+      products: topProducts,
+    });
+  } catch (error) {
+    console.error("Error fetching top selling products:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

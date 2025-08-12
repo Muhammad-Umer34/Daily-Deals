@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import ProductInfo from "./productInfo";
 import Header from "../../components/ui/customer/header";
 import { BreadcrumbWithCustomSeparator } from "./breadCrumbs";
+import { increaseOrderViews } from "../../features/customer/customerApi";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -16,6 +17,7 @@ const ProductDetailPage = () => {
       try {
         const response = await getProduct(id, accessToken);
         setProduct(response);
+        await increaseOrderViews(response._id,response.views+1);
       } catch (error) {
         console.error("Failed to fetch product details:", error);
       }
@@ -34,7 +36,6 @@ const ProductDetailPage = () => {
   return (
     <div className="relative">
       <Header />
-      {/* Adjust padding-top based on Header height */}
       <div className="pt-[80px] px-4">
         <ProductInfo product={product} />
       </div>

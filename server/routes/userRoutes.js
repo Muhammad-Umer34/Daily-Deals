@@ -1,7 +1,8 @@
 const express = require('express');
-const {getAllProductForCustomer,getProduct,postCart,postWishlist,deleteWishlist,getWishlist, postReview,getReview,getCart,deleteCartItem,getProductsByCategory,updateQuantity,getUserWishlist,updateUserInfo,postOrder,deleteUserCart,getAllOrders} = require('../controllers/customerController');
+const {getAllProductForCustomer,getProduct,postCart,postWishlist,deleteWishlist,getWishlist, postReview,getReview,getCart,deleteCartItem,getProductsByCategory,updateQuantity,getUserWishlist,updateUserInfo,postOrder,deleteUserCart,getAllOrders,increaseOrderViews,increasePurchasedCount,getTopSellingProducts} = require('../controllers/customerController');
 
-const verifyLoggedIn = require('../middlewares/authMiddleware')
+const verifyLoggedIn = require('../middlewares/authMiddleware');
+
 
 const userRouter = express.Router();
 userRouter.get('/products',verifyLoggedIn,getAllProductForCustomer);
@@ -21,6 +22,9 @@ userRouter.put('/user/:id',verifyLoggedIn,updateUserInfo);
 userRouter.post('/order',verifyLoggedIn,postOrder)
 userRouter.delete('/delete/cart/:userId',verifyLoggedIn,deleteUserCart);
 userRouter.get('/order/:userId',verifyLoggedIn,getAllOrders);
+userRouter.put('/increase/views/:productId',increaseOrderViews);
+userRouter.put('/increase/purchaseCount/:productId',increasePurchasedCount);
+userRouter.get('/products/top-selling',getTopSellingProducts);
 
 
 module.exports = userRouter;

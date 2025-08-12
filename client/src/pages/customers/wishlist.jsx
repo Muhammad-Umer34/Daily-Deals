@@ -9,7 +9,6 @@ import {
 import { useEffect } from "react";
 const WishList = ({ product }) => {
   const user = useSelector((state) => state.auth.user);
-  console.log("User in WishList:", user, user.id);
   const accessToken = useSelector((state) => state.auth.accessToken);
   const [liked, setLiked] = useState(false);
   const handleLike = () => {
@@ -18,7 +17,6 @@ const WishList = ({ product }) => {
       removeFromWishList(product._id, accessToken, user.id);
     } else {
       setLiked(true);
-      console.log("Product that is getting passed is : ",product);
       addToWishList(product, accessToken, user.id);
     }
   };

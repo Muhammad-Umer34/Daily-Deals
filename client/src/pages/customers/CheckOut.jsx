@@ -7,7 +7,7 @@ import { BreadcrumbWithCustomSeparator } from "./breadCrumbs";
 import { getCardItems } from "../../features/customer/customerApi";
 import { postOrder } from "../../features/customer/customerApi";
 import { deleteUserCart } from "../../features/customer/customerApi";
-
+import { increasePurcahsedCount } from "../../features/customer/customerApi";
 const CheckOut = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
@@ -19,7 +19,6 @@ const CheckOut = () => {
       try {
         const response = await getCardItems(user.id, accessToken);
         setCart(response);
-       
       } catch (error) {
         console.error("Failed to fetch cart items:", error);
       }
@@ -39,10 +38,7 @@ const CheckOut = () => {
   } = useForm();
 
   const savedAddresses = user?.address || [];
-  const savedPayments = [
-    "Cash on Delivery",
-    "Mastercard ending in 8514",
-  ];
+  const savedPayments = ["Cash on Delivery", "Mastercard ending in 8514"];
 
   const cartItems = cart || [];
   const [useNewAddress, setUseNewAddress] = useState(false);
@@ -53,8 +49,11 @@ const CheckOut = () => {
     }
   }, [savedAddresses.length]);
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const deliveryFee = 15.00;
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const deliveryFee = 15.0;
   const discount = 0;
   const total = subtotal - discount + deliveryFee;
 
@@ -70,11 +69,19 @@ const CheckOut = () => {
       expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       userId: user.id,
     };
-    console.log("✅ Order Data:", orderData);
+
+    
+    await Promise.all(
+      orderData.items.map((item) =>
+      {
+        increasePurcahsedCount(item.productId, item.quantity)
+      }
+      )
+    );
     const order = await postOrder(accessToken, orderData);
     await deleteUserCart(accessToken, user.id);
     setCart([]);
-    navigate('/home/order-confirmation',{state:{order:order}});
+    navigate("/home/order-confirmation", { state: { order: order } });
     reset();
   };
 
@@ -88,9 +95,13 @@ const CheckOut = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <div className="border border-gray-300 rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-4 text-black">Contact Information</h3>
+              <h3 className="text-xl font-semibold mb-4 text-black">
+                Contact Information
+              </h3>
               <div>
-                <label className="block mb-2 font-medium text-black">Phone Number *</label>
+                <label className="block mb-2 font-medium text-black">
+                  Phone Number *
+                </label>
                 <input
                   type="tel"
                   className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-black transition-colors"
@@ -99,8 +110,8 @@ const CheckOut = () => {
                     required: "Phone number is required",
                     pattern: {
                       value: /^[\+]?[0-9\s\-\(\)]+$/,
-                      message: "Please enter a valid phone number"
-                    }
+                      message: "Please enter a valid phone number",
+                    },
                   })}
                 />
                 {errors.phoneNumber && (
@@ -111,10 +122,14 @@ const CheckOut = () => {
               </div>
             </div>
             <div className="border border-gray-300 rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-4 text-black">Shipping Information</h3>
+              <h3 className="text-xl font-semibold mb-4 text-black">
+                Shipping Information
+              </h3>
 
               <div className="mb-4">
-                <label className="block mb-2 font-medium text-black">Select Saved Address</label>
+                <label className="block mb-2 font-medium text-black">
+                  Select Saved Address
+                </label>
                 <select
                   className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-black transition-colors disabled:bg-gray-100 disabled:text-gray-500"
                   disabled={useNewAddress}
@@ -138,20 +153,29 @@ const CheckOut = () => {
                   onChange={(e) => setUseNewAddress(e.target.checked)}
                   disabled={savedAddresses.length === 0}
                 />
-                <label htmlFor="useNewAddress" className="text-black font-medium">
-                  Use a new address {savedAddresses.length === 0 && "(Required - No saved addresses)"}
+                <label
+                  htmlFor="useNewAddress"
+                  className="text-black font-medium"
+                >
+                  Use a new address{" "}
+                  {savedAddresses.length === 0 &&
+                    "(Required - No saved addresses)"}
                 </label>
               </div>
 
               {useNewAddress && (
                 <div>
-                  <label className="block mb-2 font-medium text-black">New Address *</label>
+                  <label className="block mb-2 font-medium text-black">
+                    New Address *
+                  </label>
                   <textarea
                     rows="3"
                     className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-black transition-colors"
                     placeholder="Enter your complete address..."
                     {...register("newAddress", {
-                      required: useNewAddress ? "New address is required" : false,
+                      required: useNewAddress
+                        ? "New address is required"
+                        : false,
                     })}
                   ></textarea>
                   {errors.newAddress && (
@@ -163,10 +187,14 @@ const CheckOut = () => {
               )}
             </div>
             <div className="border border-gray-300 rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-4 text-black">Payment Method</h3>
+              <h3 className="text-xl font-semibold mb-4 text-black">
+                Payment Method
+              </h3>
 
               <div>
-                <label className="block mb-2 font-medium text-black">Select Payment Method *</label>
+                <label className="block mb-2 font-medium text-black">
+                  Select Payment Method *
+                </label>
                 <select
                   className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-black transition-colors"
                   {...register("paymentMethod", {
@@ -194,10 +222,15 @@ const CheckOut = () => {
 
             <div className="space-y-4 mb-6">
               {cartItems.map((item) => (
-                <div key={item._id} className="flex items-center gap-3 p-2 border border-gray-200 rounded-lg">
+                <div
+                  key={item._id}
+                  className="flex items-center gap-3 p-2 border border-gray-200 rounded-lg"
+                >
                   <div className="w-16 h-16 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
                     <img
-                      src={item.image || item.imageUrl || "/api/placeholder/64/64"}
+                      src={
+                        item.image || item.imageUrl || "/api/placeholder/64/64"
+                      }
                       alt={item.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -205,15 +238,21 @@ const CheckOut = () => {
                       }}
                     />
                   </div>
-                  
+
                   <div className="flex-grow min-w-0">
                     <p className="font-medium text-sm truncate">{item.name}</p>
-                    <p className="text-gray-600 text-xs">Qty: {item.quantity}</p>
-                    <p className="text-gray-600 text-xs">${item.price.toFixed(2)} each</p>
+                    <p className="text-gray-600 text-xs">
+                      Qty: {item.quantity}
+                    </p>
+                    <p className="text-gray-600 text-xs">
+                      ${item.price.toFixed(2)} each
+                    </p>
                   </div>
-                  
+
                   <div className="flex-shrink-0">
-                    <span className="font-semibold text-sm">${(item.price * item.quantity).toFixed(2)}</span>
+                    <span className="font-semibold text-sm">
+                      ${(item.price * item.quantity).toFixed(2)}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -251,7 +290,10 @@ const CheckOut = () => {
             </button>
 
             <div className="text-center bg-white border-2 border-black p-2 rounded-lg text-black text-2xl flex justify-center cursor-pointer">
-              <a href="/cart" className="text-sm text-black transition-colors font-semibold ">
+              <a
+                href="/cart"
+                className="text-sm text-black transition-colors font-semibold "
+              >
                 ← Return to Cart
               </a>
             </div>

@@ -39,7 +39,6 @@ export const getProduct = async (id, accessToken) => {
 };
 
 export const addToCart = async (product, accessToken) => {
-  console.log("Adding product to cart:", product);
   const token = accessToken || "";
   try {
     const response = await axios.post(`${BASE_URL}/cart`, product, {
@@ -260,7 +259,7 @@ export const getUserWishlist = async (userId, accessToken) => {
 export const updateUserInfo = async (user, accessToken) => {
   try {
     const userId = user.id;
-    console.log("From Customer Api : ",user);
+    console.log("From Customer Api : ", user);
     const response = await axios.put(`${BASE_URL}/user/${userId}`, user, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -275,49 +274,90 @@ export const updateUserInfo = async (user, accessToken) => {
   }
 };
 
-
-export const postOrder = async (accessToken,orderData)=>
-{
-  try{
-    const response = await axios.post(`${BASE_URL}/order`,orderData,{
-      headers:{
-        Authorization : `Bearer ${accessToken}`
-      }
-    })
-   return response.data;
-  }
-  catch(error){
-    console.log(error);
-    throw error;
-  }
-}
-
-export const deleteUserCart = async (accessToken,userId)=>{
-  try{
-    const response = await axios.delete(`${BASE_URL}/delete/cart/${userId}`,{
-      headers:{
-        Authorization : `Bearer ${accessToken}`
-      }
-    })
+export const postOrder = async (accessToken, orderData) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/order`, orderData, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     return response.data;
-  }
-  catch(error){
+  } catch (error) {
     console.log(error);
     throw error;
   }
-}
+};
 
-export const getAllOrders = async (accessToken,userId)=>{
-  try{
-    const response = await axios.get(`${BASE_URL}/order/${userId}`,{
-      headers:{
-        Authorization : `Bearer ${accessToken}`
-      }
-    })
+export const deleteUserCart = async (accessToken, userId) => {
+  try {
+    const response = await axios.delete(`${BASE_URL}/delete/cart/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     return response.data;
-  }
-  catch(error){
+  } catch (error) {
     console.log(error);
     throw error;
   }
-}
+};
+
+export const getAllOrders = async (accessToken, userId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/order/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const increaseOrderViews = async (productId, viewsCount) => {
+
+  try {
+    const response = await axios.put(
+      `${BASE_URL}/increase/views/${productId}`,
+      { viewsCount }
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+
+export const increasePurcahsedCount = async (productId,quantity) => {
+  try {
+    const response = await axios.put(
+      `${BASE_URL}/increase/purchaseCount/${productId}`,
+      {quantity:quantity}
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getTopSellingProducts = async (user, accessToken) => {
+  const token = accessToken || user?.accessToken;
+  try {
+    const response = await axios.get(`${BASE_URL}/products/top-selling`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching products:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
