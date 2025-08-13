@@ -16,7 +16,6 @@ export default function DisplayWishlist() {
       try {
         const result = await getUserWishlist(user.id,accessToken);
         setItems(result);
-        console.log(result);
       } catch (error) {
         console.error("Failed to fetch wishlist:", error);
       }

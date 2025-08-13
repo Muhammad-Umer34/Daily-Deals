@@ -344,14 +344,10 @@ export const increasePurcahsedCount = async (productId,quantity) => {
   }
 };
 
-export const getTopSellingProducts = async (user, accessToken) => {
-  const token = accessToken || user?.accessToken;
+export const getTopSellingProducts = async () => {
+
   try {
-    const response = await axios.get(`${BASE_URL}/products/top-selling`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(`${BASE_URL}/products/top-selling`);
     return response.data;
   } catch (error) {
     console.error(

@@ -20,6 +20,8 @@ import CategoryProductPage from "./pages/customers/categoryProductsPage.jsx";
 import ProfileForm from "./pages/customers/profileInfo.jsx";
 import CheckOut from "./pages/customers/CheckOut.jsx";
 import OrderConfirmation from "./pages/customers/order-confirmation.jsx";
+import  CategorySubCategoryProductPage from "./pages/customers/categorySubCategoryProductsPage.jsx";
+
 
 
 
@@ -51,13 +53,14 @@ const router = createBrowserRouter([
     element:<CategoryProductPage/>,
   },
   {
+    path : "/home/:category/:subcategory",
+    element : <CategorySubCategoryProductPage/>,
+  },
+  {
     path :"/customer/cart",
     element : <CartPage/>
   },
-  {
-    path : "/home/:category/:subcategory/:id",
-    element : <ProductDetailPage></ProductDetailPage>
-  },
+  
   {
     path : "/home/profile",
     element : <ProfileForm/>

@@ -403,14 +403,17 @@ exports.increasePurchasedCount = async (req, res) => {
 
 exports.getTopSellingProducts = async (req, res) => {
   try {
-    const topProducts = await productSchema
-      .find()
-      .sort({ purchasedCount: -1 }) 
-      .limit(4);
+    const [topProducts, newArrival, topViewed] = await Promise.all([
+      productSchema.find().sort({ purchasedCount: -1 }).limit(4),
+      productSchema.find().sort({ createdAt: -1 }).limit(4),
+      productSchema.find().sort({ views: -1 }).limit(4)
+    ]);
 
     res.status(200).json({
       message: "Top selling products fetched successfully",
-      products: topProducts,
+      topProducts,
+      newArrival,
+      topViewed,
     });
   } catch (error) {
     console.error("Error fetching top selling products:", error);

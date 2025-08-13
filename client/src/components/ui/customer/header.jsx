@@ -15,7 +15,7 @@ export default function Header() {
 
   const navDropdownItems = {
     Home: ['New Arrivals', 'Best Sellers', 'Trending Now'],
-    Men: ['T-Shirts', 'Shirts', 'Jeans', 'Jackets', 'Shoes'],
+    Men: ['T-Shirt', 'Shirts', 'Jeans', 'Jacket', 'Shoes'],
     Women: ['Dresses', 'Tops', 'Skirts', 'Shoes', 'Accessories'],
     Kids: ['Boys Clothing', 'Girls Clothing', 'Baby Wear'],
     Categories: ['Casual Wear', 'Formal Wear', 'Sportswear', 'Accessories'],
@@ -52,7 +52,7 @@ export default function Header() {
             >
               {link}
             </button>
-            <HeaderDropdown items={navDropdownItems[link]} />
+            <HeaderDropdown items={navDropdownItems[link]} Category={link} />
           </div>
         ))}
       </nav>

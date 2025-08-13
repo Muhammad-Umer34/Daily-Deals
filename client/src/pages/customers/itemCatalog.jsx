@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 
 const ItemCatalog = () => {
   const rawCategory = useSelector((state) => state.userProducts?.category || "");
+  const subCategory = useSelector((state) => state.userProducts?.subCategory || "");
   const startingIndex = useSelector((state) => state.userProducts?.startIndex || 0);
   const endingIndex = useSelector((state) => state.userProducts?.endIndex || 0);
   const totalProducts = useSelector((state) => state.userProducts?.totalProducts || 0);
@@ -11,8 +12,14 @@ const ItemCatalog = () => {
     if (!word) return "";
     return word.charAt(0).toUpperCase() + word.slice(1);
   };
-
-  const category = capitalize(rawCategory);
+  let category = "";
+  if(!subCategory){
+     category = capitalize(rawCategory);
+  }
+  else
+  {
+    category = capitalize(subCategory);
+  }
 
   return (
     <div

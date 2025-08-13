@@ -5,7 +5,6 @@ import { removeFromWishList } from "../../features/customer/customerApi";
 import { useState } from "react";
 
 export default function WishListItem({ item,onDelete }) {
-  console.log(item);
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
   const navigate = useNavigate();

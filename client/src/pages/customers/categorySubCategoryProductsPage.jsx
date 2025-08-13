@@ -10,20 +10,24 @@ import { userProductActions } from "../../features/customer/productsSlice";
 import LayoutWithFilters from "./FilterandProducts";
 import Footer from "./footer";
 
-const CategoryProductPage = () => {
+const CategorySubCategoryProductPage = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const category = location.pathname.split("/").pop();
-
+  const subcategory = location.pathname.split("/").pop();
+  const category = location.pathname.split("/")[2];
 
   useEffect(() => {
     dispatch(userProductActions.setCategory(category));
-    dispatch(userProductActions.setSubCategory(null));
-
+    dispatch(userProductActions.setSubCategory(subcategory));
     const fetchProducts = async () => {
       try {
         const products = await getProductByCategory(category);
-        dispatch(userProductActions.setProducts(products));
+        console.log(products);
+        console.log(subcategory);
+        const filteredProducts = products.filter(
+          (product) => product.subcategory === subcategory.toLowerCase()
+        );
+        dispatch(userProductActions.setProducts(filteredProducts));
       } catch (error) {
         console.error("Failed to fetch products:", error);
       }
@@ -52,4 +56,4 @@ const CategoryProductPage = () => {
   );
 };
 
-export default CategoryProductPage;
+export default  CategorySubCategoryProductPage;

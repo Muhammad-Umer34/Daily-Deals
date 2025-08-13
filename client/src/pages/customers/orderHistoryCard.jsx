@@ -1,5 +1,4 @@
 const HistoryCard = ({ order }) => {
-  console.log("called");
 
   const date = new Date(order.createdAt).toLocaleDateString("en-US", {
     year: "numeric",

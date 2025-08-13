@@ -174,13 +174,13 @@ exports.postLogin = async (req, res) => {
         ACCESS_TOKEN_SECRET,
         { expiresIn: "30m" }
       );
-
+     
       const refreshToken = jwt.sign(
         { id: user.id, email: user.email, userType: user.userType },
         REFRESH_TOKEN_SECRET,
         { expiresIn: "7d" }
       );
-
+console.log("Refresh Token is ",refreshToken);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: false,

@@ -86,7 +86,6 @@ const OrderHistory = () => {
           </div>
         </div>
         <div>
-          {console.log("cards")}
            {
             orders.map((order)=>{
               return <HistoryCard order={order}/>

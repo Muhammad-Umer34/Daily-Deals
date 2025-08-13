@@ -5,6 +5,7 @@ const initialState = {
   FilteredProducts:[],
   pageNo : 1,
   category : null,
+  subCategory : null,
   startIndex : 0 ,
   endIndex : 0 ,
   totalProducts : 0 ,
@@ -20,6 +21,9 @@ const userProductSlice = createSlice(
         },
         setCategory(state,action){
           state.category = action.payload;
+        },
+        setSubCategory(state,action){
+            state.subCategory = action.payload;
         },
         setPageNo(state,action){
             state.pageNo = action.payload;  
