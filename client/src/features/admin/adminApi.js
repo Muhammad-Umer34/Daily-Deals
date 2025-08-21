@@ -149,3 +149,16 @@ if(imageUpdated)
     throw error;
   }
 };
+
+export const postOrders = async (item)=>{
+  try {
+    const response = await axios.post(`${BASE_URL}/orders`, item, {
+      withCredentials: true,
+    });
+    console.log("Order added successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding order:", error.response?.data || error.message);
+    throw error;
+  }
+}

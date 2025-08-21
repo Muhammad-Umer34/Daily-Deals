@@ -135,3 +135,7 @@ exports.updateProductController = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+exports.postStoreOrder = async (req,res)=>{
+  console.log(req.body);
+}

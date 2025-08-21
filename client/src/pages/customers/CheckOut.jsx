@@ -8,6 +8,7 @@ import { getCardItems } from "../../features/customer/customerApi";
 import { postOrder } from "../../features/customer/customerApi";
 import { deleteUserCart } from "../../features/customer/customerApi";
 import { increasePurcahsedCount } from "../../features/customer/customerApi";
+import { postOrders } from "../../features/admin/adminApi";
 const CheckOut = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
@@ -74,7 +75,9 @@ const CheckOut = () => {
     await Promise.all(
       orderData.items.map((item) =>
       {
-        increasePurcahsedCount(item.productId, item.quantity)
+        console.log(item);
+        increasePurcahsedCount(item.productId, item.quantity);
+        postOrders(item);
       }
       )
     );
