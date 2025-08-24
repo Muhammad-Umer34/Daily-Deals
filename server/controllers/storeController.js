@@ -120,11 +120,11 @@ exports.deleteProductController = async (req, res) => {
 exports.updateProductController = async (req, res) => {
   const productId = req.params.id;
   console.log("Backend recieve", req.body);
-  const { name, description, price, quantity, category, images, size, color } = req.body;
+  const { name, description, price, stock, category, images, size, color,subcategory } = req.body;
   try {
     const product = await productSchema.findByIdAndUpdate(
       productId,
-      { name, description, price, stock: quantity, category, images, size, color },
+      { name, description, price, stock, category,subcategory, images, size, color },
       { new: true }
     );
     if (!product) {

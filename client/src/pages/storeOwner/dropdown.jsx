@@ -60,7 +60,7 @@ export default function SortDropdown({ value, onChange }) {
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu className="cursor-pointer">
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
           {value

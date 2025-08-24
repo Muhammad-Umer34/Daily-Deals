@@ -1,6 +1,6 @@
 import { FaEdit, FaTrash, FaEye, FaStar } from "react-icons/fa";
 
-const ProductCard = ({ product, deleteProduct, editProduct }) => {
+const ProductCard = ({ product, deleteProduct, editProduct,onEdit }) => {
   return (
     <div className="group relative bg-white rounded-2xl border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md transition-all duration-300 w-72 p-4 flex flex-col">
       <div className="relative h-44 rounded-xl overflow-hidden bg-gray-50 mb-3">
@@ -71,10 +71,10 @@ const ProductCard = ({ product, deleteProduct, editProduct }) => {
 
       <div className="flex items-center gap-2 mt-4">
         <button
-          onClick={() => editProduct(product._id)}
+          onClick={onEdit}
           className="flex-1 flex items-center justify-center gap-2 bg-gray-900 text-white text-sm font-medium py-2 rounded-lg hover:bg-black transition"
         >
-          <FaEdit className="w-3 h-3" />
+          <FaEdit className="w-3 h-3" onClick={onEdit} />
           Edit
         </button>
         <button

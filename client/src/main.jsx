@@ -26,6 +26,7 @@ import DashBoard from "./pages/storeOwner/newDashboard.jsx";
 import Order from "./pages/storeOwner/Orders.jsx";
 import Products from "./pages/storeOwner/Products.jsx";
 import Profile from "./pages/storeOwner/Profile.jsx";
+import NewAddProduct from "./pages/storeOwner/newAddProduct.jsx";
 
 
 const router = createBrowserRouter([
@@ -44,6 +45,8 @@ const router = createBrowserRouter([
   {path: "store/order", element:<Order/>},
   {path: "store/products", element:<Products/>},
   {path: "store/profile", element:<Profile/>},
+  {path: "store/add-product", element:<AddProduct/>},
+  {path: "store/new-add-product", element:<NewAddProduct/>},
   {
     path: "/signup",
     element: <UserSignupCard />,

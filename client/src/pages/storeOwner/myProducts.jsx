@@ -6,15 +6,17 @@ import { productActions } from "../../features/admin/editProductSlice";
 import { uiActions } from "../../features/admin/uiSlice";
 import { storeOwnerProductsActions } from "../../features/admin/myProductsSlice";
 
-const MyProducts = () => {
+const MyProducts = ({ onEdit }) => {
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
+  const ep = useSelector((state) => state.product.product);
+
   const products = useSelector(
     (state) => state.storeOwnerProducts.filteredProducts
   );
   const dispatch = useDispatch();
 
-  const fetchProducts = async () => {
+const fetchProducts = async ({onEdit}) => {
     try {
       const data = await getProducts(user, accessToken);
       dispatch(storeOwnerProductsActions.setProducts(data));
@@ -32,10 +34,10 @@ const MyProducts = () => {
     }
   };
 
-  const editProduct = (productId) => {
+  const editProduct = async (productId) => {
     const productToEdit = products.find((product) => product._id === productId);
-    dispatch(productActions.setProductDetails(productToEdit));
-    dispatch(uiActions.changeField("editProduct"));
+    await dispatch(productActions.setProductDetails(productToEdit));
+    console.log(ep);
   };
 
   useEffect(() => {
@@ -57,6 +59,7 @@ const MyProducts = () => {
                   product={product}
                   deleteProduct={deleteProduct}
                   editProduct={editProduct}
+                  onEdit={onEdit}
                 />
               ))}
             </div>

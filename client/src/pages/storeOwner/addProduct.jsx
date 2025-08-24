@@ -64,8 +64,8 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 to-gray-300 flex items-center justify-center py-0 px-0 border border-gray-200 shadow-2xl">
-      <div className="w-full h-full bg-white p-8 sm:p-12 md:p-16 rounded-none shadow-none border-none mx-0 my-0 flex flex-col justify-center">
+    <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 to-gray-300 flex items-center justify-center py-0 px-0 border border-gray-700 shadow-2xl">
+      <div className="w-full h-full bg-white p-8 sm:p-12 md:p-16 rounded-none shadow-none border-none mx-0 my-0 flex flex-col justify-center border-gray-900">
         <h2 className="text-3xl font-bold mb-8 text-center text-gray-800 tracking-tight">
           Add Product
         </h2>
@@ -73,7 +73,6 @@ const AddProduct = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-6 w-full max-w-4xl mx-auto"
         >
-          {/* Product Name */}
           <div>
             <Label
               htmlFor="name"
@@ -193,8 +192,6 @@ const AddProduct = () => {
               </p>
             )}
           </div>
-
-          {/* Category */}
           <div>
             <Label className="text-base font-semibold text-gray-700">
               Category
@@ -229,8 +226,6 @@ const AddProduct = () => {
               </p>
             )}
           </div>
-
-          {/* Subcategory */}
           <div>
             <Label
               htmlFor="subcategory"
@@ -273,7 +268,6 @@ const AddProduct = () => {
             )}
           </div>
 
-          {/* Image Upload */}
           <div>
             <Label
               htmlFor="images"
@@ -298,7 +292,6 @@ const AddProduct = () => {
             )}
           </div>
 
-          {/* Sizes */}
           <div>
             <Label className="text-base font-semibold text-gray-700">
               Available Sizes
@@ -326,7 +319,6 @@ const AddProduct = () => {
             </div>
           </div>
 
-          {/* Colors */}
           <div>
             <Label className="text-base font-semibold text-gray-700">
               Available Colors
@@ -354,7 +346,6 @@ const AddProduct = () => {
             </div>
           </div>
 
-          {/* Submit Button */}
           <div className="pt-2">
             <button
               type="submit"

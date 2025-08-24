@@ -7,7 +7,9 @@ import { useDispatch } from "react-redux";
 import { storeOwnerProductsActions } from "../../features/admin/myProductsSlice";
 import { getProducts } from "../../features/admin/adminApi";
 import { RiFilter2Fill } from "react-icons/ri";
+import NewAddProduct from "./newAddProduct";
 import SortDropdown from "./dropdown";
+import NewEditProduct from "./newEditProduct";
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -16,6 +18,7 @@ const Products = () => {
   const accessToken = useSelector((state) => state.auth.accessToken);
   const [search, setSearch] = useState("");
   const [dropdown, setDropdown] = useState(false);
+  const [edit, setEdit] = useState(false);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
@@ -30,16 +33,31 @@ const Products = () => {
       dispatch(storeOwnerProductsActions.filterProducts(filteredProducts));
     }
   };
+
   const fetchP = async () => {
     const data = await getProducts(user, accessToken);
     dispatch(storeOwnerProductsActions.setProducts(data));
   };
+
   useEffect(() => {
     fetchP();
   }, [user, accessToken]);
+
   return (
     <div>
       <NewHeader />
+
+      {dropdown && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <NewAddProduct onClose={() => setDropdown(false)} />
+        </div>
+      )}
+      {edit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <NewEditProduct onClose={() => setEdit(false)} />
+        </div>
+      )}
+
       <div className="mt-10 mb-5 ml-70 mr-70 flex justify-between items-center">
         <h1 className="text-3xl font-bold">Products</h1>
 
@@ -56,15 +74,21 @@ const Products = () => {
             />
             <BiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" />
           </div>
-          <button className="px-4 py-1 rounded-lg bg-black text-white border-2 border-black hover:bg-gray-800 transition cursor-pointer">
+          <button
+            className="px-4 py-1 rounded-lg bg-black text-white border-2 border-black hover:bg-gray-800 transition cursor-pointer"
+            onClick={() => setDropdown(!dropdown)}
+          >
             Add Product
           </button>
-          <SortDropdown/>
+          <SortDropdown className="cursor-pointer" />
         </div>
       </div>
-
-      <MyProducts />
+      <MyProducts onEdit={() => {setEdit(true)
+        console.log("edit");
+        console.log(edit);
+      }}/>
     </div>
   );
 };
+
 export default Products;

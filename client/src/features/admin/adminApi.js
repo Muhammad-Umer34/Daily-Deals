@@ -101,6 +101,7 @@ export const deleteProductApi = async (productId, user, accessToken) => {
 
 
 export const updateProductApi = async (imageUpdated, productData, user, accessToken) => {
+  console.log("Update Product API called with:", imageUpdated, productData);
   const token = accessToken || user?.accessToken;
     const imageArray = [];
 if(imageUpdated)
@@ -117,22 +118,10 @@ if(imageUpdated)
     );
     imageArray.push(imageinfo.data.url);
   }
-
+  productData.images = imageArray;
 }
-  const updatedProductInfo = {
-    name: productData.name,
-    description: productData.description,
-    price: productData.price,
-    quantity: productData.stock,
-    category: productData.category,
-    images: imageUpdated ? imageArray : productData.images, 
-    size: productData.size || [],
-    color: productData.color || [],
-  };
-  
-  const productId = productData._id;
   try {
-    const response = await axios.put(`${BASE_URL}/products/${productId}`, updatedProductInfo, {
+    const response = await axios.put(`${BASE_URL}/products/${productData._id}`,productData, {
       params: {
         userType: user.userType,
         storeId: user.id
