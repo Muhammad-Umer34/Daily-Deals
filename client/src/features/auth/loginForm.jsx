@@ -38,7 +38,7 @@ const SigninCard = () => {
         })
       );
       if(response.user.userType == "storeOwner") {
-        Navigate("/store");
+        Navigate("/store/dashboard");
       } else if(response.user.userType == "customer") {
         Navigate("/home");
       }

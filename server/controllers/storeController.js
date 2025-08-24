@@ -1,5 +1,6 @@
-const { check, validationResult } = require("express-validator");
-const productSchema = require('../models/store').default; 
+const {check, validationResult}=require("express-validator")
+const productSchema = require("../models/store.js").default;
+const storeOrderSchema=require("../models/storeOrders.js").default;
 
 exports.postProductController = [
   check('name')
@@ -136,6 +137,33 @@ exports.updateProductController = async (req, res) => {
   }
 }
 
-exports.postStoreOrder = async (req,res)=>{
+exports.postStoreOrder = async (req, res) => {
   console.log(req.body);
-}
+  const { productId, userId, name, image, price, quantity, color, size } = req.body;
+
+  try {
+    const product = await productSchema.findById(productId);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const { storeId } = product;
+
+    const order = await storeOrderSchema.create({
+      productId,
+      userId,
+      storeId,
+      productName: name,
+      productImage: image,
+      price,
+      quantity,
+      color,
+      size,
+    });
+
+    res.status(200).json({ message: "Order Placed Successfully", order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

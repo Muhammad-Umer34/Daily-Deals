@@ -21,9 +21,11 @@ import ProfileForm from "./pages/customers/profileInfo.jsx";
 import CheckOut from "./pages/customers/CheckOut.jsx";
 import OrderConfirmation from "./pages/customers/order-confirmation.jsx";
 import  CategorySubCategoryProductPage from "./pages/customers/categorySubCategoryProductsPage.jsx";
-
-
-
+import NewHeader from "./components/ui/admin/newHeader.jsx";
+import DashBoard from "./pages/storeOwner/newDashboard.jsx";
+import Order from "./pages/storeOwner/Orders.jsx";
+import Products from "./pages/storeOwner/Products.jsx";
+import Profile from "./pages/storeOwner/Profile.jsx";
 
 
 const router = createBrowserRouter([
@@ -38,7 +40,10 @@ const router = createBrowserRouter([
     path: "/login",
     element: <SigninCard />,
   },
-      {path: "store", element: <ResponsiveDrawer />},
+  {path: "store/dashboard", element:<DashBoard/>},
+  {path: "store/order", element:<Order/>},
+  {path: "store/products", element:<Products/>},
+  {path: "store/profile", element:<Profile/>},
   {
     path: "/signup",
     element: <UserSignupCard />,

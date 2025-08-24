@@ -6,7 +6,8 @@ import activeSlice from "./features/customer/activeSlice";
 import userProductSlice from "./features/customer/productsSlice";
 import filterSlice from "./features/customer/filterSlice";
 import navSlice from "./features/customer/navSlice";
+import storeOwnerProductsSlice from "./features/admin/myProductsSlice";
 
-const appStore = configureStore({reducer : {auth : authSlice.reducer,ui: uiSlice.reducer,product: productSlice.reducer,active:activeSlice.reducer,userProducts:userProductSlice.reducer,filter:filterSlice.reducer,navActive:navSlice.reducer}});
+const appStore = configureStore({reducer : {auth : authSlice.reducer,ui: uiSlice.reducer,product: productSlice.reducer,active:activeSlice.reducer,userProducts:userProductSlice.reducer,filter:filterSlice.reducer,navActive:navSlice.reducer,storeOwnerProducts:storeOwnerProductsSlice.reducer}});
 
 export default appStore ; 

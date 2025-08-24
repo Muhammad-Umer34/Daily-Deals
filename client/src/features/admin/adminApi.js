@@ -151,6 +151,7 @@ if(imageUpdated)
 };
 
 export const postOrders = async (item)=>{
+  console.log("Post Orders Recieved the call");
   try {
     const response = await axios.post(`${BASE_URL}/orders`, item, {
       withCredentials: true,
