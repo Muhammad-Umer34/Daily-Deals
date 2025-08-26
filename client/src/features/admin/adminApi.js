@@ -48,7 +48,6 @@ export const postProduct = async (productData,user,accessToken) => {
         Authorization: `Bearer ${token}`, 
       },
     });
-    console.log("Product added successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error adding product:", error.response?.data || error.message);
@@ -70,7 +69,7 @@ export const getProducts = async (user, accessToken) => {
         Authorization: `Bearer ${token}`, 
       },
     });
-    console.log("Products fetched successfully:", response.data);
+
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error.response?.data || error.message);
@@ -149,6 +148,68 @@ export const postOrders = async (item)=>{
     return response.data;
   } catch (error) {
     console.error("Error adding order:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+export const getOrders = async(user,accessToken)=>{
+  const token = accessToken || user?.accessToken;
+  try {
+      const response = await axios.get(`${BASE_URL}/orders`, {
+      params:{
+        userType: user.userType,
+        storeId: user.id
+      },
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching orders:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+export const getOrderDetails = async (orderId,user,accessToken)=>{
+  const token = accessToken || user?.accessToken;
+  try {
+      const response = await axios.get(`${BASE_URL}/orders/${orderId}`, {
+      params:{
+        userType: user.userType,
+        storeId: user.id
+      },
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+    });
+    console.log("Order details fetched successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching order details:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+export const dispatchOrder = async (orderId, user, accessToken) => {
+  const token = accessToken || user?.accessToken;
+  try {
+    const response = await axios.put(`${BASE_URL}/orders/dispatch/${orderId}`, {}, {
+      params: {
+        userType: user.userType,
+        storeId: user.id
+      },
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("Order dispatched successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error dispatching order:", error.response?.data || error.message);
     throw error;
   }
 }

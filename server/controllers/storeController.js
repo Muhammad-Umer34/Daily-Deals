@@ -1,6 +1,7 @@
 const {check, validationResult}=require("express-validator")
 const productSchema = require("../models/store.js").default;
 const storeOrderSchema=require("../models/storeOrders.js").default;
+const Order = require("../models/order.js");
 
 exports.postProductController = [
   check('name')
@@ -139,7 +140,7 @@ exports.updateProductController = async (req, res) => {
 
 exports.postStoreOrder = async (req, res) => {
   console.log(req.body);
-  const { productId, userId, name, image, price, quantity, color, size } = req.body;
+  const { productId, userId, name, image, price, quantity, color, size,parentOrderId} = req.body;
 
   try {
     const product = await productSchema.findById(productId);
@@ -159,6 +160,7 @@ exports.postStoreOrder = async (req, res) => {
       quantity,
       color,
       size,
+      parentOrderId:parentOrderId,
     });
 
     res.status(200).json({ message: "Order Placed Successfully", order });
@@ -167,3 +169,48 @@ exports.postStoreOrder = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+exports.getStoreOrdersController = async (req,res)=>{
+  const storeId=req.query.storeId;
+  try{
+    const orders=await storeOrderSchema.find({storeId:storeId});
+    res.status(200).json(orders);
+  }
+  catch(error){
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+exports.getOrderDetailsController = async(req,res)=>{
+  const storeId=req.query.storeId;
+  const orderId=req.params.id;
+  try{
+    const order = await Order.findOne({_id:orderId});
+    res.status(200).json(order);
+  }
+  catch(error){
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+exports.dispatchOrder = async(req,res)=>{
+  const storeId=req.query.storeId;
+  const orderId=req.params.id;
+  try{
+    const order = await Order.findOneAndUpdate(
+      { _id: orderId },
+      { orderStatus: 'Dispatched' },
+      { new: true }
+    );
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found or does not belong to this store' });
+    }
+    res.status(200).json({ message: 'Order dispatched successfully', order });
+  }
+  catch(error){
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}

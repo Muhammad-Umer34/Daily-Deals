@@ -298,6 +298,8 @@ exports.postOrder = async (req, res) => {
     paymentStatus,
     expectedDeliveryDate,
     userId,
+    userName,
+    userEmail,
   } = req.body;
   const newOrder = new Order({
     items,
@@ -309,6 +311,8 @@ exports.postOrder = async (req, res) => {
     paymentStatus,
     expectedDeliveryDate,
     userId,
+    userName,
+    userEmail,
   });
   try {
     const savedOrder = await newOrder.save();

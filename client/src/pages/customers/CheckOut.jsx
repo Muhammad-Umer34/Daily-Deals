@@ -69,19 +69,20 @@ const CheckOut = () => {
       paymentStatus: "Pending",
       expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       userId: user.id,
+      userName: user.name,
+      userEmail: user.email,
     };
 
-    
-    await Promise.all(
+    const order = await postOrder(accessToken, orderData);
+      await Promise.all(
       orderData.items.map((item) =>
       {
-        console.log(item);
+        item.parentOrderId= order._id;
         increasePurcahsedCount(item.productId, item.quantity);
         postOrders(item);
       }
       )
     );
-    const order = await postOrder(accessToken, orderData);
     await deleteUserCart(accessToken, user.id);
     setCart([]);
     navigate("/home/order-confirmation", { state: { order: order } });

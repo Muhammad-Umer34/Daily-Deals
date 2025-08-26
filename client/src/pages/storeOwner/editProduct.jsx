@@ -285,8 +285,6 @@ const EditProduct = () => {
               )}
             </div>
           </div>
-
-          {/* Variants */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-6">Product Variants</h2>
             
@@ -315,7 +313,6 @@ const EditProduct = () => {
                 </div>
               </div>
 
-              {/* Colors */}
               <div>
                 <Label className="text-sm font-medium text-gray-700">Available Colors</Label>
                 <div className="grid grid-cols-4 lg:grid-cols-6 gap-2 mt-2">
@@ -340,8 +337,6 @@ const EditProduct = () => {
               </div>
             </div>
           </div>
-
-          {/* Actions */}
           <div className="flex justify-end gap-4">
             <button
               type="button"

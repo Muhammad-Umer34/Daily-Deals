@@ -27,6 +27,7 @@ import Order from "./pages/storeOwner/Orders.jsx";
 import Products from "./pages/storeOwner/Products.jsx";
 import Profile from "./pages/storeOwner/Profile.jsx";
 import NewAddProduct from "./pages/storeOwner/newAddProduct.jsx";
+import OrderDetails from "./pages/storeOwner/orderDetails.jsx";
 
 
 const router = createBrowserRouter([
@@ -47,6 +48,7 @@ const router = createBrowserRouter([
   {path: "store/profile", element:<Profile/>},
   {path: "store/add-product", element:<AddProduct/>},
   {path: "store/new-add-product", element:<NewAddProduct/>},
+  {path: "store/order/:id", element:<OrderDetails/>},
   {
     path: "/signup",
     element: <UserSignupCard />,

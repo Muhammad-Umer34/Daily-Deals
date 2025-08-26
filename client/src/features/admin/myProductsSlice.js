@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   products:[],
-  filteredProducts:[]
+  filteredProducts:[],
+  orders:[],
+  filteredOrders:[]
 }
 const storeOwnerProductsSlice = createSlice({
   name: "storeOwnerProducts",
@@ -13,6 +15,13 @@ const storeOwnerProductsSlice = createSlice({
     },
     filterProducts: (state, action) => {
       state.filteredProducts = action.payload;
+    },
+    setOrders: (state, action) => {
+      state.orders = action.payload;
+      state.filteredOrders = action.payload;
+    },
+    filterOrders: (state, action) => {
+      state.filteredOrders = action.payload;
     },
   },
 })

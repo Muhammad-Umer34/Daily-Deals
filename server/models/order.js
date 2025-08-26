@@ -40,6 +40,14 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  userName: {
+    type: String,
+    required: false,
+  },
+  userEmail: {
+    type: String,
+    required: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
