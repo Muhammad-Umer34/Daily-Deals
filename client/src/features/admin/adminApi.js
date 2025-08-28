@@ -213,3 +213,24 @@ export const dispatchOrder = async (orderId, user, accessToken) => {
     throw error;
   }
 }
+
+export const getDashboardData = async (user, accessToken) => {
+  const token = accessToken || user?.accessToken;
+  try {
+    const response = await axios.get(`${BASE_URL}/dashboard/${user.id}`, {
+      params: {
+        userType: user.userType,
+        storeId: user.id,
+      },
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("Dashboard data fetched successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error.response?.data || error.message);
+    throw error;
+  }
+}

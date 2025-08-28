@@ -214,3 +214,93 @@ exports.dispatchOrder = async(req,res)=>{
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+exports.getDashboardData = async (req, res) => {
+  const storeID = req.params.id;
+
+  try {
+    // Reusable date helpers
+    const now = new Date();
+    const last30DaysDate = new Date(new Date().setDate(now.getDate() - 30));
+    const last6MonthsDate = new Date(new Date().setMonth(now.getMonth() - 6));
+    const last12MonthsDate = new Date(new Date().setFullYear(now.getFullYear() - 1));
+
+    // Pipeline helpers
+    const groupByDay = [
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          totalRevenue: { $sum: "$totalPrice" },
+          totalOrders: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ];
+
+    const groupByMonth = [
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          totalRevenue: { $sum: "$totalPrice" },
+          totalOrders: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ];
+
+    const groupByStatus = (withRevenue = false) => [
+      {
+        $group: {
+          _id: "$orderStatus",
+          totalOrders: { $sum: 1 },
+          ...(withRevenue && { totalRevenue: { $sum: "$totalPrice" } })
+        }
+      },
+      { $sort: { _id: 1 } }
+    ];
+
+    // Queries
+    const last30Days = await Order.aggregate([
+      { $match: { createdAt: { $gte: last30DaysDate } } },
+      ...groupByDay
+    ]);
+
+    const last30DaysSummary = await Order.aggregate([
+      { $match: { createdAt: { $gte: last30DaysDate } } },
+      ...groupByStatus()
+    ]);
+
+    const last6Months = await Order.aggregate([
+      { $match: { createdAt: { $gte: last6MonthsDate } } },
+      ...groupByMonth
+    ]);
+
+    const last6MonthsSummary = await Order.aggregate([
+      { $match: { createdAt: { $gte: last6MonthsDate } } },
+      ...groupByStatus(true) // with revenue
+    ]);
+
+    const last12Months = await Order.aggregate([
+      { $match: { createdAt: { $gte: last12MonthsDate } } },
+      ...groupByMonth
+    ]);
+
+    const last12MonthsSummary = await Order.aggregate([
+      { $match: { createdAt: { $gte: last12MonthsDate } } },
+      ...groupByStatus()
+    ]);
+
+    res.status(200).json({
+      last30Days,
+      last30DaysSummary,
+      last6Months,
+      last6MonthsSummary,
+      last12Months,
+      last12MonthsSummary
+    });
+
+  } catch (error) {
+    console.error("Dashboard Data Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
