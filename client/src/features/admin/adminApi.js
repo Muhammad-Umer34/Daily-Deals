@@ -227,7 +227,6 @@ export const getDashboardData = async (user, accessToken) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Dashboard data fetched successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching dashboard data:", error.response?.data || error.message);

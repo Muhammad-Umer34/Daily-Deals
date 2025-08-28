@@ -66,6 +66,7 @@ const NewEditProduct = ({ onClose }) => {
   };
 
   return (
+ 
     <div className="w-[30%] m-auto mt-10 border-2 p-5 rounded-lg shadow-lg h-[80vh] flex flex-col bg-white">
       <div className="flex justify-between items-center text-xl font-bold mb-5">
         <div></div>

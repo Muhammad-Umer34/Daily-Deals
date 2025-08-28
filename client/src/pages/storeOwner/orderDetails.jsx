@@ -8,6 +8,7 @@ import { getOrderDetails } from "../../features/admin/adminApi";
 import { useEffect, useState } from "react";
 import OrderDetailCard from "./orderDetailsCard";
 import { dispatchOrder } from "../../features/admin/adminApi";
+import AdminFooter from "./Footer";
 
 const OrderDetails = () => {
   const user = useSelector((state) => state.auth.user);
@@ -276,6 +277,7 @@ const OrderDetails = () => {
           </div>
         </div>
       </div>
+      <AdminFooter />
     </div>
   );
 };

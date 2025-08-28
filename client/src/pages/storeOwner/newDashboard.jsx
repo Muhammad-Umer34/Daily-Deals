@@ -7,7 +7,7 @@ import { getDashboardData } from "../../features/admin/adminApi";
 import DonutChart from "./PieChart";
 import { getOrders } from "../../features/admin/adminApi";
 import OrderCard from "./orderCard";
-
+import AdminFooter from "./Footer";
 const DashBoard = () => {
   const dispatch = useDispatch();
   const dashboardField = useSelector((state) => state.ui.dashboardField);
@@ -137,8 +137,6 @@ const DashBoard = () => {
           last6MonthsSummary: data.last6MonthsSummary || [],
           last12MonthsSummary: data.last12MonthsSummary || [],
         });
-
-        console.log("Processed dashboard data:", { p1, p2, p3 });
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
         setError(err.message || "Failed to fetch dashboard data");
@@ -260,6 +258,7 @@ const DashBoard = () => {
             )}
           </div>
       </div>
+      <AdminFooter />
     </div>
   );
 };

@@ -10,6 +10,7 @@ import { RiFilter2Fill } from "react-icons/ri";
 import NewAddProduct from "./newAddProduct";
 import SortDropdown from "./dropdown";
 import NewEditProduct from "./newEditProduct";
+import AdminFooter from "./Footer";
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -44,7 +45,7 @@ const Products = () => {
   }, [user, accessToken]);
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <NewHeader />
 
       {dropdown && (
@@ -84,9 +85,9 @@ const Products = () => {
         </div>
       </div>
       <MyProducts onEdit={() => {setEdit(true)
-        console.log("edit");
-        console.log(edit);
       }}/>
+      
+        <AdminFooter />
     </div>
   );
 };

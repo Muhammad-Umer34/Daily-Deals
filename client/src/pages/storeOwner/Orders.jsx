@@ -6,6 +6,7 @@ import { storeOwnerProductsActions } from "../../features/admin/myProductsSlice"
 import { getOrders } from "../../features/admin/adminApi";
 import SortDropdown from "./dropdown";
 import OrderCard from "./orderCard";
+import AdminFooter from "./Footer";
 
 const Order = () => {
   const dispatch = useDispatch();
@@ -46,9 +47,13 @@ const Order = () => {
     fetchOrders();
   }, [user, accessToken]);
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <NewHeader />
+ return (
+  <div className="flex flex-col min-h-screen bg-gray-50">
+    {/* Header */}
+    <NewHeader />
+
+    {/* Main Content */}
+    <main className="flex-grow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mt-10 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h1 className="text-3xl font-bold text-gray-900">Manage Orders</h1>
@@ -66,7 +71,7 @@ const Order = () => {
               />
               <BiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" />
             </div>
-            <SortDropdown />
+       
           </div>
         </div>
 
@@ -97,8 +102,13 @@ const Order = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </main>
+
+    {/* Footer */}
+    <AdminFooter className="w-full"/>
+  </div>
+);
+
 };
 
 export default Order;

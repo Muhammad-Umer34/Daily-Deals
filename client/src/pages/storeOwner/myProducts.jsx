@@ -16,7 +16,7 @@ const MyProducts = ({ onEdit }) => {
   );
   const dispatch = useDispatch();
 
-const fetchProducts = async ({onEdit}) => {
+const fetchProducts = async () => {
     try {
       const data = await getProducts(user, accessToken);
       dispatch(storeOwnerProductsActions.setProducts(data));
@@ -37,7 +37,7 @@ const fetchProducts = async ({onEdit}) => {
   const editProduct = async (productId) => {
     const productToEdit = products.find((product) => product._id === productId);
     await dispatch(productActions.setProductDetails(productToEdit));
-    console.log(ep);
+    onEdit();
   };
 
   useEffect(() => {
