@@ -43,7 +43,7 @@ export default function DonutChart({ data = [] }) {
   }
 
   return (
-    <div className="w-[100%] mx-auto bg-white border rounded-2xl shadow-md p-6">
+    <div className="w-[100%] mx-auto bg-white border rounded-2xl shadow-md p-8">
       {/* Title */}
       <h2 className="text-lg font-semibold mb-4">
         Order Status - Last 30 Days

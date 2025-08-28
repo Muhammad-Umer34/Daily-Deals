@@ -5,6 +5,8 @@ import { uiActions } from "../../features/admin/uiSlice";
 import { useEffect, useState } from "react";
 import { getDashboardData } from "../../features/admin/adminApi";
 import DonutChart from "./PieChart";
+import { getOrders } from "../../features/admin/adminApi";
+import OrderCard from "./orderCard";
 
 const DashBoard = () => {
   const dispatch = useDispatch();
@@ -19,6 +21,7 @@ const DashBoard = () => {
     last6MonthsSummary: [],
     last12MonthsSummary: [],
   });
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -104,7 +107,10 @@ const DashBoard = () => {
         return dashboardData.last30Days;
     }
   };
-
+  const getTopFourOrders = (data) => {
+     const sortedOrders = [...data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    return sortedOrders.slice(0, 4);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -112,7 +118,8 @@ const DashBoard = () => {
         setError(null);
 
         const data = await getDashboardData(user, accessToken);
-
+        const ordersData = await getOrders(user, accessToken);
+        setOrders(getTopFourOrders(ordersData || []));
         if (!data) {
           throw new Error("No data received from API");
         }
@@ -224,9 +231,34 @@ const DashBoard = () => {
           period={dashboardField}
           loading={loading}
         />
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <DonutChart data={getCurrentSummary()} />
-        </div>
+      </div>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <DonutChart data={getCurrentSummary()} />
+      </div>
+
+      <div className="mt-10 mb-8 ml-70 mr-70 flex flex-col ">
+        <h1 className="text-3xl font-bold text-gray-900">Recent Orders</h1> 
+         <div className=" mt-10 grid grid-cols-5 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            <div>Order ID</div>
+            <div>Product Name</div>
+            <div>Total Amount</div>
+            <div>Status</div>
+            <div>Actions</div>
+          </div>
+           <div className="divide-y divide-gray-200">
+            {orders.length > 0 ? (
+              orders.map((order) => (
+                <OrderCard key={order._id} order={order} />
+              ))
+            ) : (
+              <div className="px-6 py-12 text-center text-gray-500">
+                <div className="text-lg font-medium">No orders found</div>
+                <div className="text-sm mt-1">
+                  {search ? "Try adjusting your search criteria" : "Orders will appear here when available"}
+                </div>
+              </div>
+            )}
+          </div>
       </div>
     </div>
   );
