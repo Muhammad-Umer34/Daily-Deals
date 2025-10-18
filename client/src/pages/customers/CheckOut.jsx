@@ -140,6 +140,7 @@ const CheckOut = () => {
                   {...register("savedAddress")}
                 >
                   <option value="">Choose a saved address</option>
+                  {console.log(savedAddresses)};
                   {savedAddresses.map((addr, idx) => (
                     <option key={idx} value={addr}>
                       {addr}

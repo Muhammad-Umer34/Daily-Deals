@@ -4,13 +4,17 @@ import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSelector, useDispatch } from 'react-redux';
 import { activeActions } from '../../../features/customer/activeSlice';
+import { chatbotActions } from '../../../features/customer/chatbotSlice';
 import HeaderDropdown from './headerDropdown';
 import { useNavigate } from 'react-router-dom';
+import { FaRobot } from "react-icons/fa6";
+import ChatbotModal from '../../../pages/customers/chatbot';
 
 export default function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const activeField = useSelector((state) => state.active.activeField);
+  const isOpen = useSelector((state) => state.chatbot.isOpen);
   const [search, setSearch] = useState('');
 
   const navDropdownItems = {
@@ -28,9 +32,12 @@ export default function Header() {
        navigate(`/home/${field.toLowerCase()}`);
     }
     else{
- navigate("/home");
+      navigate("/home");
     }
-    
+  };
+
+  const handleChatbotToggle = () => {
+    dispatch(chatbotActions.toggleChatbot());
   };
 
   const navLinks = ["Home", "Men", "Women", "Kids", "Categories"];
@@ -59,6 +66,17 @@ export default function Header() {
 
       {/* Right: Search + Icons */}
       <div className="flex items-center gap-4">
+        {/* Chatbot Icon */}
+        <button
+          onClick={handleChatbotToggle}
+          className={`text-xl transition-all duration-200 ${
+            isOpen ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+          }`}
+          title="Open Chat Assistant"
+        >
+          <FaRobot />
+        </button>
+
         {/* Search Bar */}
         <div className="relative hidden sm:block">
           <input
@@ -82,11 +100,18 @@ export default function Header() {
         </div>
 
         {/* Cart Icon */}
-        <FaShoppingCart size={20} className="text-gray-700 cursor-pointer" />
+        <FaShoppingCart size={20} className="text-gray-700 cursor-pointer hover:text-blue-600 transition-colors" />
 
         {/* Profile Icon */}
-        <FaUserCircle size={22} className="text-gray-700 cursor-pointer" onClick={()=>navigate("/home/profile")} />
+        <FaUserCircle 
+          size={22} 
+          className="text-gray-700 cursor-pointer hover:text-blue-600 transition-colors" 
+          onClick={() => navigate("/home/profile")} 
+        />
       </div>
+
+      {/* Chatbot Modal */}
+      <ChatbotModal />
     </header>
   );
 }
