@@ -38,7 +38,11 @@ const CheckOut = () => {
     formState: { errors },
   } = useForm();
 
-  const savedAddresses = user?.address || [];
+  const savedAddresses = Array.isArray(user?.address)
+    ? user.address
+    : user?.address
+    ? [user.address]
+    : [];
   const savedPayments = ["Cash on Delivery", "Mastercard ending in 8514"];
 
   const cartItems = cart || [];

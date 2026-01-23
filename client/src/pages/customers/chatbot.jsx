@@ -34,8 +34,6 @@ export default function ChatbotModal() {
     try {
       console.log("\n--- SENDING TO BACKEND ---");
       console.log("User Input:", inputValue);
-      
-      // Call backend API with the question
       const response = await getAnswer(inputValue);
       
       console.log("Backend Response:", response);
