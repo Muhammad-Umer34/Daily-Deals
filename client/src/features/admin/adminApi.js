@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useSelector } from "react-redux";
-import store from "../../../../server/models/store";
-const BASE_URL = "http://localhost:5000/api/store";
+const BASE_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/store`;
 
 
 export const postProduct = async (productData,user,accessToken) => {

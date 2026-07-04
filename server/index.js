@@ -31,8 +31,13 @@ app.use('/api/store',storeRouter);
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('✅ MongoDB connected');
-    app.listen(process.env.PORT, () => {
-      console.log(`✅ Server running on port ${process.env.PORT}`);
-    });
   })
   .catch(err => console.error('MongoDB error:', err));
+
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(process.env.PORT || 5000, () => {
+    console.log(`✅ Server running on port ${process.env.PORT || 5000}`);
+  });
+}
+
+module.exports = app;
