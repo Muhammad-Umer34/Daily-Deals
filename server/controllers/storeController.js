@@ -207,6 +207,13 @@ exports.dispatchOrder = async(req,res)=>{
     if (!order) {
       return res.status(404).json({ error: 'Order not found or does not belong to this store' });
     }
+    
+    // Also update the store-specific line item status!
+    await storeOrderSchema.updateMany(
+      { parentOrderId: orderId, storeId: storeId },
+      { status: 'Dispatched' }
+    );
+
     res.status(200).json({ message: 'Order dispatched successfully', order });
   }
   catch(error){
@@ -230,7 +237,7 @@ exports.getDashboardData = async (req, res) => {
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-          totalRevenue: { $sum: "$totalPrice" },
+          totalRevenue: { $sum: { $multiply: ["$price", "$quantity"] } },
           totalOrders: { $sum: 1 }
         }
       },
@@ -241,7 +248,7 @@ exports.getDashboardData = async (req, res) => {
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
-          totalRevenue: { $sum: "$totalPrice" },
+          totalRevenue: { $sum: { $multiply: ["$price", "$quantity"] } },
           totalOrders: { $sum: 1 }
         }
       },
@@ -251,42 +258,42 @@ exports.getDashboardData = async (req, res) => {
     const groupByStatus = (withRevenue = false) => [
       {
         $group: {
-          _id: "$orderStatus",
+          _id: "$status",
           totalOrders: { $sum: 1 },
-          ...(withRevenue && { totalRevenue: { $sum: "$totalPrice" } })
+          ...(withRevenue && { totalRevenue: { $sum: { $multiply: ["$price", "$quantity"] } } })
         }
       },
       { $sort: { _id: 1 } }
     ];
 
     // Queries
-    const last30Days = await Order.aggregate([
-      { $match: { createdAt: { $gte: last30DaysDate } } },
+    const last30Days = await storeOrderSchema.aggregate([
+      { $match: { storeId: storeID, createdAt: { $gte: last30DaysDate } } },
       ...groupByDay
     ]);
 
-    const last30DaysSummary = await Order.aggregate([
-      { $match: { createdAt: { $gte: last30DaysDate } } },
+    const last30DaysSummary = await storeOrderSchema.aggregate([
+      { $match: { storeId: storeID, createdAt: { $gte: last30DaysDate } } },
       ...groupByStatus()
     ]);
 
-    const last6Months = await Order.aggregate([
-      { $match: { createdAt: { $gte: last6MonthsDate } } },
+    const last6Months = await storeOrderSchema.aggregate([
+      { $match: { storeId: storeID, createdAt: { $gte: last6MonthsDate } } },
       ...groupByMonth
     ]);
 
-    const last6MonthsSummary = await Order.aggregate([
-      { $match: { createdAt: { $gte: last6MonthsDate } } },
+    const last6MonthsSummary = await storeOrderSchema.aggregate([
+      { $match: { storeId: storeID, createdAt: { $gte: last6MonthsDate } } },
       ...groupByStatus(true) // with revenue
     ]);
 
-    const last12Months = await Order.aggregate([
-      { $match: { createdAt: { $gte: last12MonthsDate } } },
+    const last12Months = await storeOrderSchema.aggregate([
+      { $match: { storeId: storeID, createdAt: { $gte: last12MonthsDate } } },
       ...groupByMonth
     ]);
 
-    const last12MonthsSummary = await Order.aggregate([
-      { $match: { createdAt: { $gte: last12MonthsDate } } },
+    const last12MonthsSummary = await storeOrderSchema.aggregate([
+      { $match: { storeId: storeID, createdAt: { $gte: last12MonthsDate } } },
       ...groupByStatus()
     ]);
 

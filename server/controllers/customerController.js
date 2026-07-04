@@ -334,7 +334,7 @@ exports.deleteUserCart = async (req, res) => {
     }
     res.status(200).json({ message: "Cart deleted successfully" });
   } catch (error) {
-    console.log(erorr);
+    console.error("Error deleting user cart:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

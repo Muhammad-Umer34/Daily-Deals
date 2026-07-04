@@ -128,7 +128,7 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
         yaxis: [
           {
             title: {
-              text: "Revenue ($)",
+              text: "Revenue (Rs.)",
               style: {
                 color: '#008FFB',
                 fontSize: '14px'
@@ -136,7 +136,7 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
             },
             labels: {
               formatter: function (val) {
-                return val ? `$${val.toLocaleString()}` : '$0';
+                return val ? `Rs. ${val.toLocaleString()}` : 'Rs. 0';
               }
             }
           },
@@ -162,7 +162,7 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
           y: [
             {
               formatter: function (y) {
-                return y ? `$${y.toLocaleString()}` : '$0';
+                return y ? `Rs. ${y.toLocaleString()}` : 'Rs. 0';
               }
             },
             {
@@ -232,7 +232,7 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
         <div className="bg-blue-50 p-4 rounded-lg">
           <div className="text-blue-600 text-sm font-medium">Total Revenue</div>
           <div className="text-2xl font-bold text-blue-800">
-            ${data.reduce((sum, item) => sum + (item.totalRevenue || 0), 0).toLocaleString()}
+            Rs. {data.reduce((sum, item) => sum + (item.totalRevenue || 0), 0).toLocaleString()}
           </div>
         </div>
         <div className="bg-green-50 p-4 rounded-lg">
@@ -244,7 +244,7 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
         <div className="bg-purple-50 p-4 rounded-lg">
           <div className="text-purple-600 text-sm font-medium">Average Order Value</div>
           <div className="text-2xl font-bold text-purple-800">
-            ${(() => {
+            Rs. {(() => {
               const totalRevenue = data.reduce((sum, item) => sum + (item.totalRevenue || 0), 0);
               const totalOrders = data.reduce((sum, item) => sum + (item.totalOrders || 0), 0);
               return totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2) : '0.00';

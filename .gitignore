@@ -7,3 +7,7 @@ client/dist/
 server/node_modules/
 server/.env
 server/dist/
+chatbot/venv/
+chatbot/.env
+__pycache__/
+*.pyc

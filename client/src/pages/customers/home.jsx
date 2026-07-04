@@ -4,7 +4,7 @@ import HeroSection from "../../components/ui/customer/heroSection";
 import Separator from "../../components/ui/customer/separator";
 import DisplayCategories from "./displayCategories";
 import Footer from "./footer";
-import { getTopSellingProducts } from "../../features/customer/customerApi";
+import { getTopSellingProducts, getProductsForCustomer } from "../../features/customer/customerApi";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -15,6 +15,7 @@ const CustomerHome = () => {
   const [newArrival, setNewArrival] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
   const [topViewed, setTopViewed] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
 
   useEffect(() => {
     const fetchTopSellingProducts = async () => {
@@ -27,7 +28,18 @@ const CustomerHome = () => {
         console.error("Failed to fetch top selling products:", error);
       }
     };
+
+    const fetchAllProducts = async () => {
+      try {
+        const response = await getProductsForCustomer(user, accessToken);
+        setAllProducts(response || []);
+      } catch (error) {
+        console.error("Failed to fetch all products:", error);
+      }
+    };
+
     fetchTopSellingProducts();
+    fetchAllProducts();
   }, [user, accessToken]);
 
   return (
@@ -42,9 +54,9 @@ const CustomerHome = () => {
       <ShowProducts product={topViewed} />
       <Separator name="Shop By Category" />
       <Separator name="Dress Styles" />
-      <DisplayCategories name="Dress Styles" />
+      <DisplayCategories name="Dress Styles" allProducts={allProducts} />
       <Separator name="Shop By Gender" />
-      <DisplayCategories name="Shop By Gender" />
+      <DisplayCategories name="Shop By Gender" allProducts={allProducts} />
       <Footer />
     </div>
   );

@@ -1,6 +1,6 @@
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
-from langchain.schema.output_parser import StrOutputParser
+from langchain_classic.chains import RetrievalQA
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 from setup import vectorstore, llm
 
 retriever = vectorstore.as_retriever(search_kwargs={"k": 3})

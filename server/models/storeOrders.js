@@ -13,6 +13,7 @@ const storeOrderSchema = new mongoose.Schema({
   parentOrderId: { type: String ,required:false},
   userName: { type: String ,required:false},
   userEmail: { type: String ,required:false},
+  status: { type: String, default: "Pending" },
   createdAt: { type: Date, default: Date.now },
 });
 

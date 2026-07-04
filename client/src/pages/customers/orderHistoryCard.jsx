@@ -23,7 +23,7 @@ const HistoryCard = ({ order }) => {
         <div className="flex flex-wrap gap-4 font-semibold text-gray-700">
           <div>Order #: {order._id}</div>
           <div>Date: {date}</div>
-          <div>Total: ${order.totalPrice}</div>
+          <div>Total: Rs. {order.totalPrice}</div>
         </div>
 
         <div className="flex gap-4 items-center">
@@ -58,7 +58,7 @@ const HistoryCard = ({ order }) => {
                 </p>
               </div>
             </div>
-            <div className="font-semibold text-black">${item.price}</div>
+            <div className="font-semibold text-black">Rs. {item.price}</div>
           </div>
         ))}
       </div>

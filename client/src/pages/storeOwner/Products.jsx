@@ -59,7 +59,7 @@ const Products = () => {
         </div>
       )}
 
-      <div className="mt-10 mb-5 ml-70 mr-70 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-8 mt-10 mb-5 flex justify-between items-center">
         <h1 className="text-3xl font-bold">Products</h1>
 
         <div className="flex gap-3 items-center">

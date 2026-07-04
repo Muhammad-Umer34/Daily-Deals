@@ -2,6 +2,8 @@ import { useSelector, useDispatch } from "react-redux";
 import Header from "../../components/ui/customer/header";
 import { BreadcrumbWithCustomSeparator } from "./breadCrumbs";
 import { navActions } from "../../features/customer/navSlice";
+import { authActions } from "../../features/auth/authSlices";
+import { useNavigate } from "react-router-dom";
 
 import { FiUser, FiShoppingCart, FiHeart, FiClock, FiLogOut } from "react-icons/fi";
 import CartPage from "./cart";
@@ -20,10 +22,16 @@ const tabItems = [
 
 const ProfileForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const active = useSelector((state) => state.navActive.active);
 
   const handleOnClick = (value) => {
-    dispatch(navActions.setActive(value));
+    if (value === 'Sign Out') {
+      dispatch(authActions.logout());
+      navigate("/login");
+    } else {
+      dispatch(navActions.setActive(value));
+    }
   };
 
   return (

@@ -19,17 +19,9 @@ function ResponsiveAppBar() {
       </div>
       {/* Logo */}
       <div
-        className={`
-          flex-1 flex justify-end
-          md:justify-end
-          lg:justify-center
-        `}
+        className="text-2xl font-extrabold tracking-tight text-slate-900 flex items-center select-none"
       >
-        <img
-          src="images/daily_deals_logo.ico"
-          alt="Daily Deals logo"
-          className="h-8 md:h-10 lg:h-12"
-        />
+        Mono<span className="text-blue-600">Fit</span>
       </div>
       {/* Empty div for spacing on large screens */}
       <div className="hidden lg:flex flex-1"></div>

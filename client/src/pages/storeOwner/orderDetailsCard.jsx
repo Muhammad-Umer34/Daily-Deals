@@ -34,13 +34,13 @@ const OrderDetailCard = ({ order }) => {
         {order.quantity || 0}
       </div>
       <div className="text-sm font-medium text-gray-900">
-        ${unitPrice}
+        Rs. {unitPrice}
       </div>
       <div className="text-sm text-gray-600">
         {order.color || "N/A"}
       </div>
       <div className="text-sm font-medium text-gray-900">
-        ${order.price?.toFixed(2) || "0.00"}
+        Rs. {order.price?.toFixed(2) || "0.00"}
       </div>
     </div>
   );

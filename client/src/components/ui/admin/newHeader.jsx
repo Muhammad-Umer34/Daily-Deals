@@ -1,6 +1,7 @@
 import { FiUser, FiLogOut } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
 import { uiActions } from "../../../features/admin/uiSlice";
+import { authActions } from "../../../features/auth/authSlices";
 import { useNavigate } from "react-router-dom";
 
 const NewHeader = () => {
@@ -15,6 +16,11 @@ const NewHeader = () => {
     dispatch(uiActions.changeField(link));
     navigate(`/store/${link.toLowerCase()}`);
 
+  };
+
+  const handleLogout = () => {
+    dispatch(authActions.logout());
+    navigate("/login");
   };
 
   return (
@@ -42,7 +48,10 @@ const NewHeader = () => {
           <FiUser className="text-xl" />
           <span className="font-medium">{user?.name || "Guest"}</span>
         </div>
-        <button className="flex items-center gap-2 px-3 py-1.5 bg-black text-white rounded-lg hover:bg-gray-900 transition duration-200 cursor-pointer">
+        <button 
+          onClick={handleLogout}
+          className="flex items-center gap-2 px-3 py-1.5 bg-black text-white rounded-lg hover:bg-gray-900 transition duration-200 cursor-pointer"
+        >
           <FiLogOut className="text-lg" />
           Logout
         </button>

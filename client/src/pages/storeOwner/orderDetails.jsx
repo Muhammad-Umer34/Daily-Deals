@@ -216,15 +216,15 @@ const OrderDetails = () => {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-sm font-medium text-gray-600">Subtotal:</span>
-                  <span className="text-sm font-medium text-gray-900">${subtotal}</span>
+                  <span className="text-sm font-medium text-gray-900">Rs. {subtotal}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm font-medium text-gray-600">Shipping Cost:</span>
-                  <span className="text-sm font-medium text-gray-900">$15.00</span>
+                  <span className="text-sm font-medium text-gray-900">Rs. 15.00</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm font-medium text-gray-600">Discount:</span>
-                  <span className="text-sm font-medium text-gray-900">$0.00</span>
+                  <span className="text-sm font-medium text-gray-900">Rs. 0.00</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm font-medium text-gray-600">GST:</span>
@@ -234,7 +234,7 @@ const OrderDetails = () => {
                   <div className="flex justify-between">
                     <span className="text-base font-semibold text-gray-900">Total:</span>
                     <span className="text-base font-semibold text-gray-900">
-                      ${orderDetails.totalPrice?.toFixed(2) || "0.00"}
+                      Rs. {orderDetails.totalPrice?.toFixed(2) || "0.00"}
                     </span>
                   </div>
                 </div>

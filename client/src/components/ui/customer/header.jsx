@@ -27,11 +27,9 @@ export default function Header() {
 
   const handleOnChangeField = (field) => {
     dispatch(activeActions.changeField(field));
-    if(field!=='Home' || field !== 'home')
-    {
-       navigate(`/home/${field.toLowerCase()}`);
-    }
-    else{
+    if (field !== 'Home' && field !== 'home') {
+      navigate(`/home/${field.toLowerCase()}`);
+    } else {
       navigate("/home");
     }
   };
@@ -44,8 +42,11 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-md px-6 py-3 flex items-center justify-between">
-      <div className="text-2xl font-bold text-blue-600">
-        <img src="/images/daily_deals.png" alt="Daily Deals Logo" className="h-8" />
+      <div 
+        className="text-2xl font-extrabold tracking-tight text-slate-900 flex items-center cursor-pointer select-none"
+        onClick={() => navigate("/home")}
+      >
+        Mono<span className="text-blue-600">Fit</span>
       </div>
 
       <nav className="hidden md:flex gap-6 font-medium text-sm">

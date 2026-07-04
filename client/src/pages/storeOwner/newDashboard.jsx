@@ -179,10 +179,10 @@ const DashBoard = () => {
   return (
     <div>
       <NewHeader />
-      <div className="mt-10 mb-5 ml-70 mr-70 flex justify-between items-center">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-5 flex justify-between items-center">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
       </div>
-      <div className="mt-10 mb-5 ml-70 mr-70 flex items-center gap-3">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-5 flex items-center gap-3">
         <button
           className="bg-gray-200 text-black rounded-sm p-2 font-bold cursor-pointer transition-colors duration-200 hover:bg-gray-300"
           style={
@@ -234,7 +234,7 @@ const DashBoard = () => {
         <DonutChart data={getCurrentSummary()} />
       </div>
 
-      <div className="mt-10 mb-8 ml-70 mr-70 flex flex-col ">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-8 flex flex-col ">
         <h1 className="text-3xl font-bold text-gray-900">Recent Orders</h1> 
          <div className=" mt-10 grid grid-cols-5 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 text-sm font-semibold text-gray-700 uppercase tracking-wide">
             <div>Order ID</div>
@@ -252,7 +252,7 @@ const DashBoard = () => {
               <div className="px-6 py-12 text-center text-gray-500">
                 <div className="text-lg font-medium">No orders found</div>
                 <div className="text-sm mt-1">
-                  {search ? "Try adjusting your search criteria" : "Orders will appear here when available"}
+                  Orders will appear here when available
                 </div>
               </div>
             )}

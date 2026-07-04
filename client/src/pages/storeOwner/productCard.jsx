@@ -49,7 +49,7 @@ const ProductCard = ({ product, deleteProduct, editProduct, onEdit }) => {
 
           <div className="flex items-center justify-between">
             <span className="text-lg font-bold text-gray-900">
-              ₹{(product.price / 1000).toFixed(0)}k
+              Rs. {product.price.toLocaleString()}
             </span>
 
             {product.totalPurchased > 0 && (

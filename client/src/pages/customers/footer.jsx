@@ -3,7 +3,7 @@ const Footer = () => {
     <footer className="bg-gray-900 text-gray-300 py-10 px-4 mt-10">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
-          <h2 className="text-white text-2xl font-bold mb-4">Daily Deals</h2>
+          <h2 className="text-white text-2xl font-bold mb-4">MonoFit</h2>
           <p className="text-sm">
             Discover a wide range of products at the best prices. Shop smart, live better.
           </p>
@@ -45,7 +45,7 @@ const Footer = () => {
       </div>
 
       <div className="text-center text-sm text-gray-500 mt-10 border-t pt-5">
-        &copy; {new Date().getFullYear()} Daily Deals. All rights reserved.
+        &copy; {new Date().getFullYear()} MonoFit. All rights reserved.
       </div>
     </footer>
   );

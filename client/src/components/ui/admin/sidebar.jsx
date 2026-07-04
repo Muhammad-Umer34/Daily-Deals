@@ -26,6 +26,7 @@ import { RiBarChart2Line } from "react-icons/ri";
 import { useSelector, useDispatch } from 'react-redux';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { uiActions } from '../../../features/admin/uiSlice';
+import { authActions } from '../../../features/auth/authSlices';
 
 import AddProduct from '../../../pages/storeOwner/addProduct';
 import MyProducts from '../../../pages/storeOwner/myProducts';
@@ -106,10 +107,20 @@ function ResponsiveDrawer(props) {
       <List>
         {['Analytics', 'Settings', 'Logout'].map((text, index) => (
           <ListItem key={text} disablePadding>
-            <ListItemButton sx={{
-              '&:hover': { background: sidebarAccent },
-              color: sidebarText
-            }}>
+            <ListItemButton 
+              onClick={() => {
+                if (text === 'Logout') {
+                  dispatch(authActions.logout());
+                  navigate("/login");
+                } else {
+                  dispatch(uiActions.changeField(text));
+                }
+              }}
+              sx={{
+                '&:hover': { background: sidebarAccent },
+                color: sidebarText
+              }}
+            >
               <ListItemIcon sx={{ color: sidebarIcon }}>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
@@ -146,11 +157,9 @@ function ResponsiveDrawer(props) {
             <MenuIcon />
           </IconButton>
           <Box sx={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <img
-              src="/images/daily_deals.png"
-              alt="Daily Deals"
-              style={{ height: 36, objectFit: "contain" }}
-            />
+            <Typography variant="h6" noWrap component="div" sx={{ fontWeight: "800", color: "#1e293b", letterSpacing: "-0.025em" }}>
+              Mono<span style={{ color: "#2563eb" }}>Fit</span>
+            </Typography>
           </Box>
         </Toolbar>
       </AppBar>

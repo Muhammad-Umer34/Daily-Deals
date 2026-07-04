@@ -1,6 +1,6 @@
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
-from langchain.schema import Document
+from langchain_core.documents import Document
 from pinecone import Pinecone, ServerlessSpec, CloudProvider, AwsRegion
 from dotenv import load_dotenv
 import os

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-const CategoryCard = ({ category }) => {
+const CategoryCard = ({ category, productCount = 0 }) => {
   const defaultImage = "/default-category.jpg";
   const imageUrl = category.image || defaultImage;
 
@@ -20,9 +20,11 @@ const CategoryCard = ({ category }) => {
         </div>
       </div>
       <div className="flex items-center justify-between px-4 py-3">
-        <span className="text-gray-500 text-sm">0 products</span>
+        <span className="text-gray-500 text-sm">
+          {productCount} {productCount === 1 ? "product" : "products"}
+        </span>
         <Link
-          to={`/category/${category._id}`}
+          to={`/home/${category.name.toLowerCase()}`}
           className="text-sm font-semibold text-black hover:underline flex items-center"
         >
           Shop Now

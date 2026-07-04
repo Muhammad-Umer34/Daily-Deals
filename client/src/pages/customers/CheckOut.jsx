@@ -254,13 +254,13 @@ const CheckOut = () => {
                       Qty: {item.quantity}
                     </p>
                     <p className="text-gray-600 text-xs">
-                      ${item.price.toFixed(2)} each
+                      Rs. {item.price.toLocaleString()} each
                     </p>
                   </div>
 
                   <div className="flex-shrink-0">
                     <span className="font-semibold text-sm">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      Rs. {(item.price * item.quantity).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -272,15 +272,15 @@ const CheckOut = () => {
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-sm">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>Rs. {subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>Discount</span>
-                <span>-${discount.toFixed(2)}</span>
+                <span>-Rs. {discount.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>Delivery Fee</span>
-                <span>${deliveryFee.toFixed(2)}</span>
+                <span>Rs. {deliveryFee.toLocaleString()}</span>
               </div>
             </div>
 
@@ -288,7 +288,7 @@ const CheckOut = () => {
 
             <div className="flex justify-between font-bold text-lg mb-6">
               <span>Total</span>
-              <span>${total.toFixed(2)}</span>
+              <span>Rs. {total.toLocaleString()}</span>
             </div>
 
             <button
