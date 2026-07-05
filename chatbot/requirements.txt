@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+langchain
+langchain-groq
+langchain-community
+langchain-pinecone
+sentence-transformers
+torch --extra-index-url https://download.pytorch.org/whl/cpu
+python-dotenv
