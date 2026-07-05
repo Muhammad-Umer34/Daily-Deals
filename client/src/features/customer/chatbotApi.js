@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = import.meta.env.VITE_CHATBOT_URL || "http://127.0.0.1:8000";
 
 export const getAnswer = async (question="what is your delivery charges?") => {
   console.log("In Function");

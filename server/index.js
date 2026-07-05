@@ -24,6 +24,10 @@ app.use(cors({
 }));
 
 
+app.get('/', (req, res) => {
+  res.send('API is running...');
+});
+
 app.use('/api/auth', authRouter);
 app.use('/api/customer',userRouter);
 app.use('/api/store',storeRouter);
