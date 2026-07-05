@@ -7,11 +7,19 @@ import {
   checkWishList,
 } from "../../features/customer/customerApi";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 const WishList = ({ product }) => {
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
   const [liked, setLiked] = useState(false);
   const handleLike = () => {
+    if (!user || !user.id) {
+      alert("Please login first to add items to your wishlist.");
+      navigate("/login");
+      return;
+    }
     if (liked) {
       setLiked(false);
       removeFromWishList(product._id, accessToken, user.id);

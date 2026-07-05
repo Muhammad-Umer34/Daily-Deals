@@ -3,6 +3,7 @@ import { AiFillStar } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import { postReview, getAllReviews } from "../../features/customer/customerApi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
 
 const StarRating = ({ rating, setRating }) => {
   return (
@@ -20,6 +21,7 @@ const StarRating = ({ rating, setRating }) => {
 };
 
 const ReviewBox = ({ product }) => {
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
 
@@ -32,17 +34,26 @@ const ReviewBox = ({ product }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await getAllReviews(product._id, accessToken, user.id);
-        setReviews(response);
+        const response = await getAllReviews(product._id, accessToken, user?.id);
+        setReviews(response || []);
       } catch (error) {
         console.error("Failed to fetch reviews:", error);
       }
     };
 
-    if (user && product?._id) {
+    if (product?._id) {
       fetchReviews();
     }
   }, [reviewSubmitted, product._id, accessToken, user?.id]);
+
+  const handleWriteReview = () => {
+    if (!user || !user.id) {
+      alert("Please login first to write a review.");
+      navigate("/login");
+      return;
+    }
+    setShowForm(true);
+  };
 
   const handleSubmit = async () => {
     try {
@@ -82,7 +93,7 @@ const ReviewBox = ({ product }) => {
       )}
 
       <button
-        onClick={() => setShowForm(true)}
+        onClick={handleWriteReview}
         className="mt-4 px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
       >
         Write a Review

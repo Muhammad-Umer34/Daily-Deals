@@ -12,13 +12,11 @@ const App = () => {
       if (isAuthenticated && user) {
         if (user.userType === "storeOwner") {
           navigate("/store/dashboard");
-        } else if (user.userType === "customer") {
-          navigate("/home");
         } else {
-          navigate("/login");
+          navigate("/home");
         }
       } else {
-        navigate("/login");
+        navigate("/home");
       }
     }
   }, [isAuthenticated, user, navigate]);

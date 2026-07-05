@@ -35,6 +35,11 @@ const ProductDetailPage = ({ product }) => {
   const handleLike = () => setLiked(!liked);
 
   const handleAddToCart = () => {
+    if (!user || !user.id) {
+      alert("Please login first to add items to your cart.");
+      navigate("/login");
+      return;
+    }
     if (!selectedColor || !selectedSize) {
       alert("Please select color and size.");
       return;
