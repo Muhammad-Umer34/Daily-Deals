@@ -1,11 +1,15 @@
+import React, { useState } from "react";
 import Input from "@mui/material/Input";
 import TextField from "@mui/material/TextField";
 import { useForm } from "react-hook-form";
 import { RxCross2 } from "react-icons/rx";
 import { postProduct } from "../../features/admin/adminApi";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-const NewAddProduct = ({ onClose }) => {
+const NewAddProduct = ({ onClose, onProductAdded }) => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
   console.log(user);
@@ -17,6 +21,7 @@ const NewAddProduct = ({ onClose }) => {
   } = useForm();
 
   const onSubmit = async (data) => {
+    setLoading(true);
     console.log(data);
     const {
       name,
@@ -48,7 +53,23 @@ const NewAddProduct = ({ onClose }) => {
       material,
     };
     console.log(formattedData);
-    await postProduct(formattedData, user, accessToken);
+    try {
+      await postProduct(formattedData, user, accessToken);
+      alert("Product added successfully!");
+      if (onProductAdded) {
+        await onProductAdded();
+      }
+      if (onClose) {
+        onClose();
+      } else {
+        navigate("/store/products");
+      }
+    } catch (error) {
+      console.error("Failed to add product:", error);
+      alert("Failed to add product. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,7 +78,7 @@ const NewAddProduct = ({ onClose }) => {
       <div className="flex justify-between items-center text-xl font-bold mb-5">
         <div></div>
         <h1>Add Product</h1>
-        <RxCross2 className="cursor-pointer hover:text-red-500" onClick={onClose} />
+        <RxCross2 className="cursor-pointer hover:text-red-500" onClick={onClose || (() => navigate("/store/products"))} />
       </div>
 
       {/* Scrollable Form */}
@@ -221,9 +242,14 @@ const NewAddProduct = ({ onClose }) => {
           </div>
           <button
             type="submit"
-            className="mt-4 mb-4 w-[60%] bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors self-center"
+            disabled={loading}
+            className={`mt-4 mb-4 w-[60%] py-2 px-4 rounded-lg text-white self-center transition-colors ${
+              loading 
+                ? "bg-gray-400 cursor-not-allowed" 
+                : "bg-black hover:bg-gray-800 cursor-pointer"
+            }`}
           >
-            Add Product
+            {loading ? "Adding Product..." : "Add Product"}
           </button>
         </form>
       </div>

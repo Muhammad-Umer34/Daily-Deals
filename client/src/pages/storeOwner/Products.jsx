@@ -50,7 +50,7 @@ const Products = () => {
 
       {dropdown && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <NewAddProduct onClose={() => setDropdown(false)} />
+          <NewAddProduct onClose={() => setDropdown(false)} onProductAdded={fetchP} />
         </div>
       )}
       {edit && (
