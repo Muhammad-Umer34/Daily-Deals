@@ -130,8 +130,11 @@ const UserSignupCard = () => {
         <CardFooter className="flex-col gap-3 mt-6 border-t border-white/10 pt-6">
           <Button 
             variant="outline" 
-            className="w-full h-11 border-white/10 text-gray-200 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-all duration-200 cursor-pointer"
+            className="w-full h-11 border-white/10 text-gray-200 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-all duration-200 cursor-pointer flex items-center justify-center gap-2"
           >
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114-3.51 0-6.357-2.828-6.357-6.314 0-3.486 2.847-6.314 6.357-6.314 1.543 0 2.957.543 4.07 1.457l3.058-3.057C18.914 2.128 15.829 1 12.24 1 6.033 1 1 6.033 1 12.24s5.033 11.24 11.24 11.24c6.457 0 10.743-4.528 10.743-10.928 0-.743-.072-1.457-.214-2.143H12.24z"/>
+            </svg>
             Sign Up with Google
           </Button>
           <Button

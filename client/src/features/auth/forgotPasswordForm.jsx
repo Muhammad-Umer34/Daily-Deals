@@ -103,7 +103,7 @@ const ForgotPasswordForm = () => {
                 <Button 
                   type="submit" 
                   disabled={loading}
-                  className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg h-11 transition-all duration-300 shadow-lg shadow-blue-600/20 active:scale-[0.98] cursor-pointer"
+                  className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 cursor-pointer"
                 >
                   {loading ? "Sending PIN..." : "Send Verification PIN"}
                 </Button>
@@ -171,7 +171,7 @@ const ForgotPasswordForm = () => {
                 <Button 
                   type="submit" 
                   disabled={loading}
-                  className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg h-11 transition-all duration-300 shadow-lg shadow-blue-600/20 active:scale-[0.98] cursor-pointer"
+                  className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 cursor-pointer"
                 >
                   {loading ? "Resetting..." : "Reset Password"}
                 </Button>
