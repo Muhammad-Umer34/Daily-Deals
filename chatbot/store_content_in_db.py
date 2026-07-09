@@ -1,4 +1,4 @@
-from langchain_huggingface import HuggingFaceEmbeddings
+from embeddings import HuggingFaceInferenceEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain_core.documents import Document
 from pinecone import Pinecone, ServerlessSpec, CloudProvider, AwsRegion
@@ -46,7 +46,7 @@ else:
 # 4️⃣ Initialize embedding model (1024 dimensions)
 # ======================
 print("🤖 Loading embedding model...")
-embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-large-en-v1.5")
+embeddings = HuggingFaceInferenceEmbeddings(model_name="BAAI/bge-large-en-v1.5")
 
 # ======================
 # 5️⃣ Your store information

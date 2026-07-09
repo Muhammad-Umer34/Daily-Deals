@@ -1,13 +1,13 @@
-from langchain_groq import ChatGroq
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_pinecone import PineconeVectorStore
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
+from langchain_groq import ChatGroq
+from langchain_pinecone import PineconeVectorStore
+from embeddings import HuggingFaceInferenceEmbeddings
 
 load_dotenv()
 
-print("Loading embeddings...")
-embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-large-en-v1.5")
+print("Loading inference embeddings...")
+embeddings = HuggingFaceInferenceEmbeddings(model_name="BAAI/bge-large-en-v1.5")
 
 print("Connecting to Pinecone...")
 vectorstore = PineconeVectorStore.from_existing_index(

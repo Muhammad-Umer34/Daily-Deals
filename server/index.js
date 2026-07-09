@@ -24,19 +24,54 @@ app.use(cors({
 }));
 
 
+let cachedDbPromise = mongoose.connect(process.env.MONGO_URI)
+  .then((conn) => {
+    console.log('✅ MongoDB initial connection success');
+    return conn;
+  })
+  .catch((err) => {
+    console.error('❌ MongoDB initial connection error:', err);
+    cachedDbPromise = null;
+    throw err;
+  });
+
+app.use(async (req, res, next) => {
+  if (mongoose.connection.readyState === 1) {
+    return next();
+  }
+
+  if (!cachedDbPromise) {
+    console.log('🔄 Re-attempting MongoDB connection...');
+    cachedDbPromise = mongoose.connect(process.env.MONGO_URI)
+      .then((conn) => {
+        console.log('✅ MongoDB connection established');
+        return conn;
+      })
+      .catch((err) => {
+        cachedDbPromise = null;
+        console.error('❌ MongoDB connection retry error:', err);
+        throw err;
+      });
+  }
+
+  try {
+    await cachedDbPromise;
+    next();
+  } catch (err) {
+    return res.status(500).json({ 
+      message: "Database connection failed", 
+      error: err.message 
+    });
+  }
+});
+
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
 app.use('/api/auth', authRouter);
-app.use('/api/customer',userRouter);
-app.use('/api/store',storeRouter);
-
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('✅ MongoDB connected');
-  })
-  .catch(err => console.error('MongoDB error:', err));
+app.use('/api/customer', userRouter);
+app.use('/api/store', storeRouter);
 
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   app.listen(process.env.PORT || 5000, () => {
