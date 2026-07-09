@@ -6,19 +6,29 @@ from embeddings import HuggingFaceInferenceEmbeddings
 
 load_dotenv()
 
-print("Loading inference embeddings...")
-embeddings = HuggingFaceInferenceEmbeddings(model_name="BAAI/bge-large-en-v1.5")
+_vectorstore = None
+_llm = None
 
-print("Connecting to Pinecone...")
-vectorstore = PineconeVectorStore.from_existing_index(
-    index_name="dailyeals",
-    embedding=embeddings
-)
+def get_vectorstore():
+    global _vectorstore
+    if _vectorstore is None:
+        print("Connecting to Pinecone...")
+        embeddings = HuggingFaceInferenceEmbeddings(model_name="BAAI/bge-large-en-v1.5")
+        _vectorstore = PineconeVectorStore.from_existing_index(
+            index_name="dailyeals",
+            embedding=embeddings
+        )
+    return _vectorstore
 
-print("Loading LLM...")
-llm = ChatGroq(
-    model="llama-3.1-8b-instant",
-    api_key=os.getenv("GROQ_API_KEY")
-)
-
-print("Setup complete!\n")
+def get_llm():
+    global _llm
+    if _llm is None:
+        groq_key = os.getenv("GROQ_API_KEY")
+        if not groq_key:
+            raise ValueError("GROQ_API_KEY environment variable is not set")
+        print("Loading LLM...")
+        _llm = ChatGroq(
+            model="llama-3.1-8b-instant",
+            api_key=groq_key
+        )
+    return _llm

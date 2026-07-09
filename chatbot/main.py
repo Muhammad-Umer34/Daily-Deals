@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from qa_chain import retrieval_chain, summary_chain
+from qa_chain import get_retrieval_chain, get_summary_chain
 
 app = FastAPI()
 
@@ -24,6 +24,10 @@ async def ask_question(request: Question):
     print(f"Question: {query}")
     
     try:
+        # Lazy load chains on request
+        retrieval_chain = get_retrieval_chain()
+        summary_chain = get_summary_chain()
+
         # Get answer from retrieval
         print(f"Searching documents...")
         result = retrieval_chain.invoke({"query": query})

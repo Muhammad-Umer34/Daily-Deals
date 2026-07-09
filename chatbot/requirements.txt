@@ -6,4 +6,5 @@ langchain-groq
 langchain-community
 langchain-pinecone
 requests
+huggingface-hub
 python-dotenv
