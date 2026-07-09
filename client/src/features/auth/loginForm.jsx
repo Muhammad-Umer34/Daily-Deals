@@ -92,12 +92,13 @@ const SigninCard = () => {
               <div className="grid gap-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password" className="text-gray-300 text-sm font-medium">Password</Label>
-                  <a
-                    href="#"
-                    className="text-xs text-blue-400 hover:text-blue-300 hover:underline transition-colors"
+                  <button
+                    type="button"
+                    onClick={() => Navigate("/forgot-password")}
+                    className="text-xs text-blue-400 hover:text-blue-300 hover:underline bg-transparent border-none p-0 cursor-pointer transition-colors"
                   >
                     Forgot password?
-                  </a>
+                  </button>
                 </div>
                 <Input
                   id="password"

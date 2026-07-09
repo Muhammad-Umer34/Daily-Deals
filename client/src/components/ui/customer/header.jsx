@@ -101,7 +101,11 @@ export default function Header() {
         </div>
 
         {/* Cart Icon */}
-        <FaShoppingCart size={20} className="text-gray-700 cursor-pointer hover:text-blue-600 transition-colors" />
+        <FaShoppingCart 
+          size={20} 
+          className="text-gray-700 cursor-pointer hover:text-blue-600 transition-colors" 
+          onClick={() => navigate("/customer/cart")} 
+        />
 
         {/* Profile Icon */}
         <FaUserCircle 

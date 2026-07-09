@@ -8,6 +8,7 @@ import "./index.css";
 import App from "./App.jsx";
 import SigninCard from "./features/auth/loginForm.jsx";
 import UserSignupCard from "./features/auth/userSignupForm.jsx";
+import ForgotPasswordForm from "./features/auth/forgotPasswordForm.jsx";
 import StoreSignupCard from "./features/auth/store.jsx";
 import StoreHome from "./pages/storeOwner/dashboard.jsx";
 import CustomerHome from "./pages/customers/home.jsx";
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <SigninCard />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPasswordForm />,
   },
   {path: "store/dashboard", element:<DashBoard/>},
   {path: "store/order", element:<Order/>},

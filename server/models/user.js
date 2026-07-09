@@ -24,6 +24,14 @@ const userSchema = new mongoose.Schema(
         enum : ['storeOwner' , 'customer'] ,
         default : 'customer'
     },
+    resetPasswordPin : {
+        type : String ,
+        default : null
+    },
+    resetPasswordPinExpires : {
+        type : Date ,
+        default : null
+    },
     createdAt : {
         type : Date ,
         default : Date.now

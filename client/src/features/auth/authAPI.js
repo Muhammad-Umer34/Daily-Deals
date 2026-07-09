@@ -79,6 +79,31 @@ export const loginForm = async (userObj) => {
     throw error;
   }
 };
+
+export const forgotPasswordAPI = async (email) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/forgot-password`, { email }, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+    throw error;
+  }
+};
+
+export const resetPasswordAPI = async (email, pin, newPassword) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/reset-password`, { email, pin, newPassword }, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+    throw error;
+  }
+};
+
 function handleAxiosError(error) {
   if (error.response) {
     console.error("Server responded with error:", error.response.status);

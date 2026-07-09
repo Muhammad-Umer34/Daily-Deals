@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { check, validationResult } = require("express-validator");
+const nodemailer = require("nodemailer");
 
 require("dotenv").config();
 
@@ -221,4 +222,97 @@ exports.refreshAccessToken = (req, res) => {
   );
 
   res.status(200).json({ accessToken: newAccessToken });
+};
+
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return res.status(404).json({ message: "User with this email does not exist" });
+    }
+
+    // Generate 6-digit random PIN
+    const pin = Math.floor(100000 + Math.random() * 900000).toString();
+    const pinExpires = Date.now() + 15 * 60 * 1000; // expires in 15 mins
+
+    // Store in User document
+    user.resetPasswordPin = pin;
+    user.resetPasswordPinExpires = pinExpires;
+    await user.save();
+
+    // Create transporter
+    const transporter = nodemailer.createTransport({
+      service: process.env.EMAIL_SERVICE || "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: `"Daily Deals Support" <${process.env.EMAIL_USER}>`,
+      to: user.email,
+      subject: "Daily Deals Password Reset Verification PIN",
+      html: `
+        <div style="font-family: sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px; background-color: #ffffff;">
+          <h2 style="color: #3b82f6; text-align: center; margin-bottom: 20px;">Daily Deals Password Reset</h2>
+          <p style="color: #334155; font-size: 16px;">Hello <strong>${user.name || "User"}</strong>,</p>
+          <p style="color: #334155; font-size: 16px; line-height: 1.5;">You requested to reset your password. Use the following verification PIN to reset it:</p>
+          <div style="font-size: 32px; font-weight: bold; text-align: center; background-color: #f1f5f9; padding: 15px; letter-spacing: 5px; border-radius: 8px; margin: 20px 0; color: #1e293b; border: 1px solid #e2e8f0;">
+            ${pin}
+          </div>
+          <p style="color: #ef4444; font-size: 14px; text-align: center;"><strong>Note:</strong> This PIN will expire in 15 minutes.</p>
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+          <p style="font-size: 12px; color: #64748b; text-align: center;">If you did not request this, you can safely ignore this email.</p>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: "Verification PIN sent to email successfully" });
+
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  const { email, pin, newPassword } = req.body;
+  try {
+    if (!email || !pin || !newPassword) {
+      return res.status(400).json({ message: "Email, pin, and new password are required" });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return res.status(404).json({ message: "User with this email does not exist" });
+    }
+
+    // Check PIN and Expiration
+    if (!user.resetPasswordPin || user.resetPasswordPin !== pin || !user.resetPasswordPinExpires || user.resetPasswordPinExpires < Date.now()) {
+      return res.status(400).json({ message: "Invalid or expired verification PIN" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Save user password and clear reset fields
+    user.password = hashedPassword;
+    user.resetPasswordPin = null;
+    user.resetPasswordPinExpires = null;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successfully. You can now login." });
+
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
