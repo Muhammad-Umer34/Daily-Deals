@@ -45,6 +45,10 @@ async def ask_question(request: Question):
         print(f"ERROR: {e}\n")
         return {"error": str(e)}
 
+@app.get("/")
+async def root():
+    return {"message": "Daily Deals Chatbot API is running!"}
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
