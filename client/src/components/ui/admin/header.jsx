@@ -21,7 +21,7 @@ function ResponsiveAppBar() {
       <div
         className="text-2xl font-extrabold tracking-tight text-slate-900 flex items-center select-none"
       >
-        Mono<span className="text-blue-600">Fit</span>
+        Daily<span className="text-blue-600"> Deals</span>
       </div>
       {/* Empty div for spacing on large screens */}
       <div className="hidden lg:flex flex-1"></div>

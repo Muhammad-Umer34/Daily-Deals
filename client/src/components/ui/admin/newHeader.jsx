@@ -25,7 +25,7 @@ const NewHeader = () => {
 
   return (
     <header className="flex justify-between items-center px-10 py-4 bg-white shadow-md rounded-xl">
-      <h1 className="text-2xl font-bold text-black">MonoFit</h1>
+      <h1 className="text-2xl font-bold text-black">Daily Deals</h1>
 
       <nav className="flex gap-6">
         {navLinks.map((link, i) => (

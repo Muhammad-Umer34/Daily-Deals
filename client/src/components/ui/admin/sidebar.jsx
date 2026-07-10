@@ -158,7 +158,7 @@ function ResponsiveDrawer(props) {
           </IconButton>
           <Box sx={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
             <Typography variant="h6" noWrap component="div" sx={{ fontWeight: "800", color: "#1e293b", letterSpacing: "-0.025em" }}>
-              Mono<span style={{ color: "#2563eb" }}>Fit</span>
+              Daily<span style={{ color: "#2563eb" }}> Deals</span>
             </Typography>
           </Box>
         </Toolbar>

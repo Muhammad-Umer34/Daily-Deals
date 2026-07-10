@@ -46,7 +46,7 @@ export default function Header() {
         className="text-2xl font-extrabold tracking-tight text-slate-900 flex items-center cursor-pointer select-none"
         onClick={() => navigate("/home")}
       >
-        Mono<span className="text-blue-600">Fit</span>
+        Daily<span className="text-blue-600"> Deals</span>
       </div>
 
       <nav className="hidden md:flex gap-6 font-medium text-sm">

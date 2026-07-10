@@ -46,7 +46,7 @@ const UserSignupCard = () => {
             Create Account
           </CardTitle>
           <CardDescription className="text-gray-400 mt-2 text-sm">
-            Register as a customer on MonoFit
+            Register as a customer on Daily Deals
           </CardDescription>
           <CardAction className="absolute top-6 right-6">
             <Button 

@@ -44,10 +44,10 @@ const StoreSignupCard = () => {
         <div className="absolute inset-0 bg-gradient-to-tr from-zinc-950 via-zinc-950/70 to-transparent"></div>
         <div className="absolute bottom-20 left-20 right-20 z-20">
           <h2 className="text-4xl font-extrabold text-white tracking-tight leading-tight">
-            Partner with MonoFit
+            Partner with Daily Deals
           </h2>
           <p className="text-gray-300 mt-4 text-lg max-w-md">
-            Join hundreds of top fashion brands and list your products on Pakistan's leading fashion platform, MonoFit.
+            Join hundreds of top fashion brands and list your products on Pakistan's leading fashion platform, Daily Deals.
           </p>
         </div>
       </div>
