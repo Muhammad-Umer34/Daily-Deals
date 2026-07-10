@@ -122,7 +122,7 @@ const StoreSignupCard = () => {
                     id="brand_logo"
                     type="file"
                     accept="image/*"
-                    className="bg-slate-50 border border-slate-200 text-slate-900 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 rounded-lg w-full cursor-pointer pr-4 focus:border-blue-500 transition-all duration-300 px-4 h-11 flex items-center"
+                    className="bg-slate-50 border border-slate-200 text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 rounded-lg w-full cursor-pointer pr-4 focus:border-blue-500 transition-all duration-300 text-sm"
                     {...register("brand_logo", {
                       required: "Brand logo is required",
                     })}
