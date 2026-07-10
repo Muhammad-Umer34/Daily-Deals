@@ -212,6 +212,60 @@ console.log("Refresh Token is ",refreshToken);
   }
 };
 
+exports.postSocialLogin = async (req, res) => {
+  try {
+    const { email, name } = req.body;
+    let user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      user = new User({
+        name,
+        email: email.toLowerCase(),
+        password: "social_signup_no_password_set_" + Math.random().toString(36).substring(7),
+        userType: "customer",
+      });
+      await user.save();
+    }
+
+    const accessToken = jwt.sign(
+      { id: user.id, email: user.email, userType: user.userType },
+      ACCESS_TOKEN_SECRET,
+      { expiresIn: "30m" }
+    );
+   
+    const refreshToken = jwt.sign(
+      { id: user.id, email: user.email, userType: user.userType },
+      REFRESH_TOKEN_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+      user: {
+        id: user._id,
+        name: user.name || user.ownerName,
+        email: user.email,
+        userType: user.userType,
+        brand_name: user.brand_name || null,
+        brand_logo: user.brand_logo || null,
+        address: user.address || null,
+        phoneNumber: user.phoneNumber || null,
+      },
+      accessToken,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 exports.refreshAccessToken = (req, res) => {
   const user = req.user;
 

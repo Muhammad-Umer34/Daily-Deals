@@ -104,6 +104,18 @@ export const resetPasswordAPI = async (email, pin, newPassword) => {
   }
 };
 
+export const socialLoginAPI = async (email, name) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/social-login`, { email, name }, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+    throw error;
+  }
+};
+
 function handleAxiosError(error) {
   if (error.response) {
     console.error("Server responded with error:", error.response.status);

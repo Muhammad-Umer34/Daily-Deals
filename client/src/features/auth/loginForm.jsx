@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { loginForm } from "./authAPI";
+import { loginForm, socialLoginAPI } from "./authAPI";
 import { authActions } from "./authSlices";
+import { supabase } from "../../supabase";
 import {
   Card,
   CardAction,
@@ -26,6 +27,53 @@ const SigninCard = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  useEffect(() => {
+    const checkOAuthSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const email = session.user.email;
+          const name = session.user.user_metadata.full_name || session.user.email.split('@')[0];
+          
+          const response = await socialLoginAPI(email, name);
+          
+          await dispatch(
+            authActions.login({
+              user: response.user,
+              accessToken: response.accessToken,
+            })
+          );
+
+          await supabase.auth.signOut();
+
+          if (response.user.userType === "storeOwner") {
+            Navigate("/store/dashboard");
+          } else {
+            Navigate("/home");
+          }
+        }
+      } catch (error) {
+        console.error("OAuth session handling failed:", error.message || error);
+      }
+    };
+
+    checkOAuthSession();
+  }, [dispatch, Navigate]);
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: window.location.origin + "/login",
+        },
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error("Google Auth error:", error.message || error);
+    }
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -126,6 +174,8 @@ const SigninCard = () => {
 
         <CardFooter className="flex-col gap-4 mt-6 border-t border-white/10 pt-6">
           <Button 
+            type="button"
+            onClick={handleGoogleLogin}
             variant="outline" 
             className="w-full h-11 border-white/10 text-gray-200 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-all duration-200 cursor-pointer flex items-center justify-center gap-2"
           >
