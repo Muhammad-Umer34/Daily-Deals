@@ -61,17 +61,11 @@ const ForgotPasswordForm = () => {
       <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] rounded-full bg-indigo-400/20 blur-[100px] pointer-events-none"></div>
 
       <Card className="w-full max-w-md bg-white border border-slate-200 shadow-2xl rounded-2xl p-6 text-slate-800 relative z-10">
-        <CardHeader className="relative">
-          <CardTitle className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 bg-clip-text text-transparent">
-            Forgot Password
-          </CardTitle>
-          <CardDescription className="text-slate-500 mt-2 text-sm">
-            {step === 1 
-              ? "Enter your email to receive a password reset PIN" 
-              : "Enter the PIN sent to your email and choose a new password"
-            }
-          </CardDescription>
-          <CardAction className="absolute top-6 right-6">
+        <CardHeader className="flex flex-col gap-1">
+          <div className="flex justify-between items-start w-full">
+            <CardTitle className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 bg-clip-text text-transparent">
+              Forgot Password
+            </CardTitle>
             <Button 
               variant="link" 
               onClick={() => Navigate("/login")}
@@ -79,7 +73,13 @@ const ForgotPasswordForm = () => {
             >
               Sign In
             </Button>
-          </CardAction>
+          </div>
+          <CardDescription className="text-slate-500 text-sm">
+            {step === 1 
+              ? "Enter your email to receive a password reset PIN" 
+              : "Enter the PIN sent to your email and choose a new password"
+            }
+          </CardDescription>
         </CardHeader>
 
         <CardContent className="mt-4">
