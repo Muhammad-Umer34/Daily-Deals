@@ -104,9 +104,9 @@ export const resetPasswordAPI = async (email, pin, newPassword) => {
   }
 };
 
-export const socialLoginAPI = async (email, name) => {
+export const socialLoginAPI = async (supabaseToken) => {
   try {
-    const response = await axios.post(`${BASE_URL}/social-login`, { email, name }, {
+    const response = await axios.post(`${BASE_URL}/social-login`, { supabaseToken }, {
       withCredentials: true,
     });
     return response.data;

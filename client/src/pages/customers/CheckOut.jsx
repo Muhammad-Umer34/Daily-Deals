@@ -6,9 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { BreadcrumbWithCustomSeparator } from "./breadCrumbs";
 import { getCardItems } from "../../features/customer/customerApi";
 import { postOrder } from "../../features/customer/customerApi";
-import { deleteUserCart } from "../../features/customer/customerApi";
-import { increasePurcahsedCount } from "../../features/customer/customerApi";
-import { postOrders } from "../../features/admin/adminApi";
 const CheckOut = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
@@ -58,36 +55,20 @@ const CheckOut = () => {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const deliveryFee = 15.0;
+  const deliveryFee = 15.0; // display only; server charges DELIVERY_FEE in customerController.js
   const discount = 0;
   const total = subtotal - discount + deliveryFee;
 
   const onSubmit = async (data) => {
+    // Server builds items, prices, store orders and clears the cart from the user's saved cart.
     const orderData = {
-      items: cartItems,
-      totalPrice: total,
       shippingAddress: data.useNewAddress ? data.newAddress : data.savedAddress,
       paymentMethod: data.paymentMethod,
       phoneNumber: data.phoneNumber,
-      orderStatus: "Pending",
-      paymentStatus: "Pending",
-      expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      userId: user.id,
       userName: user.name,
-      userEmail: user.email,
     };
 
     const order = await postOrder(accessToken, orderData);
-      await Promise.all(
-      orderData.items.map((item) =>
-      {
-        item.parentOrderId= order._id;
-        increasePurcahsedCount(item.productId, item.quantity);
-        postOrders(item);
-      }
-      )
-    );
-    await deleteUserCart(accessToken, user.id);
     setCart([]);
     navigate("/home/order-confirmation", { state: { order: order } });
     reset();

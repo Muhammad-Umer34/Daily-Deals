@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { check, validationResult } = require("express-validator");
 const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 
 require("dotenv").config();
 
@@ -214,14 +215,28 @@ console.log("Refresh Token is ",refreshToken);
 
 exports.postSocialLogin = async (req, res) => {
   try {
-    const { email, name } = req.body;
-    let user = await User.findOne({ email: email.toLowerCase() });
+    // Identity comes from Supabase, never from the request body.
+    const { supabaseToken } = req.body;
+    if (!supabaseToken) {
+      return res.status(400).json({ message: "Supabase access token is required" });
+    }
+    const sbRes = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
+      headers: { apikey: process.env.SUPABASE_ANON_KEY, Authorization: `Bearer ${supabaseToken}` },
+    });
+    const sbUser = sbRes.ok ? await sbRes.json() : null;
+    if (!sbUser?.email) {
+      return res.status(401).json({ message: "Invalid social login session" });
+    }
+    const email = sbUser.email.toLowerCase();
+    const name = sbUser.user_metadata?.full_name || email.split("@")[0];
+
+    let user = await User.findOne({ email });
 
     if (!user) {
       user = new User({
         name,
-        email: email.toLowerCase(),
-        password: "social_signup_no_password_set_" + Math.random().toString(36).substring(7),
+        email,
+        password: await bcrypt.hash(crypto.randomBytes(32).toString("hex"), 10),
         userType: "customer",
       });
       await user.save();
@@ -291,12 +306,13 @@ exports.forgotPassword = async (req, res) => {
     }
 
     // Generate 6-digit random PIN
-    const pin = Math.floor(100000 + Math.random() * 900000).toString();
+    const pin = crypto.randomInt(100000, 1000000).toString();
     const pinExpires = Date.now() + 15 * 60 * 1000; // expires in 15 mins
 
     // Store in User document
     user.resetPasswordPin = pin;
     user.resetPasswordPinExpires = pinExpires;
+    user.resetPasswordAttempts = 0;
     await user.save();
 
     // Create transporter
@@ -349,7 +365,17 @@ exports.resetPassword = async (req, res) => {
     }
 
     // Check PIN and Expiration
-    if (!user.resetPasswordPin || user.resetPasswordPin !== pin || !user.resetPasswordPinExpires || user.resetPasswordPinExpires < Date.now()) {
+    if (!user.resetPasswordPin || !user.resetPasswordPinExpires || user.resetPasswordPinExpires < Date.now()) {
+      return res.status(400).json({ message: "Invalid or expired verification PIN" });
+    }
+    if (user.resetPasswordPin !== pin) {
+      // Burn the PIN after 5 wrong guesses so it can't be brute-forced.
+      user.resetPasswordAttempts = (user.resetPasswordAttempts || 0) + 1;
+      if (user.resetPasswordAttempts >= 5) {
+        user.resetPasswordPin = null;
+        user.resetPasswordPinExpires = null;
+      }
+      await user.save();
       return res.status(400).json({ message: "Invalid or expired verification PIN" });
     }
 
