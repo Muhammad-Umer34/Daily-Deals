@@ -288,20 +288,6 @@ export const postOrder = async (accessToken, orderData) => {
   }
 };
 
-export const deleteUserCart = async (accessToken, userId) => {
-  try {
-    const response = await axios.delete(`${BASE_URL}/delete/cart/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
-
 export const getAllOrders = async (accessToken, userId) => {
   try {
     const response = await axios.get(`${BASE_URL}/order/${userId}`, {
@@ -330,19 +316,6 @@ export const increaseOrderViews = async (productId, viewsCount) => {
   }
 };
 
-
-export const increasePurcahsedCount = async (productId,quantity) => {
-  try {
-    const response = await axios.put(
-      `${BASE_URL}/increase/purchaseCount/${productId}`,
-      {quantity:quantity}
-    );
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
 
 export const getTopSellingProducts = async () => {
 

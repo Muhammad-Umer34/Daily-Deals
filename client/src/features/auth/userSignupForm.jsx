@@ -27,10 +27,8 @@ const UserSignupCard = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          const email = session.user.email;
-          const name = session.user.user_metadata.full_name || session.user.email.split('@')[0];
           
-          const response = await socialLoginAPI(email, name);
+          const response = await socialLoginAPI(session.access_token);
           
           await dispatch(
             authActions.login({
