@@ -69,6 +69,20 @@ app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
+// Hit daily by the Vercel cron in vercel.json so free-tier Supabase (paused after ~7 idle days)
+// and MongoDB see activity. Read-only and cheap, so it needs no auth.
+app.get('/api/keepalive', async (req, res) => {
+  try {
+    await mongoose.connection.db.admin().ping();
+    const sb = await fetch(`${process.env.SUPABASE_URL}/auth/v1/settings`, {
+      headers: { apikey: process.env.SUPABASE_ANON_KEY },
+    });
+    res.status(sb.ok ? 200 : 502).json({ mongo: 'ok', supabase: sb.status });
+  } catch (err) {
+    res.status(500).json({ message: 'Keepalive failed', error: err.message });
+  }
+});
+
 app.use('/api/auth', authRouter);
 app.use('/api/customer', userRouter);
 app.use('/api/store', storeRouter);
