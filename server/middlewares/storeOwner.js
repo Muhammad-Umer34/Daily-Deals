@@ -1,8 +1,6 @@
+// Role comes from the verified JWT (set by authMiddleware), never from the request.
 const verifyStoreOwner = (req, res, next) => {
-  const userTypeFromBody = req.body?.user?.userType;
-  const userTypeFromQuery = req.query?.userType;
-
-  if (userTypeFromBody === "storeOwner" || userTypeFromQuery === "storeOwner") {
+  if (req.user?.userType === "storeOwner") {
     return next();
   }
   return res.status(401).json({ message: "You are not a Store Owner" });

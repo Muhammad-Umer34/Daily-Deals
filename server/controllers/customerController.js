@@ -5,7 +5,10 @@ const Review = require("../models/review").default;
 const Product = require("../models/store").default;
 const User = require("../models/user");
 const Order = require("../models/order.js");
+const StoreOrder = require("../models/storeOrders.js").default;
 const mongoose = require("mongoose");
+
+const DELIVERY_FEE = 15; // keep in sync with CheckOut.jsx
 
 exports.getAllProductForCustomer = async (req, res) => {
   try {
@@ -32,16 +35,20 @@ exports.getProduct = async (req, res) => {
 
 exports.postCart = async (req, res) => {
   console.log("Received cart data:", req.body);
-  const { productId, userId, name, image, price, quantity, color, size } =
-    req.body;
+  const { productId, quantity, color, size } = req.body;
 
   try {
+    // Name, image and price come from the product record, not the client.
+    const product = await productSchema.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
     const cartItem = new Cart({
       productId,
-      userId,
-      name,
-      image,
-      price,
+      userId: req.user.id,
+      name: product.name,
+      image: product.images?.[0],
+      price: product.price,
       quantity,
       color,
       size,
@@ -61,7 +68,7 @@ exports.postCart = async (req, res) => {
 exports.postWishlist = async (req, res) => {
   console.log(req.body);
   const product = req.body.product;
-  const userId = req.params.uId;
+  const userId = req.user.id;
   const productId = req.params.pId;
   try {
     const wishlistItem = new Wishlist({
@@ -82,7 +89,7 @@ exports.postWishlist = async (req, res) => {
 
 exports.deleteWishlist = async (req, res) => {
   const productId = req.params.id;
-  const userId = req.body.userId;
+  const userId = req.user.id;
   console.log("In delete controller ");
   try {
     const wishlistItem = await Wishlist.findOneAndDelete({ productId, userId });
@@ -99,7 +106,8 @@ exports.deleteWishlist = async (req, res) => {
 };
 
 exports.getWishlist = async (req, res) => {
-  const { pId, uId } = req.params;
+  const { pId } = req.params;
+  const uId = req.user.id;
 
   if (!pId || !uId) {
     return res.status(400).json({ message: "Missing product or user ID" });
@@ -129,8 +137,12 @@ exports.getWishlist = async (req, res) => {
 exports.postReview = async (req, res) => {
   console.log("Received review data:", req.body);
   const productId = req.params.pId;
-  const { rating, comment, user } = req.body;
+  const { rating, comment } = req.body;
   try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     const review = new Review({
       productId,
       userId: user.id,
@@ -182,7 +194,7 @@ exports.getReview = async (req, res) => {
 };
 
 exports.getCart = async (req, res) => {
-  const userId = req.query.userId;
+  const userId = req.user.id;
   try {
     const cartItems = await Cart.find({ userId });
     if (!cartItems || cartItems.length === 0) {
@@ -197,7 +209,7 @@ exports.getCart = async (req, res) => {
 
 exports.deleteCartItem = async (req, res) => {
   const itemId = req.params.id;
-  const userId = req.body.userId;
+  const userId = req.user.id;
   try {
     const cartItem = await Cart.findOneAndDelete({ _id: itemId, userId });
     if (!cartItem) {
@@ -225,7 +237,7 @@ exports.getProductsByCategory = async (req, res) => {
 
 exports.updateQuantity = async (req, res) => {
   const productId = req.params.productId?.toString();
-  const userId = req.body.user?.toString();
+  const userId = req.user.id;
   const quantity = req.body.quantity;
   try {
     const cartItem = await Cart.findOneAndUpdate(
@@ -246,7 +258,7 @@ exports.updateQuantity = async (req, res) => {
 };
 
 exports.getUserWishlist = async (req, res) => {
-  const userId = req.params.uId;
+  const userId = req.user.id;
   try {
     const wishlistItems = await Wishlist.find({ userId });
     if (!wishlistItems || wishlistItems.length === 0) {
@@ -260,7 +272,7 @@ exports.getUserWishlist = async (req, res) => {
 };
 
 exports.updateUserInfo = async (req, res) => {
-  const userId = req.params.id;
+  const userId = req.user.id;
   const { name, email, address, phoneNumber } = req.body;
 
   console.log(
@@ -288,59 +300,72 @@ exports.updateUserInfo = async (req, res) => {
 };
 
 exports.postOrder = async (req, res) => {
-  const {
-    items,
-    totalPrice,
-    shippingAddress,
-    paymentMethod,
-    phoneNumber,
-    orderStatus,
-    paymentStatus,
-    expectedDeliveryDate,
-    userId,
-    userName,
-    userEmail,
-  } = req.body;
-  const newOrder = new Order({
-    items,
-    totalPrice,
-    shippingAddress,
-    paymentMethod,
-    phoneNumber,
-    orderStatus,
-    paymentStatus,
-    expectedDeliveryDate,
-    userId,
-    userName,
-    userEmail,
-  });
+  // Items, prices and statuses are built here from the user's cart and the
+  // product records; the client only supplies delivery details.
+  const userId = req.user.id;
+  const { shippingAddress, paymentMethod, phoneNumber, userName } = req.body;
   try {
-    const savedOrder = await newOrder.save();
-    res.status(201).json(savedOrder);
+    const cartItems = await Cart.find({ userId });
+    if (cartItems.length === 0) {
+      return res.status(400).json({ message: "Cart is empty" });
+    }
+    const products = await productSchema.find({ _id: { $in: cartItems.map((i) => i.productId) } });
+    const productsById = new Map(products.map((p) => [p.id, p]));
+
+    const items = [];
+    for (const cartItem of cartItems) {
+      const product = productsById.get(cartItem.productId);
+      if (!product || !Number.isInteger(cartItem.quantity) || cartItem.quantity < 1) {
+        return res.status(400).json({ message: `Invalid cart item: ${cartItem.name}` });
+      }
+      items.push({ ...cartItem.toObject(), price: product.price, storeId: product.storeId });
+    }
+    const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+    const order = await Order.create({
+      items,
+      totalPrice: subtotal + DELIVERY_FEE,
+      shippingAddress,
+      paymentMethod,
+      phoneNumber,
+      orderStatus: "Pending",
+      paymentStatus: "Pending",
+      expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      userId,
+      userName,
+      userEmail: req.user.email,
+    });
+
+    await StoreOrder.insertMany(
+      items.map((i) => ({
+        productId: i.productId,
+        userId,
+        storeId: i.storeId,
+        productName: i.name,
+        productImage: i.image,
+        price: i.price,
+        quantity: i.quantity,
+        color: i.color,
+        size: i.size,
+        parentOrderId: order.id,
+      }))
+    );
+    await productSchema.bulkWrite(
+      items.map((i) => ({
+        updateOne: { filter: { _id: i.productId }, update: { $inc: { purchasedCount: i.quantity } } },
+      }))
+    );
+    await Cart.deleteMany({ userId });
+
+    res.status(201).json(order);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-exports.deleteUserCart = async (req, res) => {
-  console.log("In delete controller ");
-  console.log(req.params);
-  const userId = req.params.userId;
-  try {
-    const deletedCart = await Cart.deleteMany({ userId });
-    if (!deletedCart) {
-      return res.status(404).json({ message: "Cart not found" });
-    }
-    res.status(200).json({ message: "Cart deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting user cart:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
 exports.getAllOrders = async (req, res) => {
-  const userId = req.params.userId;
+  const userId = req.user.id;
   try {
     const orders = await Order.find({ userId });
     res.status(200).json(orders);
@@ -369,38 +394,6 @@ exports.increaseOrderViews = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-exports.increasePurchasedCount = async (req, res) => {
-  try {
-    const productId = req.params.productId;
-    let quantity = req.body.quantity;
-
-    console.log("Received:", productId, quantity);
-
-    quantity = Number(quantity);
-    if (isNaN(quantity) || quantity <= 0) {
-      return res.status(400).json({ message: "Invalid quantity" });
-    }
-
-    const updatedProduct = await productSchema.findByIdAndUpdate(
-      productId,
-      { $inc: { purchasedCount: quantity } },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedProduct) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    res.status(200).json({
-      message: "Purchased count updated successfully",
-      product: updatedProduct,
-    });
-  } catch (error) {
-    console.error("Error updating purchased count:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

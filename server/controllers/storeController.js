@@ -2,6 +2,11 @@ const {check, validationResult}=require("express-validator")
 const productSchema = require("../models/store.js").default;
 const storeOrderSchema=require("../models/storeOrders.js").default;
 const Order = require("../models/order.js");
+const User = require("../models/user");
+
+// The store owner's id always comes from the verified JWT (req.user), never from the request.
+const ownsOrder = (orderId, storeId) =>
+  storeOrderSchema.exists({ parentOrderId: orderId, storeId });
 
 exports.postProductController = [
   check('name')
@@ -61,6 +66,7 @@ exports.postProductController = [
     try {
       const { name, description, price, quantity, category, images,size,color } = req.body;
       console.log("Received product data:", req.body);
+      const owner = await User.findById(req.user.id);
 
       const product = await productSchema.create({
         name,
@@ -71,9 +77,9 @@ exports.postProductController = [
         images,
         size,
         color,
-        storeId: req.body.user.id ,
-        brand: req.body.user.brand_name || '',
-        brand_logo: req.body.user.brand_logo || '',
+        storeId: req.user.id,
+        brand: owner?.brand_name || '',
+        brand_logo: owner?.brand_logo || '',
         reviewsCount: 0,
         views: 0,
         purchasedCount: 0,
@@ -95,7 +101,7 @@ exports.postProductController = [
 
 exports.getProductsController = async (req, res) => {
   try {
-    const products = await productSchema.find({ storeId: req.query?.storeId });
+    const products = await productSchema.find({ storeId: req.user.id });
     res.status(200).json(products);
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -106,7 +112,7 @@ exports.getProductsController = async (req, res) => {
 exports.deleteProductController = async (req, res) => {
   const productId = req.params.id;
   try {
-    const product = await productSchema.findByIdAndDelete(productId);
+    const product = await productSchema.findOneAndDelete({ _id: productId, storeId: req.user.id });
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
@@ -123,8 +129,8 @@ exports.updateProductController = async (req, res) => {
   console.log("Backend recieve", req.body);
   const { name, description, price, stock, category, images, size, color,subcategory } = req.body;
   try {
-    const product = await productSchema.findByIdAndUpdate(
-      productId,
+    const product = await productSchema.findOneAndUpdate(
+      { _id: productId, storeId: req.user.id },
       { name, description, price, stock, category,subcategory, images, size, color },
       { new: true }
     );
@@ -138,40 +144,8 @@ exports.updateProductController = async (req, res) => {
   }
 }
 
-exports.postStoreOrder = async (req, res) => {
-  console.log(req.body);
-  const { productId, userId, name, image, price, quantity, color, size,parentOrderId} = req.body;
-
-  try {
-    const product = await productSchema.findById(productId);
-    if (!product) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-
-    const { storeId } = product;
-
-    const order = await storeOrderSchema.create({
-      productId,
-      userId,
-      storeId,
-      productName: name,
-      productImage: image,
-      price,
-      quantity,
-      color,
-      size,
-      parentOrderId:parentOrderId,
-    });
-
-    res.status(200).json({ message: "Order Placed Successfully", order });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
 exports.getStoreOrdersController = async (req,res)=>{
-  const storeId=req.query.storeId;
+  const storeId=req.user.id;
   try{
     const orders=await storeOrderSchema.find({storeId:storeId});
     res.status(200).json(orders);
@@ -183,9 +157,12 @@ exports.getStoreOrdersController = async (req,res)=>{
 }
 
 exports.getOrderDetailsController = async(req,res)=>{
-  const storeId=req.query.storeId;
+  const storeId=req.user.id;
   const orderId=req.params.id;
   try{
+    if (!(await ownsOrder(orderId, storeId))) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
     const order = await Order.findOne({_id:orderId});
     res.status(200).json(order);
   }
@@ -196,9 +173,12 @@ exports.getOrderDetailsController = async(req,res)=>{
 }
 
 exports.dispatchOrder = async(req,res)=>{
-  const storeId=req.query.storeId;
+  const storeId=req.user.id;
   const orderId=req.params.id;
   try{
+    if (!(await ownsOrder(orderId, storeId))) {
+      return res.status(404).json({ error: 'Order not found or does not belong to this store' });
+    }
     const order = await Order.findOneAndUpdate(
       { _id: orderId },
       { orderStatus: 'Dispatched' },
@@ -223,7 +203,7 @@ exports.dispatchOrder = async(req,res)=>{
 }
 
 exports.getDashboardData = async (req, res) => {
-  const storeID = req.params.id;
+  const storeID = req.user.id;
 
   try {
     // Reusable date helpers

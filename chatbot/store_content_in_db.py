@@ -1,4 +1,4 @@
-from embeddings import HuggingFaceInferenceEmbeddings
+from langchain_pinecone import PineconeEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain_core.documents import Document
 from pinecone import Pinecone, ServerlessSpec, CloudProvider, AwsRegion
@@ -12,7 +12,7 @@ import time
 load_dotenv()
 
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-PINECONE_INDEX_NAME = "dailyeals"
+PINECONE_INDEX_NAME = "dailydeals-e5"  # must match setup.py
 
 # ======================
 # 2️⃣ Initialize Pinecone client
@@ -30,7 +30,7 @@ if PINECONE_INDEX_NAME not in index_names:
     print(f"📦 Creating index '{PINECONE_INDEX_NAME}'...")
     pc.create_index(
         name=PINECONE_INDEX_NAME,
-        dimension=1024,  # BAAI/bge-large-en-v1.5 uses 1024 dimensions
+        dimension=1024,  # multilingual-e5-large uses 1024 dimensions
         metric="cosine",
         spec=ServerlessSpec(
             cloud=CloudProvider.AWS,
@@ -46,7 +46,7 @@ else:
 # 4️⃣ Initialize embedding model (1024 dimensions)
 # ======================
 print("🤖 Loading embedding model...")
-embeddings = HuggingFaceInferenceEmbeddings(model_name="BAAI/bge-large-en-v1.5")
+embeddings = PineconeEmbeddings(model="multilingual-e5-large")
 
 # ======================
 # 5️⃣ Your store information
@@ -137,7 +137,8 @@ This chatbot is your **Daily Deals Virtual Shopping Assistant** here to:
 # 6️⃣ Create document and embed it
 # ======================
 print("📝 Creating document...")
-docs = [Document(page_content=store_text, metadata={"source": "store_info"})]
+# One chunk per section: e5 truncates input at 512 tokens.
+docs = [Document(page_content=part.strip(), metadata={"source": "store_info"}) for part in store_text.split("---") if part.strip()]
 
 # ======================
 # 7️⃣ Store embeddings in Pinecone
