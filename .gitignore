@@ -11,3 +11,4 @@ chatbot/venv/
 chatbot/.env
 __pycache__/
 *.pyc
+DEMO_ACCOUNTS.md
