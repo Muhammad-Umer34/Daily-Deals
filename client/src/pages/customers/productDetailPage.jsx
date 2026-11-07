@@ -1,44 +1,41 @@
 import { useParams } from "react-router-dom";
-import { getProduct } from "../../features/customer/customerApi";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { getProduct, increaseOrderViews } from "../../features/customer/customerApi";
 import ProductInfo from "./productInfo";
 import Header from "../../components/ui/customer/header";
+import Footer from "./footer";
 import { BreadcrumbWithCustomSeparator } from "./breadCrumbs";
-import { increaseOrderViews } from "../../features/customer/customerApi";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const accessToken = useSelector((state) => state.auth.accessToken);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await getProduct(id, accessToken);
-        setProduct(response);
-        await increaseOrderViews(response._id,response.views+1);
-      } catch (error) {
-        console.error("Failed to fetch product details:", error);
-      }
-    };
-    fetchProduct();
+    setProduct(null);
+    setFailed(false);
+    getProduct(id)
+      .then((p) => {
+        setProduct(p);
+        increaseOrderViews(p._id).catch(() => {});
+      })
+      .catch(() => setFailed(true));
   }, [id]);
 
-  if (!product) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-gray-500">Loading product...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="relative">
+    <div className="flex flex-col min-h-screen w-full bg-white">
       <Header />
-      <div className="pt-[80px] px-4">
-        <ProductInfo product={product} />
-      </div>
+      <main className="flex-1 pt-16 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto mb-6">
+          <BreadcrumbWithCustomSeparator productName={product?.name} />
+        </div>
+        {product ? (
+          <ProductInfo product={product} />
+        ) : (
+          <p className="text-center text-gray-500 py-24">{failed ? "This product is no longer available." : "Loading product…"}</p>
+        )}
+      </main>
+      <Footer />
     </div>
   );
 };

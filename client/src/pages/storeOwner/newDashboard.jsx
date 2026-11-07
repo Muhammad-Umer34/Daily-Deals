@@ -180,7 +180,7 @@ const DashBoard = () => {
     <div>
       <NewHeader />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-5 flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold">Dashboard</h1>
       </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-5 flex items-center gap-3">
         <button

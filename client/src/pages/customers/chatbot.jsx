@@ -32,21 +32,12 @@ export default function ChatbotModal() {
     dispatch(chatbotActions.setLoading(true));
 
     try {
-      console.log("\n--- SENDING TO BACKEND ---");
-      console.log("User Input:", inputValue);
       const response = await getAnswer(inputValue);
-      
-      console.log("Backend Response:", response);
-      console.log("--- END ---\n");
-
-      let botReply = "";
-      
-      if (response.error) {
-        botReply = `Error: ${response.error}`;
-        console.error("Bot Error:", response.error);
-      } else {
-        botReply = response.answer || "No answer received";
-      }
+      // Server errors stay in the console; shoppers get a plain apology.
+      if (response.error) console.error("Bot Error:", response.error);
+      const botReply = response.error || !response.answer
+        ? "Sorry, I'm having trouble answering right now. Please try again in a moment."
+        : response.answer;
 
       const botMessage = {
         id: messages.length + 2,
@@ -81,7 +72,8 @@ export default function ChatbotModal() {
     return (
       <button
         onClick={() => dispatch(chatbotActions.toggleChatbot())}
-        className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all z-40"
+        aria-label="Open chat assistant"
+        className="fixed bottom-5 right-5 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3.5 shadow-lg transition-all z-40 cursor-pointer"
       >
         <MessageCircle size={24} />
       </button>
@@ -103,6 +95,7 @@ export default function ChatbotModal() {
             onClick={() => dispatch(chatbotActions.toggleChatbot())}
             className="hover:bg-blue-700 p-1 rounded transition-all cursor-pointer"
             title="Close chat"
+            aria-label="Close chat"
           >
             <X size={20} />
           </button>
@@ -121,7 +114,10 @@ export default function ChatbotModal() {
                     : 'bg-gray-200 text-gray-800 rounded-bl-none'
                 }`}
               >
-                <p className="text-sm">{msg.text}</p>
+                <p className="text-sm whitespace-pre-line">
+                  {/* Bot answers use **bold**; render it instead of showing the asterisks. */}
+                  {msg.text.split(/\*\*(.+?)\*\*/g).map((part, i) => (i % 2 ? <strong key={i}>{part}</strong> : part))}
+                </p>
                 <span className="text-xs opacity-70 mt-1 block">
                   {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>

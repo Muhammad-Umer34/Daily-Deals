@@ -1,7 +1,20 @@
 import { createSlice} from "@reduxjs/toolkit";
 
-const storedUser = localStorage.getItem("user");
-const storedToken = localStorage.getItem("accessToken");
+// A token whose exp has passed is treated as logged out, so the UI never shows a dead session.
+const tokenExpired = (token) => {
+  try {
+    return JSON.parse(atob(token.split(".")[1])).exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+};
+let storedUser = localStorage.getItem("user");
+let storedToken = localStorage.getItem("accessToken");
+if (storedToken && tokenExpired(storedToken)) {
+  localStorage.removeItem("user");
+  localStorage.removeItem("accessToken");
+  storedUser = storedToken = null;
+}
 
 const initialState = {
   user : storedUser ? JSON.parse(storedUser) : null,

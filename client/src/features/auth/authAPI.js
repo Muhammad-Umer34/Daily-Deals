@@ -1,6 +1,4 @@
 import axios from "axios";
-import { authActions } from "./authSlices";
-import { useState } from "react";
 
 const BASE_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/auth`;
 
@@ -19,10 +17,8 @@ export const customerregisterForm = async (userObj) => {
     const response = await axios.post(`${BASE_URL}/register/customer`, userData, {
       withCredentials: true,
     });
-    console.log("Response data is", response.data);
     return response.data;
   } catch (error) {
-    console.log("Error in customerregisterForm:", error.response.data);
     handleAxiosError(error);
     throw error;
   }
@@ -49,15 +45,12 @@ export const storeregisterForm = async (userObj) => {
       brand_name: userObj.name,
       confirmPassword: userObj.confirmPassword,
     };
-    console.log("User data is", userData);
     const response = await axios.post(`${BASE_URL}/register/store`, userData, {
       withCredentials: true,
     });
 
-    console.log("Response data is", response.data);
     return response.data;
   } catch (error) {
-    console.log("Error in storeregisterForm:", error.response.data);
     handleAxiosError(error);
     throw error;
   }
@@ -116,16 +109,10 @@ export const socialLoginAPI = async (supabaseToken) => {
   }
 };
 
+// Puts a readable message on the error for the form to show inline (validation errors come as an array).
 function handleAxiosError(error) {
-  if (error.response) {
-    console.error("Server responded with error:", error.response.status);
-    console.error("Error message:", error.response.data.message);
-    alert(error.response.data.message || "Request failed");
-  } else if (error.request) {
-    console.error("No response from server:", error.request);
-    alert("No response from server. Please try again.");
-  } else {
-    console.error("Axios error:", error.message);
-    alert("An error occurred: " + error.message);
-  }
+  const data = error.response?.data;
+  error.userMessage = error.response
+    ? data?.message || data?.errors?.[0]?.msg || "Something went wrong. Please try again."
+    : "Can't reach the server. Check your connection and try again.";
 }

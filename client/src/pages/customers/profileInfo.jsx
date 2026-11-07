@@ -10,6 +10,7 @@ import CartPage from "./cart";
 import DisplayWishlist from "./displayWishlist";
 import GetOrShowInfo from "./gettingInfo";
 import OrderHistory from "./orderHistory";
+import Footer from "./footer";
 
 
 const tabItems = [
@@ -37,10 +38,11 @@ const ProfileForm = () => {
   return (
     <>
       <Header />
-      <div className="mt-[100px] px-10">
+      <div className="pt-16 px-4 sm:px-10">
         <BreadcrumbWithCustomSeparator />
-        <div className="border-b border-gray-300 mt-6 px-[10%]">
-          <div className="flex justify-between">
+        {/* Tabs scroll sideways on phones so every tab, including Sign Out, stays reachable. */}
+        <div className="border-b border-gray-300 mt-6 overflow-x-auto">
+          <div className="flex md:justify-between min-w-max md:min-w-0 max-w-5xl mx-auto">
             {tabItems.map(({ name, icon, isDanger }) => (
               <button
                 key={name}
@@ -62,6 +64,7 @@ const ProfileForm = () => {
       {active === 'WishList' && <DisplayWishlist/>}
       {active === 'Profile Information' && <GetOrShowInfo/>}
       {active === 'Order History' && <OrderHistory/>}
+      <Footer />
     </>
   );
 };

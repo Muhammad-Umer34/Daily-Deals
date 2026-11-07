@@ -8,7 +8,8 @@ const Order = require("../models/order.js");
 const StoreOrder = require("../models/storeOrders.js").default;
 const mongoose = require("mongoose");
 
-const DELIVERY_FEE = 15; // keep in sync with CheckOut.jsx
+// Free delivery from Rs 2,000 (the policy the chatbot quotes); keep in sync with deliveryFee in client/src/lib/utils.js.
+const deliveryFee = (subtotal) => (subtotal >= 2000 ? 0 : 200);
 
 exports.getAllProductForCustomer = async (req, res) => {
   try {
@@ -34,14 +35,26 @@ exports.getProduct = async (req, res) => {
 };
 
 exports.postCart = async (req, res) => {
-  console.log("Received cart data:", req.body);
-  const { productId, quantity, color, size } = req.body;
+  const { productId, color, size } = req.body;
+  const quantity = Number(req.body.quantity);
+  if (!Number.isInteger(quantity) || quantity < 1) {
+    return res.status(400).json({ message: "Quantity must be at least 1" });
+  }
 
   try {
     // Name, image and price come from the product record, not the client.
     const product = await productSchema.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
+    }
+    // Same product, colour and size already in the cart: add to that line instead of duplicating it.
+    const existing = await Cart.findOneAndUpdate(
+      { productId, userId: req.user.id, color, size },
+      { $inc: { quantity } },
+      { new: true }
+    );
+    if (existing) {
+      return res.status(200).json({ message: "Cart updated", cartItem: existing });
     }
     const cartItem = new Cart({
       productId,
@@ -66,7 +79,6 @@ exports.postCart = async (req, res) => {
 };
 
 exports.postWishlist = async (req, res) => {
-  console.log(req.body);
   const product = req.body.product;
   const userId = req.user.id;
   const productId = req.params.pId;
@@ -90,7 +102,6 @@ exports.postWishlist = async (req, res) => {
 exports.deleteWishlist = async (req, res) => {
   const productId = req.params.id;
   const userId = req.user.id;
-  console.log("In delete controller ");
   try {
     const wishlistItem = await Wishlist.findOneAndDelete({ productId, userId });
     if (!wishlistItem) {
@@ -135,7 +146,6 @@ exports.getWishlist = async (req, res) => {
 };
 
 exports.postReview = async (req, res) => {
-  console.log("Received review data:", req.body);
   const productId = req.params.pId;
   const { rating, comment } = req.body;
   try {
@@ -163,7 +173,6 @@ exports.postReview = async (req, res) => {
       { $match: { productId } },
       { $group: { _id: null, averageRating: { $avg: "$rating" } } },
     ]);
-    console.log("Average rating:", averageRating);
     await Product.findByIdAndUpdate(
       productId,
       { averageRating: averageRating[0]?.averageRating || 0 },
@@ -181,11 +190,6 @@ exports.getReview = async (req, res) => {
   const productId = req.params.pId;
   try {
     const reviews = await Review.find({ productId });
-    if (!reviews || reviews.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No reviews found for this product" });
-    }
     res.status(200).json(reviews);
   } catch (error) {
     console.error("Error fetching reviews:", error);
@@ -197,9 +201,6 @@ exports.getCart = async (req, res) => {
   const userId = req.user.id;
   try {
     const cartItems = await Cart.find({ userId });
-    if (!cartItems || cartItems.length === 0) {
-      return res.status(404).json({ message: "No items found in cart" });
-    }
     res.status(200).json(cartItems);
   } catch (error) {
     console.error("Error fetching cart items:", error);
@@ -223,25 +224,28 @@ exports.deleteCartItem = async (req, res) => {
 };
 
 exports.getProductsByCategory = async (req, res) => {
-  const genre = req.params.genre;
-  console.log("Genre is :", genre);
+  const term = req.params.genre?.toLowerCase();
   try {
-    const products = await productSchema.find({ genre: genre });
-    console.log(products);
+    // "all" lists everything; otherwise match a gender (genre) or a style (category, e.g. "casual").
+    const products = await productSchema.find(term === "all" ? {} : { $or: [{ genre: term }, { category: term }] });
     return res.status(200).json(products);
   } catch (error) {
-    console.error("Error deleting cart item:", error);
+    console.error("Error fetching products by category:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
 exports.updateQuantity = async (req, res) => {
-  const productId = req.params.productId?.toString();
+  // The route param is the cart line id: one product can sit in the cart in several sizes/colours.
+  const itemId = req.params.productId;
   const userId = req.user.id;
-  const quantity = req.body.quantity;
+  const quantity = Number(req.body.quantity);
+  if (!Number.isInteger(quantity) || quantity < 1) {
+    return res.status(400).json({ message: "Quantity must be at least 1" });
+  }
   try {
     const cartItem = await Cart.findOneAndUpdate(
-      { productId, userId },
+      { _id: itemId, userId },
       { $set: { quantity } },
       { new: true }
     );
@@ -261,9 +265,6 @@ exports.getUserWishlist = async (req, res) => {
   const userId = req.user.id;
   try {
     const wishlistItems = await Wishlist.find({ userId });
-    if (!wishlistItems || wishlistItems.length === 0) {
-      return res.status(404).json({ message: "No items found in wishlist" });
-    }
     res.status(200).json(wishlistItems);
   } catch (error) {
     console.error("Error fetching wishlist items:", error);
@@ -274,12 +275,6 @@ exports.getUserWishlist = async (req, res) => {
 exports.updateUserInfo = async (req, res) => {
   const userId = req.user.id;
   const { name, email, address, phoneNumber } = req.body;
-
-  console.log(
-    "From Controller:",
-    { name, email, address, phoneNumber },
-    userId
-  );
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
@@ -304,6 +299,9 @@ exports.postOrder = async (req, res) => {
   // product records; the client only supplies delivery details.
   const userId = req.user.id;
   const { shippingAddress, paymentMethod, phoneNumber, userName } = req.body;
+  if (!shippingAddress?.trim() || !phoneNumber?.trim() || !paymentMethod) {
+    return res.status(400).json({ message: "Phone number, shipping address and payment method are required" });
+  }
   try {
     const cartItems = await Cart.find({ userId });
     if (cartItems.length === 0) {
@@ -313,10 +311,15 @@ exports.postOrder = async (req, res) => {
     const productsById = new Map(products.map((p) => [p.id, p]));
 
     const items = [];
+    const wanted = new Map(); // productId -> total quantity across sizes/colours
     for (const cartItem of cartItems) {
       const product = productsById.get(cartItem.productId);
       if (!product || !Number.isInteger(cartItem.quantity) || cartItem.quantity < 1) {
         return res.status(400).json({ message: `Invalid cart item: ${cartItem.name}` });
+      }
+      wanted.set(cartItem.productId, (wanted.get(cartItem.productId) || 0) + cartItem.quantity);
+      if (wanted.get(cartItem.productId) > product.stock) {
+        return res.status(400).json({ message: `Only ${product.stock} left of ${product.name}` });
       }
       items.push({ ...cartItem.toObject(), price: product.price, storeId: product.storeId });
     }
@@ -324,7 +327,7 @@ exports.postOrder = async (req, res) => {
 
     const order = await Order.create({
       items,
-      totalPrice: subtotal + DELIVERY_FEE,
+      totalPrice: subtotal + deliveryFee(subtotal),
       shippingAddress,
       paymentMethod,
       phoneNumber,
@@ -352,7 +355,7 @@ exports.postOrder = async (req, res) => {
     );
     await productSchema.bulkWrite(
       items.map((i) => ({
-        updateOne: { filter: { _id: i.productId }, update: { $inc: { purchasedCount: i.quantity } } },
+        updateOne: { filter: { _id: i.productId }, update: { $inc: { purchasedCount: i.quantity, stock: -i.quantity } } },
       }))
     );
     await Cart.deleteMany({ userId });

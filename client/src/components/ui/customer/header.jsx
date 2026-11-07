@@ -1,121 +1,155 @@
-import { FaUserCircle, FaShoppingCart } from 'react-icons/fa';
-import { BiSearch } from 'react-icons/bi';
-import { useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useSelector, useDispatch } from 'react-redux';
-import { activeActions } from '../../../features/customer/activeSlice';
-import { chatbotActions } from '../../../features/customer/chatbotSlice';
-import HeaderDropdown from './headerDropdown';
-import { useNavigate } from 'react-router-dom';
-import { FaRobot } from "react-icons/fa6";
-import ChatbotModal from '../../../pages/customers/chatbot';
+import { FaUserCircle, FaShoppingCart } from "react-icons/fa";
+import { BiSearch } from "react-icons/bi";
+import { FiMenu, FiX, FiLogOut } from "react-icons/fi";
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { authActions } from "../../../features/auth/authSlices";
+import HeaderDropdown from "./headerDropdown";
+import ChatbotModal from "../../../pages/customers/chatbot";
+
+// Each nav link maps to a /home/<segment> listing page; dropdown items are its subcategories.
+const NAV = [
+  { label: "Home", to: "/home", items: [] },
+  { label: "Men", to: "/home/men", items: ["T-Shirt", "Shirts", "Jeans", "Jacket", "Shoes"] },
+  { label: "Women", to: "/home/women", items: ["Dresses", "Tops", "Skirts", "Shoes", "Accessories"] },
+  { label: "Kids", to: "/home/kids", items: ["Boys Clothing", "Girls Clothing", "Baby Wear"] },
+  { label: "Shop All", to: "/home/all", items: [] },
+];
 
 export default function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const activeField = useSelector((state) => state.active.activeField);
-  const isOpen = useSelector((state) => state.chatbot.isOpen);
-  const [search, setSearch] = useState('');
+  const { pathname } = useLocation();
+  const user = useSelector((state) => state.auth.user);
+  const [search, setSearch] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const navDropdownItems = {
-    Home: ['New Arrivals', 'Best Sellers', 'Trending Now'],
-    Men: ['T-Shirt', 'Shirts', 'Jeans', 'Jacket', 'Shoes'],
-    Women: ['Dresses', 'Tops', 'Skirts', 'Shoes', 'Accessories'],
-    Kids: ['Boys Clothing', 'Girls Clothing', 'Baby Wear'],
-    Categories: ['Casual Wear', 'Formal Wear', 'Sportswear', 'Accessories'],
+  const isActive = (to) => (to === "/home" ? pathname === "/home" : pathname.startsWith(to));
+
+  const onSearch = (e) => {
+    e.preventDefault();
+    const q = search.trim();
+    if (!q) return;
+    setMenuOpen(false);
+    navigate(`/home/all?q=${encodeURIComponent(q)}`);
   };
 
-  const handleOnChangeField = (field) => {
-    dispatch(activeActions.changeField(field));
-    if (field !== 'Home' && field !== 'home') {
-      navigate(`/home/${field.toLowerCase()}`);
-    } else {
-      navigate("/home");
-    }
+  const logout = () => {
+    dispatch(authActions.logout());
+    setMenuOpen(false);
+    navigate("/login");
   };
 
-  const handleChatbotToggle = () => {
-    dispatch(chatbotActions.toggleChatbot());
-  };
+  const accountLink = user?.userType === "storeOwner" ? "/store/dashboard" : "/home/profile";
 
-  const navLinks = ["Home", "Men", "Women", "Kids", "Categories"];
+  const searchBox = (className) => (
+    <form onSubmit={onSearch} role="search" className={`relative ${className}`}>
+      <input
+        type="search"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search products..."
+        aria-label="Search products"
+        className="w-full border border-gray-300 rounded-full pl-4 pr-9 py-1.5 text-sm focus:outline-none focus:border-blue-500 transition-all"
+      />
+      <button type="submit" aria-label="Search" className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black">
+        <BiSearch />
+      </button>
+    </form>
+  );
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-md px-6 py-3 flex items-center justify-between">
-      <div 
-        className="text-2xl font-extrabold tracking-tight text-slate-900 flex items-center cursor-pointer select-none"
-        onClick={() => navigate("/home")}
-      >
-        Daily<span className="text-blue-600"> Deals</span>
+    <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
+      <div className="h-16 px-4 md:px-6 flex items-center justify-between gap-4">
+        <Link to="/home" className="text-2xl font-extrabold tracking-tight text-slate-900 shrink-0">
+          Daily <span className="text-blue-600">Deals</span>
+        </Link>
+
+        <nav className="hidden md:flex gap-6 font-medium text-sm" aria-label="Main">
+          {NAV.map((link) => (
+            <div key={link.label} className="relative group">
+              <NavLink
+                to={link.to}
+                className={`${isActive(link.to) ? "text-black font-semibold" : "text-gray-500 hover:text-black"} transition-colors py-5`}
+              >
+                {link.label}
+              </NavLink>
+              {link.items.length > 0 && <HeaderDropdown items={link.items} base={link.to} />}
+            </div>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-3 md:gap-4">
+          {searchBox("hidden md:block w-36 lg:w-56")}
+
+          <Link to="/customer/cart" aria-label="Cart" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <FaShoppingCart size={20} />
+          </Link>
+
+          {user ? (
+            <>
+              <Link to={accountLink} aria-label="My account" className="text-gray-700 hover:text-blue-600 transition-colors">
+                <FaUserCircle size={22} />
+              </Link>
+              <button onClick={logout} aria-label="Log out" title="Log out" className="hidden md:block text-gray-700 hover:text-red-600 transition-colors cursor-pointer">
+                <FiLogOut size={20} />
+              </button>
+            </>
+          ) : (
+            <div className="hidden md:flex items-center gap-2">
+              <Link to="/login" className="px-4 py-1.5 text-sm font-semibold text-gray-900 rounded-full hover:bg-gray-100">
+                Log in
+              </Link>
+              <Link to="/signup" className="px-4 py-1.5 text-sm font-semibold text-white bg-black rounded-full hover:bg-gray-800">
+                Sign up
+              </Link>
+            </div>
+          )}
+
+          <button
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            className="md:hidden text-gray-800 p-1 cursor-pointer"
+          >
+            {menuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+          </button>
+        </div>
       </div>
 
-      <nav className="hidden md:flex gap-6 font-medium text-sm">
-        {navLinks.map((link) => (
-          <div key={link} className="relative group">
-            <button
-              onClick={() => handleOnChangeField(link)}
-              className={`${
-                activeField === link ? 'text-black font-semibold' : 'text-gray-400'
-              } transition-colors duration-200 cursor-pointer`}
-            >
-              {link}
+      {menuOpen && (
+        <div className="md:hidden border-t border-gray-100 px-4 py-4 space-y-4 bg-white">
+          {searchBox("w-full")}
+          <nav className="flex flex-col" aria-label="Mobile">
+            {NAV.map((link) => (
+              <Link
+                key={link.label}
+                to={link.to}
+                onClick={() => setMenuOpen(false)}
+                className={`py-2.5 text-base ${isActive(link.to) ? "font-semibold text-black" : "text-gray-600"}`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          {user ? (
+            <button onClick={logout} className="w-full py-2.5 rounded-full border border-gray-300 font-semibold text-red-600 cursor-pointer">
+              Log out
             </button>
-            <HeaderDropdown items={navDropdownItems[link]} Category={link} />
-          </div>
-        ))}
-      </nav>
-
-      {/* Right: Search + Icons */}
-      <div className="flex items-center gap-4">
-        {/* Chatbot Icon */}
-        <button
-          onClick={handleChatbotToggle}
-          className={`text-xl transition-all duration-200 ${
-            isOpen ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
-          }`}
-          title="Open Chat Assistant"
-        >
-          <FaRobot />
-        </button>
-
-        {/* Search Bar */}
-        <div className="relative hidden sm:block">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search..."
-            className="border border-gray-300 rounded-full pl-4 pr-8 py-1 text-sm 
-             focus:outline-none focus:border-blue-500 focus:shadow-md 
-             transition-all duration-300 w-32 focus:w-52"
-          />
-          <BiSearch className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500" />
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              <Link to="/login" onClick={() => setMenuOpen(false)} className="py-2.5 text-center rounded-full border border-gray-300 font-semibold">
+                Log in
+              </Link>
+              <Link to="/signup" onClick={() => setMenuOpen(false)} className="py-2.5 text-center rounded-full bg-black text-white font-semibold">
+                Sign up
+              </Link>
+            </div>
+          )}
         </div>
+      )}
 
-        {/* Flag (Avatar) */}
-        <div className="w-5 h-5">
-          <Avatar className="w-full h-full">
-            <AvatarImage src="/images/pakistan.png" />
-            <AvatarFallback>PK</AvatarFallback>
-          </Avatar>
-        </div>
-
-        {/* Cart Icon */}
-        <FaShoppingCart 
-          size={20} 
-          className="text-gray-700 cursor-pointer hover:text-blue-600 transition-colors" 
-          onClick={() => navigate("/customer/cart")} 
-        />
-
-        {/* Profile Icon */}
-        <FaUserCircle 
-          size={22} 
-          className="text-gray-700 cursor-pointer hover:text-blue-600 transition-colors" 
-          onClick={() => navigate("/home/profile")} 
-        />
-      </div>
-
-      {/* Chatbot Modal */}
       <ChatbotModal />
     </header>
   );

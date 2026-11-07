@@ -214,18 +214,14 @@ export const getProductByCategory = async (category) => {
   }
 };
 
-export const updateCartQuantity = async (
-  productId,
-  userId,
-  accessToken,
-  quantity
-) => {
+// cartItemId is the cart line's _id, so one size/colour changes without touching the others.
+export const updateCartQuantity = async (cartItemId, accessToken, quantity) => {
   const token = accessToken || "";
 
   try {
     const response = await axios.put(
-      `${BASE_URL}/cart/${productId}`,
-      { user: userId, quantity: quantity },
+      `${BASE_URL}/cart/${cartItemId}`,
+      { quantity },
       {
         headers: {
           Authorization: `Bearer ${token}`,
