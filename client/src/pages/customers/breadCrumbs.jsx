@@ -8,7 +8,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-export function BreadcrumbWithCustomSeparator() {
+// productName replaces the trailing product id on product pages.
+export function BreadcrumbWithCustomSeparator({ productName }) {
   const location = useLocation();
   const pathname = location.pathname;
   const pathSegments = pathname.split('/').filter(Boolean);
@@ -18,8 +19,8 @@ export function BreadcrumbWithCustomSeparator() {
     : pathSegments;
 
   return (
-    <div className="w-full px-0 sm:px-6 mt-6">
-      <div className="max-w-screen-xl mx-auto">
+    <div className="w-full mt-6">
+      <div>
         <Breadcrumb>
           <BreadcrumbList className="flex items-center space-x-1 text-sm sm:text-base font-medium">
             <BreadcrumbItem>
@@ -31,9 +32,11 @@ export function BreadcrumbWithCustomSeparator() {
             {segments.map((segment, index) => {
               const to = '/home/' + segments.slice(0, index + 1).join('/');
               const isLast = index === segments.length - 1;
-              const label = segment
-                .replace(/-/g, ' ')
-                .replace(/\b\w/g, c => c.toUpperCase());
+              const label = isLast && productName
+                ? productName
+                : decodeURIComponent(segment)
+                    .replace(/-/g, ' ')
+                    .replace(/\b\w/g, c => c.toUpperCase());
 
               return (
                 <div key={to} className="flex items-center space-x-1">

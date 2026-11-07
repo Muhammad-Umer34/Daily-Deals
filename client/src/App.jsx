@@ -1,30 +1,13 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import  AppSidebar  from "./components/ui/admin/sidebar";
 
 const App = () => {
-  const navigate = useNavigate();
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { pathname } = useLocation();
+  const user = useSelector((state) => state.auth.user);
 
-  useEffect(() => {
-    if (window.location.pathname === "/") {
-      if (isAuthenticated && user) {
-        if (user.userType === "storeOwner") {
-          navigate("/store/dashboard");
-        } else {
-          navigate("/home");
-        }
-      } else {
-        navigate("/home");
-      }
-    }
-  }, [isAuthenticated, user, navigate]);
-
-  return (
-    <div className="light bg-zinc-900 min-h-screen min-w-full flex items-center justify-center">
-      <Outlet />
-    </div>
-  );
+  if (pathname === "/") {
+    return <Navigate to={user?.userType === "storeOwner" ? "/store/dashboard" : "/home"} replace />;
+  }
+  return <Outlet />;
 };
 export default App;

@@ -30,17 +30,8 @@ export default function DonutChart({ data = [] }) {
 
   const chartData = formatDataForChart(data);
 
-  if (chartData.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-72">
-        <div className="text-gray-500 text-sm text-center">
-          No order data
-          <br />
-          available
-        </div>
-      </div>
-    );
-  }
+  // Nothing to chart yet: render nothing instead of a large empty block.
+  if (chartData.length === 0) return null;
 
   return (
     <div className="w-[100%] mx-auto bg-white border rounded-2xl shadow-md p-8">

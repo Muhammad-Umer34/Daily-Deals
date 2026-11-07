@@ -35,10 +35,6 @@ exports.customerPostRegister = [
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long"),
 
-  check("userType")
-    .optional()
-    .isIn(["storeOwner", "customer"])
-    .withMessage("User type must be either 'storeOwner' or 'customer'"),
 
   async (req, res) => {
     const errors = validationResult(req);
@@ -48,14 +44,15 @@ exports.customerPostRegister = [
     }
 
     try {
-      const { name, email, password, userType } = req.body;
+      const { name, email, password } = req.body;
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const newUser = new User({
         name,
         email,
         password: hashedPassword,
-        userType: userType || "customer",
+        // Store owners register through /register/store, which validates the brand; never from here.
+        userType: "customer",
         address: [],
         phoneNumber: [],
       });
@@ -129,7 +126,6 @@ exports.storePostRegister = [
     }
 
     try {
-      console.log("Request body:", req.body);
       const { name, email, password, brand_name, brand_logo } = req.body;
       const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -182,7 +178,6 @@ exports.postLogin = async (req, res) => {
         REFRESH_TOKEN_SECRET,
         { expiresIn: "7d" }
       );
-console.log("Refresh Token is ",refreshToken);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: false,
@@ -301,8 +296,10 @@ exports.forgotPassword = async (req, res) => {
     }
 
     const user = await User.findOne({ email: email.toLowerCase() });
+    // Same answer whether or not the account exists, so this can't be used to discover emails.
+    const sentMessage = "If an account exists for this email, a verification PIN has been sent.";
     if (!user) {
-      return res.status(404).json({ message: "User with this email does not exist" });
+      return res.status(200).json({ message: sentMessage });
     }
 
     // Generate 6-digit random PIN
@@ -344,7 +341,7 @@ exports.forgotPassword = async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: "Verification PIN sent to email successfully" });
+    res.status(200).json({ message: sentMessage });
 
   } catch (error) {
     console.error("Forgot password error:", error);
@@ -361,7 +358,7 @@ exports.resetPassword = async (req, res) => {
 
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return res.status(404).json({ message: "User with this email does not exist" });
+      return res.status(400).json({ message: "Invalid or expired verification PIN" });
     }
 
     // Check PIN and Expiration

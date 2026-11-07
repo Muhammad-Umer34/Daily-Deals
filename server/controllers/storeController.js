@@ -8,6 +8,17 @@ const User = require("../models/user");
 const ownsOrder = (orderId, storeId) =>
   storeOrderSchema.exists({ parentOrderId: orderId, storeId });
 
+// A store sees only its own lines of a multi-store order, and its own shipping status.
+const asSeenByStore = async (order, storeId) => {
+  const lines = await storeOrderSchema.find({ parentOrderId: order.id, storeId });
+  const productIds = new Set(lines.map((l) => l.productId));
+  const own = order.toObject();
+  own.items = own.items.filter((i) => productIds.has(String(i.productId)));
+  own.totalPrice = own.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  own.orderStatus = lines.every((l) => l.status === 'Dispatched') ? 'Dispatched' : 'Pending';
+  return own;
+};
+
 exports.postProductController = [
   check('name')
     .notEmpty()
@@ -56,7 +67,6 @@ exports.postProductController = [
     }),
 
   async (req, res) => {
-    console.log("Recieved Request Body:",req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log("Validation errors:", errors.array());
@@ -65,7 +75,6 @@ exports.postProductController = [
 
     try {
       const { name, description, price, quantity, category, images,size,color } = req.body;
-      console.log("Received product data:", req.body);
       const owner = await User.findById(req.user.id);
 
       const product = await productSchema.create({
@@ -90,7 +99,6 @@ exports.postProductController = [
         material:req.body.material,
 
       });
-      console.log("Product that is going in database is : ",product);
       res.status(201).json({ message: 'Product created successfully', product });
     } catch (error) {
       console.error("Error creating product:", error);
@@ -126,7 +134,6 @@ exports.deleteProductController = async (req, res) => {
 
 exports.updateProductController = async (req, res) => {
   const productId = req.params.id;
-  console.log("Backend recieve", req.body);
   const { name, description, price, stock, category, images, size, color,subcategory } = req.body;
   try {
     const product = await productSchema.findOneAndUpdate(
@@ -164,7 +171,10 @@ exports.getOrderDetailsController = async(req,res)=>{
       return res.status(404).json({ error: 'Order not found' });
     }
     const order = await Order.findOne({_id:orderId});
-    res.status(200).json(order);
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    res.status(200).json(await asSeenByStore(order, storeId));
   }
   catch(error){
     console.error(error);
@@ -179,22 +189,22 @@ exports.dispatchOrder = async(req,res)=>{
     if (!(await ownsOrder(orderId, storeId))) {
       return res.status(404).json({ error: 'Order not found or does not belong to this store' });
     }
+    await storeOrderSchema.updateMany(
+      { parentOrderId: orderId, storeId: storeId },
+      { status: 'Dispatched' }
+    );
+    // The customer's order is only "Dispatched" once every store in it has shipped its part.
+    const stillPending = await storeOrderSchema.exists({ parentOrderId: orderId, status: { $ne: 'Dispatched' } });
     const order = await Order.findOneAndUpdate(
       { _id: orderId },
-      { orderStatus: 'Dispatched' },
+      { orderStatus: stillPending ? 'Partially Dispatched' : 'Dispatched' },
       { new: true }
     );
     if (!order) {
       return res.status(404).json({ error: 'Order not found or does not belong to this store' });
     }
-    
-    // Also update the store-specific line item status!
-    await storeOrderSchema.updateMany(
-      { parentOrderId: orderId, storeId: storeId },
-      { status: 'Dispatched' }
-    );
 
-    res.status(200).json({ message: 'Order dispatched successfully', order });
+    res.status(200).json({ message: 'Order dispatched successfully', order: await asSeenByStore(order, storeId) });
   }
   catch(error){
     console.error(error);

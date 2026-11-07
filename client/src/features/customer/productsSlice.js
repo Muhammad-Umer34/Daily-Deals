@@ -17,7 +17,8 @@ const userProductSlice = createSlice(
     reducers:{
         setProducts(state,action){
             state.products = action.payload;
-            state.FilteredProducts = action.payload; 
+            state.FilteredProducts = action.payload;
+            state.pageNo = 1;
         },
         setCategory(state,action){
           state.category = action.payload;
@@ -30,6 +31,7 @@ const userProductSlice = createSlice(
         },
         setFilteredProducts(state,action){
             state.FilteredProducts = action.payload;
+            state.pageNo = 1;
         },
         resetFilteredProducts(state){
             state.FilteredProducts = state.products;

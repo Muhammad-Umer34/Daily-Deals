@@ -1,51 +1,36 @@
 import CategoryCard from "./categoriesCard";
 
+const DRESS_STYLES = [
+  { name: "Casual", image: "/images/casual.jpg" },
+  { name: "Formal", image: "/images/formal.jpg" },
+  { name: "Gym", image: "/images/gym.jpg" },
+  { name: "Party", image: null },
+];
+const GENDERS = [
+  { name: "Men", image: null },
+  { name: "Women", image: null },
+  { name: "Kids", image: "/images/kids.jpg" },
+  { name: "Accessories", image: null },
+];
+
 const DisplayCategories = ({ name, allProducts = [] }) => {
-  const dressStyles = [
-    { id: 1, name: "Casual", image: "/images/casual.jpg" },
-    { id: 2, name: "Formal", image: "/images/formal.jpg" },
-    { id: 3, name: "Gym", image: "/images/gym.jpg" },
-    { id: 4, name: "Party", image: "/images/party.jpg" },
-  ];
-  const Gender = [
-    { id: 1, name: "Men", image: "/images/kids.jpg" },
-    { id: 2, name: "Women", image: "/images/kids.jpg" },
-    { id: 3, name: "Kids", image: "/images/kids.jpg" },
-    { id: 4, name: "Accessories", image: "/images/kids.jpg" },
-  ];
-
-  let array = [];
   const isDressStyle = name === "Dress Styles";
-  if (isDressStyle) {
-    array = dressStyles;
-  } else {
-    array = Gender;
-  }
+  const cards = isDressStyle ? DRESS_STYLES : GENDERS;
 
-  const getProductCount = (categoryName) => {
-    const term = categoryName.toLowerCase();
-    if (isDressStyle) {
-      return allProducts.filter(
-        (p) => p.subcategory?.toLowerCase() === term
-      ).length;
-    } else {
-      return allProducts.filter(
-        (p) =>
-          p.genre?.toLowerCase() === term ||
-          p.category?.toLowerCase() === term
-      ).length;
-    }
-  };
+  // Dress styles live in `category` (e.g. "casual"); genders live in `genre`.
+  const matches = (p, term) =>
+    isDressStyle ? p.category?.toLowerCase() === term : p.genre?.toLowerCase() === term;
 
   return (
-    <div className="w-full flex flex-wrap justify-center gap-4 py-6">
-      {array.map((category) => (
-        <CategoryCard 
-          key={category.id} 
-          category={category} 
-          productCount={getProductCount(category.name)} 
-        />
-      ))}
+    <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 px-4 sm:px-8 py-4">
+      {cards.map((card) => {
+        const products = allProducts.filter((p) => matches(p, card.name.toLowerCase()));
+        // No dedicated photo: use one of the category's own products (the card shows a plain tile if none).
+        const image = card.image || products[0]?.images?.[0];
+        return (
+          <CategoryCard key={card.name} category={{ ...card, image }} productCount={products.length} />
+        );
+      })}
     </div>
   );
 };

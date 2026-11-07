@@ -14,7 +14,7 @@ const GetOrShowInfo = () => {
   const accessToken = useSelector((state) => state.auth.accessToken);
   const [editForm, setEditForm] = useState(false);
   const [addAddressForm , setAddAddressForm] = useState(false);
-  console.log("user:", user);
+  const [notice, setNotice] = useState("");
 
 
   const showForm = !(
@@ -23,8 +23,6 @@ const GetOrShowInfo = () => {
     user?.phoneNumber && 
     user.phoneNumber.length > 0
   );
-
-  console.log("showForm:", showForm);
   
   const [formData, setFormData] = useState({
     fullName: user?.name || "",
@@ -43,21 +41,20 @@ const GetOrShowInfo = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form data:", formData);
     if (!formData.fullName.trim()) {
-      alert("Please enter your full name");
+      setNotice("Please enter your full name");
       return;
     }
     if (!formData.email.trim()) {
-      alert("Please enter your email");
+      setNotice("Please enter your email");
       return;
     }
     if (!formData.phoneNumber.trim()) {
-      alert("Please enter your phone number");
+      setNotice("Please enter your phone number");
       return;
     }
     if (!formData.address.trim()) {
-      alert("Please enter your address");
+      setNotice("Please enter your address");
       return;
     }
 
@@ -73,20 +70,21 @@ const GetOrShowInfo = () => {
         
         await updateUserInfo(updatedUser, accessToken);
         dispatch(authActions.updateUser(updatedUser));
-        alert("Profile updated successfully!");
+        setNotice("Profile updated successfully!");
         
       } catch (error) {
         console.error("Error updating profile:", error);
-        alert("Failed to update profile. Please try again.");
+        setNotice("Failed to update profile. Please try again.");
       }
     } else {
       console.error("User not found");
-      alert("User session not found. Please login again.");
+      setNotice("User session not found. Please login again.");
     }
   };
 
   return (
     <div className="max-w-3xl mx-auto p-8 mt-12 bg-white shadow-xl rounded-xl border border-gray-100 relative">
+      {notice && <p role="status" className="mb-4 rounded-md bg-gray-50 border border-gray-200 px-4 py-2 text-sm text-gray-800">{notice}</p>}
        {addAddressForm && (
         <div className="fixed inset-0 flex items-center justify-center p-4 z-100 shadow-lg" style={{zIndex: 100}}>
           <div className="max-w-xl w-full max-h-screen overflow-y-auto">

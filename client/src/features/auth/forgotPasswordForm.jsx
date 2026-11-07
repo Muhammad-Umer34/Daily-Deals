@@ -1,195 +1,89 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { Link, useNavigate } from "react-router-dom";
 import { forgotPasswordAPI, resetPasswordAPI } from "./authAPI";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
+import { AuthLayout, AuthHeading, Field, FormError, inputClass, primaryButtonClass } from "./authLayout";
 
 const ForgotPasswordForm = () => {
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1); // 1 = request PIN, 2 = verify and reset
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm();
+  const [notice, setNotice] = useState("");
+  const [formError, setFormError] = useState("");
+  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm();
 
   const handleSendPin = async (data) => {
-    setLoading(true);
+    setFormError("");
     try {
       const res = await forgotPasswordAPI(data.email);
       setEmail(data.email);
+      setNotice(res.message);
       setStep(2);
-      alert(res.message || "PIN sent to your email!");
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      setFormError(error.userMessage);
     }
   };
 
   const handleResetPassword = async (data) => {
-    setLoading(true);
+    setFormError("");
     try {
-      const res = await resetPasswordAPI(email, data.pin, data.newPassword);
-      alert(res.message || "Password reset successfully!");
-      Navigate("/login");
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+      await resetPasswordAPI(email, data.pin, data.newPassword);
+      navigate("/login");
+    } catch (error) {
+      setFormError(error.userMessage);
     }
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-zinc-100 to-blue-50 relative overflow-hidden font-sans px-4 sm:px-6">
-      {/* Mesh Ambient Glow */}
-      <div className="absolute top-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full bg-blue-400/20 blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] rounded-full bg-indigo-400/20 blur-[100px] pointer-events-none"></div>
-
-      <Card className="w-full max-w-md bg-white border border-slate-200 shadow-2xl rounded-2xl p-6 text-slate-800 relative z-10">
-        <CardHeader className="flex flex-col gap-1">
-          <div className="flex justify-between items-start w-full">
-            <CardTitle className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 bg-clip-text text-transparent">
-              Forgot Password
-            </CardTitle>
-            <Button 
-              variant="link" 
-              onClick={() => Navigate("/login")}
-              className="text-blue-600 hover:text-blue-500 text-sm font-semibold p-0 cursor-pointer"
-            >
-              Sign In
-            </Button>
-          </div>
-          <CardDescription className="text-slate-500 text-sm">
-            {step === 1 
-              ? "Enter your email to receive a password reset PIN" 
-              : "Enter the PIN sent to your email and choose a new password"
-            }
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent className="mt-4">
-          {step === 1 ? (
-            <form onSubmit={handleSubmit(handleSendPin)}>
-              <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="email" className="text-slate-700 text-sm font-medium">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    className="bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg h-11 px-4 transition-all duration-300"
-                    {...register("email", { required: "Email is required" })}
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-                  )}
-                </div>
-
-                <Button 
-                  type="submit" 
-                  disabled={loading}
-                  className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 cursor-pointer"
-                >
-                  {loading ? "Sending PIN..." : "Send Verification PIN"}
-                </Button>
-              </div>
-            </form>
-          ) : (
-            <form onSubmit={handleSubmit(handleResetPassword)}>
-              <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="pin" className="text-slate-700 text-sm font-medium">Verification PIN</Label>
-                  <Input
-                    id="pin"
-                    type="text"
-                    maxLength={6}
-                    placeholder="123456"
-                    className="bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg h-11 px-4 transition-all duration-300 tracking-[0.2em] font-mono text-center"
-                    {...register("pin", { 
-                      required: "PIN is required",
-                      pattern: { value: /^[0-9]{6}$/, message: "PIN must be a 6-digit number" }
-                    })}
-                  />
-                  {errors.pin && (
-                    <p className="text-red-500 text-xs mt-1">{errors.pin.message}</p>
-                  )}
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="newPassword" className="text-slate-700 text-sm font-medium">New Password</Label>
-                  <Input
-                    id="newPassword"
-                    type="password"
-                    placeholder="••••••••"
-                    className="bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg h-11 px-4 transition-all duration-300"
-                    {...register("newPassword", { 
-                      required: "New password is required",
-                      minLength: { value: 6, message: "Password must be at least 6 characters" }
-                    })}
-                  />
-                  {errors.newPassword && (
-                    <p className="text-red-500 text-xs mt-1">{errors.newPassword.message}</p>
-                  )}
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="confirmPassword" className="text-slate-700 text-sm font-medium">Confirm New Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="••••••••"
-                    className="bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg h-11 px-4 transition-all duration-300"
-                    {...register("confirmPassword", { 
-                      required: "Confirm password is required",
-                      validate: (val) => {
-                        if (watch("newPassword") !== val) {
-                          return "Passwords do not match";
-                        }
-                      }
-                    })}
-                  />
-                  {errors.confirmPassword && (
-                    <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>
-                  )}
-                </div>
-
-                <Button 
-                  type="submit" 
-                  disabled={loading}
-                  className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-200 cursor-pointer"
-                >
-                  {loading ? "Resetting..." : "Reset Password"}
-                </Button>
-                
-                <Button 
-                  type="button" 
-                  variant="link"
-                  onClick={() => setStep(1)}
-                  className="text-slate-500 hover:text-slate-600 hover:underline text-xs mt-2"
-                >
-                  Back to request PIN
-                </Button>
-              </div>
-            </form>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+    <AuthLayout
+      image="/images/casual.jpg"
+      imageAlt="Rack of colourful shirts"
+      headline="Locked out? It happens."
+      blurb="We'll email you a 6-digit PIN so you can choose a new password."
+    >
+      <AuthHeading
+        title={step === 1 ? "Reset your password" : "Enter your PIN"}
+        subtitle={step === 1 ? "Enter the email you signed up with." : `Check ${email} for a 6-digit PIN. It expires in 15 minutes.`}
+      />
+      {step === 1 ? (
+        <form onSubmit={handleSubmit(handleSendPin)} className="space-y-5" noValidate>
+          <FormError message={formError} />
+          <Field id="email" label="Email" error={errors.email?.message}>
+            <input id="email" type="email" autoComplete="email" placeholder="you@example.com" className={inputClass}
+              {...register("email", { required: "Email is required" })} />
+          </Field>
+          <button type="submit" disabled={isSubmitting} className={primaryButtonClass}>
+            {isSubmitting ? "Sending…" : "Send PIN"}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleSubmit(handleResetPassword)} className="space-y-5" noValidate>
+          {notice && <p role="status" className="rounded-md bg-green-50 border border-green-200 px-4 py-2.5 text-sm text-green-800">{notice}</p>}
+          <FormError message={formError} />
+          <Field id="pin" label="Verification PIN" error={errors.pin?.message}>
+            <input id="pin" inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="6-digit PIN" className={`${inputClass} tracking-widest`}
+              {...register("pin", { required: "PIN is required", pattern: { value: /^\d{6}$/, message: "PIN is 6 digits" } })} />
+          </Field>
+          <Field id="newPassword" label="New password" error={errors.newPassword?.message}>
+            <input id="newPassword" type="password" autoComplete="new-password" placeholder="At least 6 characters" className={inputClass}
+              {...register("newPassword", { required: "New password is required", minLength: { value: 6, message: "Password must be at least 6 characters" } })} />
+          </Field>
+          <Field id="confirmPassword" label="Confirm new password" error={errors.confirmPassword?.message}>
+            <input id="confirmPassword" type="password" autoComplete="new-password" placeholder="Repeat the new password" className={inputClass}
+              {...register("confirmPassword", { validate: (v) => v === watch("newPassword") || "Passwords do not match" })} />
+          </Field>
+          <button type="submit" disabled={isSubmitting} className={primaryButtonClass}>
+            {isSubmitting ? "Saving…" : "Reset password"}
+          </button>
+          <button type="button" onClick={() => setStep(1)} className="w-full text-sm text-slate-600 hover:text-black cursor-pointer">
+            Use a different email
+          </button>
+        </form>
+      )}
+      <p className="mt-8 text-center text-sm text-slate-600">
+        Remembered it? <Link to="/login" className="font-semibold text-blue-600 hover:underline">Log in</Link>
+      </p>
+    </AuthLayout>
   );
 };
 

@@ -4,31 +4,34 @@ import { CheckCircle, Package, MapPin, Phone, Calendar, CreditCard, ArrowRight }
 
 export default function OrderConfirmation() {
   const location = useLocation();
-  const [order, setOrder] = useState(null);
+  // The order only travels in navigation state; after a refresh it is gone, so point to Order History.
+  const order = location.state?.order || null;
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (location.state?.order) {
-      setOrder(location.state.order);
-    } else {
-      console.error("No order data found. Redirect user or fetch by ID.");
-    }
-    setTimeout(() => setIsVisible(true), 100);
-  }, [location.state]);
+    const t = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(t);
+  }, []);
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="bg-gray-50 flex items-center justify-center py-24 px-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-black border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-800 text-lg">Loading order details...</p>
+          <CheckCircle className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+          <p className="text-gray-800 text-lg mb-6">Your orders are listed in your account.</p>
+          <Link to="/home/profile" className="px-6 py-3 bg-black text-white rounded-lg font-semibold">
+            View Order History
+          </Link>
         </div>
       </div>
     );
   }
 
+  const subtotal = order.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const fee = order.totalPrice - subtotal;
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50">
       <div className="relative z-10 p-6 py-12">
         <div className={`max-w-4xl mx-auto transition-all duration-1000 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -62,7 +65,7 @@ export default function OrderConfirmation() {
                 </div>
                 <div className="text-right">
                   <div className="bg-white/10 px-4 py-2 rounded-full">
-                    <span className="text-sm font-semibold">Status: Pending</span>
+                    <span className="text-sm font-semibold">Status: {order.orderStatus || "Pending"}</span>
                   </div>
                 </div>
               </div>
@@ -126,11 +129,11 @@ export default function OrderConfirmation() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center py-2 border-b border-gray-200">
                       <span className="text-gray-600">Subtotal</span>
-                      <span className="font-semibold">Rs {(order.totalPrice - 15).toLocaleString()}</span>
+                      <span className="font-semibold">Rs {subtotal.toLocaleString("en-PK")}</span>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b border-gray-200">
                       <span className="text-gray-600">Shipping</span>
-                      <span className="font-semibold">Rs 15</span>
+                      <span className="font-semibold">{fee ? `Rs ${fee.toLocaleString("en-PK")}` : "Free"}</span>
                     </div>
                     <div className="flex justify-between items-center py-3 bg-gray-100 px-4 rounded-xl">
                       <span className="font-bold text-lg">Total Amount</span>

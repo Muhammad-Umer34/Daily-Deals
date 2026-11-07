@@ -16,7 +16,6 @@ const WishList = ({ product }) => {
   const [liked, setLiked] = useState(false);
   const handleLike = () => {
     if (!user || !user.id) {
-      alert("Please login first to add items to your wishlist.");
       navigate("/login");
       return;
     }
@@ -42,8 +41,9 @@ const WishList = ({ product }) => {
   return (
     <button
       onClick={handleLike}
-      className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center hover:border-black"
-      aria-label="Add to Wishlist"
+      className="w-12 h-12 shrink-0 rounded-full border border-gray-300 flex items-center justify-center hover:border-black cursor-pointer"
+      aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
+      aria-pressed={liked}
     >
       <FaHeart
         className={`text-xl ${

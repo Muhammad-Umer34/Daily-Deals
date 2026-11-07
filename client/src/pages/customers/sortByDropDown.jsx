@@ -16,9 +16,7 @@ export default function SortByDropDown() {
 
   const handleOnSelect = (value) => {
     setSelectedCategory(value);
-    console.log("Products are : ",products);
-    const sorted = [...products]; 
-    console.log("Before : ",sorted);
+    const sorted = [...products];
     if (value === "newest") {
       sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } else if (value === "popular") {
@@ -30,8 +28,8 @@ export default function SortByDropDown() {
     } else if (value === "best_rating") {
       sorted.sort((a, b) => b.averageRating - a.averageRating);
     }
-    console.log("After : ",sorted);
-    dispatch(userProductActions.setProducts(sorted));
+    // Reorder only what is shown; the unfiltered list must survive for Reset Filters.
+    dispatch(userProductActions.setFilteredProducts(sorted));
   };
 
   const categories = [
@@ -44,9 +42,7 @@ export default function SortByDropDown() {
 
   return (
     <div className="flex items-center gap-2">
-      <label htmlFor="category" className="font-medium">
-        Sort by:
-      </label>
+      <span className="font-medium hidden sm:inline">Sort by:</span>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline">

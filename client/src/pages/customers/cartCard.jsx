@@ -1,81 +1,46 @@
-import { FaTrash, FaHeart, FaPlus, FaMinus } from "react-icons/fa";
-import { useState } from "react";
-import { updateCartQuantity } from "../../features/customer/customerApi";
-import { useSelector } from "react-redux";
+import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
+import { formatPrice } from "@/lib/utils";
 
-const CartItem = ({ item, onRemove }) => {
-  const [quantity, setQuantity] = useState(item.quantity);
-  const user = useSelector((state) => state.auth.user);
-  const accessToken = useSelector((state) => state.auth.accessToken);
-
-  const updateQuantity = async (newQuantity)=>
-  {
-    console.log(item._id,user.id,accessToken,newQuantity);
-    await updateCartQuantity(item.productId,user.id,accessToken,newQuantity);
-  }
+// Quantity lives in the parent cart so the order summary stays in step.
+const CartItem = ({ item, onRemove, onQuantityChange }) => {
   return (
-    <div className="border rounded-lg p-4 shadow mb-4 bg-white w-full flex flex-col md:flex-row gap-4">
-      <div className="w-full md:w-auto flex justify-center md:justify-start">
-        <img
-          src={item.image}
-          alt={item.name}
-          className="w-28 h-28 object-cover rounded"
-        />
-      </div>
+    <div className="border border-gray-200 rounded-lg p-4 bg-white w-full flex gap-4">
+      <img src={item.image} alt={item.name} className="w-24 h-28 sm:w-28 sm:h-32 object-cover rounded-md bg-gray-100 shrink-0" />
 
-      <div className="flex-1 flex flex-col justify-between">
+      <div className="flex-1 min-w-0 flex flex-col justify-between gap-3">
         <div>
-          <h4 className="font-medium text-base md:text-lg mb-1 line-clamp-2">
-            {item.name}
-          </h4>
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="inline-block text-sm font-semibold bg-gray-100 px-3 py-1 rounded-full text-black">
-              {item.color} / {item.size}
-            </span>
-            <span className="text-sm text-amber-600 inline-flex items-center">
-              👍 100+ 5-star reviews
-            </span>
-          </div>
+          <h3 className="font-medium text-base md:text-lg line-clamp-2">{item.name}</h3>
+          <p className="mt-1 text-sm text-gray-500 capitalize">
+            {item.color} · Size {String(item.size).toUpperCase()} · {formatPrice(item.price)} each
+          </p>
         </div>
 
-        <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-          <p className="font-bold text-lg">Rs. {item.price * quantity}</p>
-
-          <div className="flex items-center gap-4 text-sm text-gray-700">
-            <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="font-bold text-lg">{formatPrice(item.price * item.quantity)}</p>
+          <div className="flex items-center gap-4">
+            <div className="inline-flex items-center border border-gray-300 rounded-md">
               <button
-                className="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center text-gray-700 shadow hover:bg-gray-200 transition cursor-pointer"
-                onClick={async () => {
-                  if (quantity >= 1) {
-                    setQuantity(quantity - 1);
-                    await updateQuantity(quantity -1 );
-                  }
-                }}
+                onClick={() => onQuantityChange(item, item.quantity - 1)}
+                disabled={item.quantity <= 1}
+                aria-label={`Decrease quantity of ${item.name}`}
+                className="px-2.5 py-2 hover:bg-gray-100 disabled:text-gray-300 cursor-pointer"
               >
                 <FaMinus size={10} />
               </button>
-
-              <strong className="text-sm font-medium w-6 text-center">
-                {quantity}
-              </strong>
-
+              <span className="w-8 text-center text-sm font-medium" aria-live="polite">{item.quantity}</span>
               <button
-                className="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center text-gray-700 shadow hover:bg-gray-200 transition cursor-pointer"
-                onClick={async () => {
-                  setQuantity(quantity + 1);
-                 await updateQuantity(quantity +1);
-                }}
+                onClick={() => onQuantityChange(item, item.quantity + 1)}
+                aria-label={`Increase quantity of ${item.name}`}
+                className="px-2.5 py-2 hover:bg-gray-100 cursor-pointer"
               >
                 <FaPlus size={10} />
               </button>
             </div>
-
-            <button className="hover:text-red-500 text-gray-500">
-              <FaHeart />
-            </button>
             <button
               onClick={() => onRemove(item._id)}
-              className="hover:text-red-700 text-gray-500"
+              aria-label={`Remove ${item.name} from cart`}
+              title="Remove"
+              className="p-2 text-gray-500 hover:text-red-600 cursor-pointer"
             >
               <FaTrash />
             </button>

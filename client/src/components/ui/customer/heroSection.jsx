@@ -1,7 +1,8 @@
+import { Link } from "react-router-dom";
+
 export default function HeroSection() {
   return (
-    <section className="pt-[80px] w-full min-h-[calc(100vh-80px)] bg-white flex flex-col md:flex-row items-center justify-between px-6 md:px-16">
-      {/* Left Text Section */}
+    <section className="pt-24 pb-10 md:pt-28 md:pb-16 w-full bg-white flex flex-col md:flex-row items-center justify-between gap-8 px-6 md:px-16">
       <div className="w-full md:w-1/2 text-center md:text-left space-y-6">
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
           Elevate Your <br /> Style This Season
@@ -11,17 +12,18 @@ export default function HeroSection() {
           comfortable. From statement pieces to everyday basics – redefine your
           wardrobe with confidence and flair.
         </p>
-        <button className="px-6 py-3 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition-colors duration-300 cursor-pointer">
+        <Link
+          to="/home/all"
+          className="inline-block px-6 py-3 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition-colors duration-300"
+        >
           Shop the Collection
-        </button>
+        </Link>
       </div>
-
-      {/* Right Image Section */}
-      <div className="w-full md:w-1/2 flex justify-center items-center mt-10 md:mt-0">
+      <div className="w-full md:w-1/2 flex justify-center items-center">
         <img
           src="/images/hero_image.png"
-          alt="Fashion Model"
-          className="max-w-[500px] w-full h-auto object-contain md:max-h-[calc(100vh-100px)]"
+          alt="Model wearing a green overshirt and dark jeans"
+          className="max-w-[440px] w-full h-auto object-contain max-h-[70vh]"
         />
       </div>
     </section>

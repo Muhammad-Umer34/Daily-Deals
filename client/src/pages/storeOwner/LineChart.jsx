@@ -119,7 +119,10 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
         },
         xaxis: {
           categories: categories,
+          tickAmount: Math.min(categories.length, 10),
           labels: {
+            rotate: -45,
+            hideOverlappingLabels: true,
             style: {
               fontSize: '12px'
             }
@@ -127,6 +130,8 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
         },
         yaxis: [
           {
+            min: 0,
+            forceNiceScale: true,
             title: {
               text: "Revenue (Rs.)",
               style: {
@@ -136,12 +141,14 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
             },
             labels: {
               formatter: function (val) {
-                return val ? `Rs. ${val.toLocaleString()}` : 'Rs. 0';
+                return `Rs ${Math.round(val || 0).toLocaleString("en-PK")}`;
               }
             }
           },
           {
             opposite: true,
+            min: 0,
+            forceNiceScale: true,
             title: {
               text: "Orders",
               style: {
@@ -151,7 +158,7 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
             },
             labels: {
               formatter: function (val) {
-                return val ? val.toString() : '0';
+                return String(Math.round(val || 0));
               }
             }
           }

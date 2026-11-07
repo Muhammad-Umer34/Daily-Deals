@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 const NewAddProduct = ({ onClose, onProductAdded }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
   console.log(user);
@@ -22,7 +23,6 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
 
   const onSubmit = async (data) => {
     setLoading(true);
-    console.log(data);
     const {
       name,
       description,
@@ -52,10 +52,9 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
       genre: genre,
       material,
     };
-    console.log(formattedData);
+    setError("");
     try {
       await postProduct(formattedData, user, accessToken);
-      alert("Product added successfully!");
       if (onProductAdded) {
         await onProductAdded();
       }
@@ -65,25 +64,25 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
         navigate("/store/products");
       }
     } catch (error) {
-      console.error("Failed to add product:", error);
-      alert("Failed to add product. Please try again.");
+      setError(error.response?.data?.errors?.[0]?.msg || error.response?.data?.error || "Couldn't add the product. Please check the fields and try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-[30%] m-auto mt-10 border-2 p-5 rounded-lg shadow-lg h-[80vh] flex flex-col bg-white">
+    <div className="w-full max-w-lg mx-auto mt-10 border border-gray-200 p-5 rounded-xl shadow-lg max-h-[85vh] flex flex-col bg-white">
       {/* Fixed Header */}
       <div className="flex justify-between items-center text-xl font-bold mb-5">
         <div></div>
         <h1>Add Product</h1>
-        <RxCross2 className="cursor-pointer hover:text-red-500" onClick={onClose || (() => navigate("/store/products"))} />
+        <button type="button" aria-label="Close" onClick={onClose || (() => navigate("/store/products"))} className="cursor-pointer hover:text-red-500"><RxCross2 /></button>
       </div>
 
       {/* Scrollable Form */}
       <div className="flex-1 overflow-y-auto pr-2">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          {error && <p role="alert" className="rounded-md bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">{error}</p>}
           {/* Product Name */}
           <div className="flex flex-col">
             <label htmlFor="name">Product Name</label>

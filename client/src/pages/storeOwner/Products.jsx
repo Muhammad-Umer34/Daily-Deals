@@ -59,10 +59,10 @@ const Products = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-8 mt-10 mb-5 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 mt-10 mb-5 flex flex-wrap gap-4 justify-between items-center">
         <h1 className="text-3xl font-bold">Products</h1>
 
-        <div className="flex gap-3 items-center">
+        <div className="flex flex-wrap gap-3 items-center">
           <div className="relative hidden sm:block">
             <input
               type="text"
@@ -76,7 +76,7 @@ const Products = () => {
             <BiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" />
           </div>
           <button
-            className="px-4 py-1 rounded-lg bg-black text-white border-2 border-black hover:bg-gray-800 transition cursor-pointer"
+            className="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800 transition cursor-pointer whitespace-nowrap"
             onClick={() => setDropdown(!dropdown)}
           >
             Add Product

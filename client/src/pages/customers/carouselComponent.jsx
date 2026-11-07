@@ -1,5 +1,3 @@
-import * as React from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -8,30 +6,28 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-export function ImageCarousel({ images = [] }) {
-  const imageList = images.length > 0 ? images : ["/images/placeholder.png"];
+export function ImageCarousel({ images = [], name = "Product" }) {
+  const imageList = images.length > 0 ? images : ["/images/daily_deals.png"];
+  const several = imageList.length > 1;
 
   return (
     <Carousel className="w-full max-w-md relative">
       <CarouselContent>
         {imageList.map((imgUrl, index) => (
           <CarouselItem key={index}>
-            <div className="p-1">
-              <Card>
-                <CardContent className="flex aspect-square items-center justify-center p-0 overflow-hidden">
-                  <img
-                    src={imgUrl}
-                    alt={`Image ${index + 1}`}
-                    className="w-full h-full object-cover rounded-md"
-                  />
-                </CardContent>
-              </Card>
+            <div className="aspect-[4/5] overflow-hidden rounded-xl bg-gray-100">
+              <img src={imgUrl} alt={`${name} – image ${index + 1}`} className="w-full h-full object-cover" />
             </div>
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious className="bg-black text-white hover:bg-gray-900" />
-      <CarouselNext className="bg-black text-white hover:bg-gray-900" />
+      {/* Arrows sit inside the image so they never hang off narrow screens. */}
+      {several && (
+        <>
+          <CarouselPrevious className="left-3 bg-white/90 text-black hover:bg-white shadow" />
+          <CarouselNext className="right-3 bg-white/90 text-black hover:bg-white shadow" />
+        </>
+      )}
     </Carousel>
   );
 }

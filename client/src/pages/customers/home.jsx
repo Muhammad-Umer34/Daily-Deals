@@ -46,14 +46,13 @@ const CustomerHome = () => {
     <div className="light flex flex-col min-h-screen w-full bg-white">
       <CustomerHeader />
       <HeroSection />
-      <Separator name="New Arrival" />
+      <Separator name="New Arrivals" viewAll="/home/all" />
       <ShowProducts product={newArrival} />
-      <Separator name="Top Selling" />
+      <Separator name="Top Selling" viewAll="/home/all" />
       <ShowProducts product={topProducts} />
-      <Separator name="Top Viewed" />
+      <Separator name="Most Viewed" viewAll="/home/all" />
       <ShowProducts product={topViewed} />
-      <Separator name="Shop By Category" />
-      <Separator name="Dress Styles" />
+      <Separator name="Shop By Style" />
       <DisplayCategories name="Dress Styles" allProducts={allProducts} />
       <Separator name="Shop By Gender" />
       <DisplayCategories name="Shop By Gender" allProducts={allProducts} />
