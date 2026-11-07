@@ -9,6 +9,9 @@ const storeRouter = require('./routes/storeRoutes');
 
 require('dotenv').config();
 
+// Always use the dailydeals database, even if MONGO_URI has no /dbname (Mongo would fall back to an empty "test").
+const DB_OPTIONS = { dbName: process.env.MONGO_DB_NAME || "dailydeals" };
+
 const app = express();
 const checkingInAdmin = (req, res, next) => {
   console.log("Admin middleware is checking in", req);
@@ -24,7 +27,7 @@ app.use(cors({
 }));
 
 
-let cachedDbPromise = mongoose.connect(process.env.MONGO_URI)
+let cachedDbPromise = mongoose.connect(process.env.MONGO_URI, DB_OPTIONS)
   .then((conn) => {
     console.log('✅ MongoDB initial connection success');
     return conn;
@@ -42,7 +45,7 @@ app.use(async (req, res, next) => {
 
   if (!cachedDbPromise) {
     console.log('🔄 Re-attempting MongoDB connection...');
-    cachedDbPromise = mongoose.connect(process.env.MONGO_URI)
+    cachedDbPromise = mongoose.connect(process.env.MONGO_URI, DB_OPTIONS)
       .then((conn) => {
         console.log('✅ MongoDB connection established');
         return conn;
