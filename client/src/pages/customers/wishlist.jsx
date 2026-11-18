@@ -41,14 +41,14 @@ const WishList = ({ product }) => {
   return (
     <button
       onClick={handleLike}
-      className="w-12 h-12 shrink-0 rounded-full border border-gray-300 flex items-center justify-center hover:border-black cursor-pointer"
+      className="w-12 h-12 shrink-0 rounded-full border border-hairline flex items-center justify-center hover:border-ink cursor-pointer"
       aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
       aria-pressed={liked}
     >
       <FaHeart
         className={`text-xl ${
-          liked ? "text-red-500" : "text-gray-400"
-        } transition`}
+ liked ?"text-oxblood":"text-bark/70"
+ } transition`}
       />
     </button>
   );

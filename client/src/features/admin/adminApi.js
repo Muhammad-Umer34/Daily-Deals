@@ -37,6 +37,11 @@ export const postProduct = async (productData,user,accessToken) => {
     subcategory : productData.subcategory,
     genre:productData.genre,
     material:productData.material,
+    // What it is for: these power filters and the AI shopper's search.
+    occasions: productData.occasions || [],
+    seasons: productData.seasons || [],
+    fit: productData.fit || "",
+    fabricWeight: productData.fabricWeight || "",
   };
   const token = accessToken || user?.accessToken; 
   try {

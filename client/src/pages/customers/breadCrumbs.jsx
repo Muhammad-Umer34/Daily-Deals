@@ -22,9 +22,9 @@ export function BreadcrumbWithCustomSeparator({ productName }) {
     <div className="w-full mt-6">
       <div>
         <Breadcrumb>
-          <BreadcrumbList className="flex items-center space-x-1 text-sm sm:text-base font-medium">
+          <BreadcrumbList className="flex items-center space-x-1 note text-bark">
             <BreadcrumbItem>
-              <BreadcrumbLink asChild className="text-gray-500 hover:text-gray-700">
+              <BreadcrumbLink asChild className="text-bark hover:text-ink transition-colors duration-300">
                 <Link to="/home">Home</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -40,12 +40,12 @@ export function BreadcrumbWithCustomSeparator({ productName }) {
 
               return (
                 <div key={to} className="flex items-center space-x-1">
-                  <BreadcrumbSeparator className="text-gray-400">›</BreadcrumbSeparator>
+                  <BreadcrumbSeparator className="text-bark/50">›</BreadcrumbSeparator>
                   <BreadcrumbItem>
                     {isLast ? (
-                      <BreadcrumbPage className="text-black font-semibold">{label}</BreadcrumbPage>
+                      <BreadcrumbPage className="text-ink">{label}</BreadcrumbPage>
                     ) : (
-                      <BreadcrumbLink asChild className="text-gray-500 hover:text-gray-700">
+                      <BreadcrumbLink asChild className="text-bark hover:text-ink transition-colors duration-300">
                         <Link to={to}>{label}</Link>
                       </BreadcrumbLink>
                     )}

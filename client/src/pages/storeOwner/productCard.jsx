@@ -1,4 +1,5 @@
 import { FaEdit, FaTrash, FaEye, FaStar } from "react-icons/fa";
+import { formatPrice } from "@/lib/utils";
 
 const ProductCard = ({ product, deleteProduct, editProduct, onEdit }) => {
 
@@ -20,8 +21,8 @@ const ProductCard = ({ product, deleteProduct, editProduct, onEdit }) => {
   };
 
   return (
-    <div className="group relative bg-white rounded-2xl border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md transition-all duration-300 w-72 p-4 flex flex-col">
-      <div className="relative h-44 rounded-xl overflow-hidden bg-gray-50 mb-3">
+    <div className="group relative bg-paper border border-hairline hover:border-ink/40 transition-colors duration-300 w-72 p-4 flex flex-col">
+      <div className="relative h-44 overflow-hidden bg-parchment mb-3">
         <img
           src={product.images[0]}
           alt={product.name}
@@ -29,13 +30,13 @@ const ProductCard = ({ product, deleteProduct, editProduct, onEdit }) => {
         />
 
         <span
-          className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-xs font-semibold shadow-sm ${
-            product.stock > 10
-              ? "bg-emerald-100 text-emerald-700"
-              : product.stock > 0
-              ? "bg-amber-100 text-amber-700"
-              : "bg-red-100 text-red-700"
-          }`}
+          className={`absolute top-2 left-2 px-2 py-0.5 note ${
+ product.stock > 10
+ ?"bg-ink text-paper"
+ : product.stock > 0
+ ?"border border-ink/40 text-ink bg-paper"
+ :"border border-oxblood/40 text-oxblood bg-paper"
+ }`}
         >
           {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
         </span>
@@ -43,17 +44,17 @@ const ProductCard = ({ product, deleteProduct, editProduct, onEdit }) => {
 
       <div className="flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="font-semibold text-gray-800 text-sm line-clamp-2 mb-1">
+          <h3 className="font-medium text-ink text-sm line-clamp-2 mb-1">
             {product.name}
           </h3>
 
           <div className="flex items-center justify-between">
-            <span className="text-lg font-bold text-gray-900">
-              Rs. {product.price.toLocaleString()}
+            <span className="font-display font-semibold tracking-[-0.02em] text-xl text-ink">
+              {formatPrice(product.price)}
             </span>
 
             {product.totalPurchased > 0 && (
-              <div className="flex items-center gap-1 text-amber-600 text-xs">
+              <div className="flex items-center gap-1 text-oxblood note">
                 <FaStar className="w-3 h-3" />
                 <span>{product.totalPurchased}</span>
               </div>
@@ -61,7 +62,7 @@ const ProductCard = ({ product, deleteProduct, editProduct, onEdit }) => {
           </div>
 
           {product.views > 0 && (
-            <div className="flex items-center gap-1 text-gray-400 text-xs mt-1">
+            <div className="flex items-center gap-1 text-bark note mt-1">
               <FaEye className="w-3 h-3" />
               <span>{product.views} views</span>
             </div>
@@ -72,13 +73,13 @@ const ProductCard = ({ product, deleteProduct, editProduct, onEdit }) => {
               {product.size.slice(0, 3).map((size, index) => (
                 <span
                   key={index}
-                  className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-md"
+                  className="px-2 py-0.5 bg-parchment text-bark note border border-hairline"
                 >
                   {size}
                 </span>
               ))}
               {product.size.length > 3 && (
-                <span className="text-xs text-gray-400">
+                <span className="note text-bark">
                   +{product.size.length - 3}
                 </span>
               )}
@@ -91,7 +92,7 @@ const ProductCard = ({ product, deleteProduct, editProduct, onEdit }) => {
         <button
           type="button"
           onClick={handleEditClick}
-          className="flex-1 flex items-center justify-center gap-2 bg-gray-900 text-white text-sm font-medium py-2 rounded-lg hover:bg-black transition cursor-pointer"
+          className="flex-1 flex items-center justify-center gap-2 btn-ink !px-3 !py-2"
           style={{ pointerEvents: 'auto' }}
         >
           <FaEdit className="w-3 h-3" />
@@ -103,7 +104,7 @@ const ProductCard = ({ product, deleteProduct, editProduct, onEdit }) => {
             console.log("Delete button clicked");
             deleteProduct(product._id);
           }}
-          className="p-2.5 rounded-lg border border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-500 transition cursor-pointer"
+          className="p-2.5 border border-hairline text-bark hover:border-ink hover:text-ink transition-colors cursor-pointer"
         >
           <FaTrash className="w-3 h-3" />
         </button>

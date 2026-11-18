@@ -22,7 +22,7 @@ export default function RangeSlider({ min = 0, max = 100 }) {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <p className="text-base font-semibold text-gray-800">Price</p>
+      <p className="text-base font-semibold text-ink">Price</p>
       <Slider
         getAriaLabel={(i) => (i === 0 ? "Minimum price" : "Maximum price")}
         value={value}
@@ -34,7 +34,7 @@ export default function RangeSlider({ min = 0, max = 100 }) {
         disabled={max <= min}
         sx={{ color: "#000" }}
       />
-      <div className="flex justify-between text-xs text-gray-500 -mt-1">
+      <div className="flex justify-between text-xs text-bark -mt-1">
         <span>{formatPrice(value[0])}</span>
         <span>{formatPrice(value[1])}</span>
       </div>

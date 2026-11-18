@@ -8,6 +8,8 @@ import filterSlice from "./features/customer/filterSlice";
 import navSlice from "./features/customer/navSlice";
 import storeOwnerProductsSlice from "./features/admin/myProductsSlice";
 import chatbotSlice from "./features/customer/chatbotSlice";
-const appStore = configureStore({reducer : {auth : authSlice.reducer,ui: uiSlice.reducer,product: productSlice.reducer,active:activeSlice.reducer,userProducts:userProductSlice.reducer,filter:filterSlice.reducer,navActive:navSlice.reducer,storeOwnerProducts:storeOwnerProductsSlice.reducer,chatbot:chatbotSlice.reducer}});
+import assistantSlice from "./features/customer/assistantSlice";
+import cartSlice from "./features/customer/cartSlice";
+const appStore = configureStore({reducer : {auth : authSlice.reducer,ui: uiSlice.reducer,product: productSlice.reducer,active:activeSlice.reducer,userProducts:userProductSlice.reducer,filter:filterSlice.reducer,navActive:navSlice.reducer,storeOwnerProducts:storeOwnerProductsSlice.reducer,chatbot:chatbotSlice.reducer,assistant:assistantSlice.reducer,cart:cartSlice.reducer}});
 
 export default appStore ; 

@@ -13,7 +13,7 @@ const FilterDropdown = ({ label, options, selected, onChange }) => {
     <div className="w-full max-w-xs mb-4">
       {/* Dropdown header */}
       <div
-        className="flex items-center justify-between  py-2 text-lg font-medium text-gray-800  cursor-pointer"
+        className="flex items-center justify-between py-2 text-lg font-medium text-ink cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       >
         {label}
@@ -29,16 +29,16 @@ const FilterDropdown = ({ label, options, selected, onChange }) => {
 
       {/* Dropdown options */}
       {isOpen && (
-        <div className="grid grid-cols-2 gap-2 bg-white  px-2 py-2 mt-2">
+        <div className="grid grid-cols-2 gap-2 bg-paper px-2 py-2 mt-2">
           {options.map((option, index) => (
             <button
               key={index}
               onClick={() => handleOptionClick(option)}
               className={`text-center px-4 py-2 text-sm transition cursor-pointer ${
-                selected === option
-                  ? 'bg-blue-100 text-blue-800 font-semibold'
-                  : 'bg-gray-100 text-gray-800'
-              }`}
+ selected === option
+ ? 'bg-parchment text-ink font-semibold'
+ : 'bg-parchment text-ink'
+ }`}
             >
               {option}
             </button>

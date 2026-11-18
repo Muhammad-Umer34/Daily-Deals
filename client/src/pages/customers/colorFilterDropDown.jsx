@@ -14,7 +14,7 @@ const FilterDropdown = ({ label, options, selected, onChange }) => {
     <div className="w-full max-w-xs mb-4">
       {/* Dropdown header */}
       <div
-        className="flex items-center justify-between  py-2 text-lg font-medium text-gray-800 cursor-pointer"
+        className="flex items-center justify-between py-2 text-lg font-medium text-ink cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       >
         {label}
@@ -32,8 +32,8 @@ const FilterDropdown = ({ label, options, selected, onChange }) => {
       {isOpen && (
         <div
           className={`grid ${
-            isColorDropdown ? 'grid-cols-5' : 'grid-cols-2'
-          } gap-2 px-2 py-2 mt-2 bg-white`}
+ isColorDropdown ? 'grid-cols-5' : 'grid-cols-2'
+ } gap-2 px-2 py-2 mt-2 bg-paper`}
         >
           {options.map((option, index) => {
             const color =
@@ -48,14 +48,14 @@ const FilterDropdown = ({ label, options, selected, onChange }) => {
                 key={index}
                 onClick={() => handleOptionClick(option)}
                 className={`transition duration-150 shadow ${
-                  isSelected
-                    ? isColorDropdown
-                      ? 'ring-2 ring-offset-2 ring-blue-600'
-                      : 'bg-blue-100 text-blue-800 font-semibold'
-                    : isColorDropdown
-                      ? 'ring-1 ring-gray-300'
-                      : 'bg-gray-100 text-gray-800'
-                } ${isColorDropdown ? 'w-10 h-10 rounded-full' : 'text-center px-4 py-2 text-sm rounded-md'}`}
+ isSelected
+ ? isColorDropdown
+ ? 'ring-2 ring-offset-2 ring-oxblood'
+ : 'bg-parchment text-ink font-semibold'
+ : isColorDropdown
+ ? 'ring-1 ring-hairline'
+ : 'bg-parchment text-ink'
+ } ${isColorDropdown ? 'w-10 h-10 rounded-full' : 'text-center px-4 py-2 text-sm rounded-md'}`}
                 style={{
                   backgroundColor: color || undefined,
                 }}

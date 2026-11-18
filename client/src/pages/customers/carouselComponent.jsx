@@ -15,7 +15,7 @@ export function ImageCarousel({ images = [], name = "Product" }) {
       <CarouselContent>
         {imageList.map((imgUrl, index) => (
           <CarouselItem key={index}>
-            <div className="aspect-[4/5] overflow-hidden rounded-xl bg-gray-100">
+            <div className="aspect-[3/4] overflow-hidden bg-parchment">
               <img src={imgUrl} alt={`${name} – image ${index + 1}`} className="w-full h-full object-cover" />
             </div>
           </CarouselItem>
@@ -24,8 +24,8 @@ export function ImageCarousel({ images = [], name = "Product" }) {
       {/* Arrows sit inside the image so they never hang off narrow screens. */}
       {several && (
         <>
-          <CarouselPrevious className="left-3 bg-white/90 text-black hover:bg-white shadow" />
-          <CarouselNext className="right-3 bg-white/90 text-black hover:bg-white shadow" />
+          <CarouselPrevious className="left-3 bg-paper/90 text-ink hover:bg-paper shadow" />
+          <CarouselNext className="right-3 bg-paper/90 text-ink hover:bg-paper shadow" />
         </>
       )}
     </Carousel>

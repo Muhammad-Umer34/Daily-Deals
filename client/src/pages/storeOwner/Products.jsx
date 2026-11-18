@@ -45,7 +45,7 @@ const Products = () => {
   }, [user, accessToken]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       <NewHeader />
 
       {dropdown && (
@@ -60,7 +60,7 @@ const Products = () => {
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 mt-10 mb-5 flex flex-wrap gap-4 justify-between items-center">
-        <h1 className="text-3xl font-bold">Products</h1>
+        <h1 className="display-2 text-ink">Products</h1>
 
         <div className="flex flex-wrap gap-3 items-center">
           <div className="relative hidden sm:block">
@@ -69,14 +69,14 @@ const Products = () => {
               value={search}
               onChange={(e) => handleSearch(e)}
               placeholder="Search..."
-              className="border border-gray-300 rounded-full pl-4 pr-10 py-2 text-sm
-          focus:outline-none focus:border-blue-500 focus:shadow-md
-          transition-all duration-300 w-40 focus:w-56"
+              className="bg-paper border border-hairline pl-4 pr-10 py-2 text-sm
+ focus:outline-none focus:border-ink
+ transition-colors w-40 focus:w-56"
             />
-            <BiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <BiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-bark" />
           </div>
           <button
-            className="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800 transition cursor-pointer whitespace-nowrap"
+            className="btn-ink !px-5 !py-2 cursor-pointer whitespace-nowrap"
             onClick={() => setDropdown(!dropdown)}
           >
             Add Product

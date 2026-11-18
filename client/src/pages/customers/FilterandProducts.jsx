@@ -22,9 +22,12 @@ export default function LayoutWithFilters({ title }) {
 
   return (
     <div className="w-full max-w-screen-xl mx-auto px-4 sm:px-6 mt-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{heading}</h1>
-        <div className="flex items-center gap-3 text-sm text-gray-500">
+      <div className="flex flex-wrap items-end justify-between gap-3 mb-8 pb-4 border-b border-hairline">
+        <div>
+          <p className="note mb-2">The Collection</p>
+          <h1 className="display-2 text-ink">{heading}</h1>
+        </div>
+        <div className="flex items-center gap-4 font-meta text-xs text-bark">
           <span>
             {products.length ? `${start + 1}–${start + visible.length} of ${products.length}` : "0 products"}
           </span>
@@ -32,7 +35,7 @@ export default function LayoutWithFilters({ title }) {
           <button
             onClick={() => setShowFilters((s) => !s)}
             aria-expanded={showFilters}
-            className="md:hidden flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-gray-800 font-medium cursor-pointer"
+            className="md:hidden flex items-center gap-2 px-3 py-2.5 border border-hairline text-ink font-medium hover:border-ink transition-colors duration-300 cursor-pointer"
           >
             <FiSliders /> Filters
           </button>
@@ -40,7 +43,7 @@ export default function LayoutWithFilters({ title }) {
       </div>
 
       <div className="flex flex-col md:flex-row gap-6 md:gap-10">
-        <aside className={`${showFilters ? "block" : "hidden"} md:block w-full md:w-60 shrink-0`} aria-label="Filters">
+        <aside className={`${showFilters ?"block":"hidden"} md:block w-full md:w-60 shrink-0`} aria-label="Filters">
           <Filters />
         </aside>
 
@@ -52,7 +55,7 @@ export default function LayoutWithFilters({ title }) {
               ))}
             </div>
           ) : (
-            <p className="text-center text-gray-500 py-20">No products match this selection.</p>
+            <p className="text-center text-bark py-20 font-meta text-sm">No products match this selection.</p>
           )}
 
           {pages > 1 && (
@@ -60,7 +63,7 @@ export default function LayoutWithFilters({ title }) {
               <button
                 disabled={page === 1}
                 onClick={() => dispatch(userProductActions.setPageNo(page - 1))}
-                className="px-3 py-2 rounded-md text-sm font-medium disabled:text-gray-300 hover:bg-gray-100 cursor-pointer"
+                className="px-3 py-2 font-meta text-xs disabled:text-bark/40 hover:text-ink transition-colors duration-300 cursor-pointer"
               >
                 ‹ Previous
               </button>
@@ -69,7 +72,7 @@ export default function LayoutWithFilters({ title }) {
                   key={i}
                   onClick={() => dispatch(userProductActions.setPageNo(i + 1))}
                   aria-current={i + 1 === page ? "page" : undefined}
-                  className={`w-9 h-9 rounded-md text-sm font-medium cursor-pointer ${i + 1 === page ? "bg-black text-white" : "hover:bg-gray-100"}`}
+                  className={`w-9 h-9 font-meta text-xs transition-colors duration-300 cursor-pointer ${i + 1 === page ?"bg-ink text-paper":"text-bark hover:text-ink"}`}
                 >
                   {i + 1}
                 </button>
@@ -77,7 +80,7 @@ export default function LayoutWithFilters({ title }) {
               <button
                 disabled={page === pages}
                 onClick={() => dispatch(userProductActions.setPageNo(page + 1))}
-                className="px-3 py-2 rounded-md text-sm font-medium disabled:text-gray-300 hover:bg-gray-100 cursor-pointer"
+                className="px-3 py-2 font-meta text-xs disabled:text-bark/40 hover:text-ink transition-colors duration-300 cursor-pointer"
               >
                 Next ›
               </button>

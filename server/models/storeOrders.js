@@ -7,6 +7,7 @@ const storeOrderSchema = new mongoose.Schema({
   quantity: { type: Number, default: 1 },
   size: { type: String, required: true },
   color: { type: String, required: true },
+  sku: { type: String, default: "" },
   price: { type: Number, required: true },
   productName: { type: String, required: true },
   productImage: { type: String, required: true },

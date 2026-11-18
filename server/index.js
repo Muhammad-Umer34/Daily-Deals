@@ -6,8 +6,16 @@ const cookieParser = require('cookie-parser');
 const authRouter = require('./routes/authRoutes'); 
 const userRouter = require('./routes/userRoutes');
 const storeRouter = require('./routes/storeRoutes');
+const assistantRouter = require('./routes/assistantRoutes');
 
 require('dotenv').config();
+
+// Node on some Windows setups sees only 127.0.0.1 as its DNS server and can't resolve the
+// mongodb+srv address (querySrv ECONNREFUSED); use public DNS in that case.
+const dns = require('dns');
+if (dns.getServers().every((s) => s.startsWith('127.') || s === '::1')) {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+}
 
 // Always use the dailydeals database, even if MONGO_URI has no /dbname (Mongo would fall back to an empty "test").
 const DB_OPTIONS = { dbName: process.env.MONGO_DB_NAME || "dailydeals" };
@@ -21,9 +29,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 app.use(cookieParser());
 
+// The live site's address is always allowed. During development any localhost
+// port is too: Vite moves to 5174, 5175… when 5173 is busy, and a blocked
+// origin silently shows every page as empty.
+const isDev = process.env.NODE_ENV !== "production" && !process.env.VERCEL;
+const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:5173";
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173", 
-  credentials: true               
+  origin: (origin, done) => {
+    const localDev = isDev && /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin || "");
+    done(null, !origin || origin === allowedOrigin || localDev);
+  },
+  credentials: true,
 }));
 
 
@@ -89,6 +105,7 @@ app.get('/api/keepalive', async (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/customer', userRouter);
 app.use('/api/store', storeRouter);
+app.use('/api/assistant', assistantRouter);
 
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   app.listen(process.env.PORT || 5000, () => {

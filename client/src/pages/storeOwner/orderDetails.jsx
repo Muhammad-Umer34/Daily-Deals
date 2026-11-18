@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { formatPrice } from "@/lib/utils";
 import NewHeader from "../../components/ui/admin/newHeader";
 import { uiActions } from "../../features/admin/uiSlice";
 import { useSelector, useDispatch } from "react-redux";
@@ -73,12 +74,12 @@ const OrderDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-paper">
         <NewHeader />
         <div className="flex justify-center items-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-lg font-medium text-gray-700">Loading order details...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-oxblood mx-auto mb-4"></div>
+            <p className="font-display font-semibold tracking-[-0.02em] text-2xl text-bark">Loading order details...</p>
           </div>
         </div>
       </div>
@@ -87,14 +88,14 @@ const OrderDetails = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-paper">
         <NewHeader />
         <div className="flex justify-center items-center h-64">
           <div className="text-center">
-            <p className="text-lg font-medium text-red-600 mb-4">{error}</p>
+            <p className="font-display font-semibold tracking-[-0.02em] text-2xl text-oxblood mb-4">Error: {error}</p>
             <button 
               onClick={() => navigate(-1)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="btn-ink"
             >
               Go Back
             </button>
@@ -106,20 +107,17 @@ const OrderDetails = () => {
 
   if (!orderDetails) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-paper">
         <NewHeader />
         <div className="flex justify-center items-center h-64">
-          <p className="text-lg font-medium text-gray-700">No order details found</p>
+          <p className="font-display font-semibold tracking-[-0.02em] text-2xl text-bark">No order details found</p>
         </div>
       </div>
     );
   }
-  const subtotal = orderDetails.totalPrice
-    ? Math.max(0, orderDetails.totalPrice - 15).toFixed(2)
-    : "0.00";
 
   return (
-    <div className="min-h-screen bg-gray-50 font-inter">
+    <div className="min-h-screen bg-paper">
       <NewHeader />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
@@ -129,54 +127,54 @@ const OrderDetails = () => {
               dispatch(uiActions.changeField("Order"));
               navigate(-1);
             }}
-            className="flex items-center justify-center w-10 h-10 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200"
+            className="flex items-center justify-center w-10 h-10 bg-paper border border-hairline hover:border-ink/40 transition-colors"
           >
-            <FaArrowLeft className="w-4 h-4 text-gray-600" />
+            <FaArrowLeft className="w-4 h-4 text-bark" />
           </button>
-          <h1 className="text-2xl font-semibold text-gray-900">Order Details</h1>
+          <h1 className="display-2 text-ink">Order Details</h1>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="border-t-2 border-ink pt-8">
           <div className="p-6 space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-4">
-                <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2">
+                <h2 className="font-display font-semibold tracking-[-0.02em] text-2xl text-ink border-b border-hairline pb-2">
                   Order Information
                 </h2>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-sm font-medium text-gray-500">Order ID:</span>
-                    <span className="text-sm text-gray-900 font-mono">{orderDetails._id}</span>
+                    <span className="note text-bark">Order ID:</span>
+                    <span className="text-sm text-ink font-meta">{orderDetails._id}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm font-medium text-gray-500">Order Date:</span>
-                    <span className="text-sm text-gray-900">{date}</span>
+                    <span className="note text-bark">Order Date:</span>
+                    <span className="text-sm text-ink">{date}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm font-medium text-gray-500">Expected Delivery:</span>
-                    <span className="text-sm text-gray-900">{expectedDelivery || "Not available"}</span>
+                    <span className="note text-bark">Expected Delivery:</span>
+                    <span className="text-sm text-ink">{expectedDelivery || "Not available"}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium text-gray-500">Order Status:</span>
-                    <span className={`text-sm px-2 py-1 rounded-full text-xs font-medium ${
-                      orderDetails.orderStatus === 'Delivered' ? 'bg-green-100 text-green-800' :
-                      orderDetails.orderStatus === 'Processing' ? 'bg-blue-100 text-blue-800' :
-                      orderDetails.orderStatus === 'Shipped' ? 'bg-purple-100 text-purple-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
+                  <div className="flex justify-between items-center">
+                    <span className="note text-bark">Order Status:</span>
+                    <span className={`text-sm px-2 py-1 note ${
+ orderDetails.orderStatus === 'Delivered' ? 'bg-ink text-paper' :
+ orderDetails.orderStatus === 'Processing' ? 'border border-ink/40 text-ink' :
+ orderDetails.orderStatus === 'Shipped' ? 'border border-ink/40 text-ink' :
+ 'border border-hairline text-bark'
+ }`}>
                       {orderDetails.orderStatus || "Pending"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm font-medium text-gray-500">Payment Method:</span>
-                    <span className="text-sm text-gray-900">{orderDetails.paymentMethod || "Cash on Delivery"}</span>
+                    <span className="note text-bark">Payment Method:</span>
+                    <span className="text-sm text-ink">{orderDetails.paymentMethod || "Cash on Delivery"}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium text-gray-500">Payment Status:</span>
-                    <span className={`text-sm px-2 py-1 rounded-full text-xs font-medium ${
-                      orderDetails.paymentStatus === 'Paid' ? 'bg-green-100 text-green-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
+                  <div className="flex justify-between items-center">
+                    <span className="note text-bark">Payment Status:</span>
+                    <span className={`text-sm px-2 py-1 note ${
+ orderDetails.paymentStatus === 'Paid' ? 'bg-ink text-paper' :
+ 'border border-oxblood/40 text-oxblood'
+ }`}>
                       {orderDetails.paymentStatus || "Pending"}
                     </span>
                   </div>
@@ -184,90 +182,83 @@ const OrderDetails = () => {
               </div>
 
               <div className="space-y-4">
-                <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2">
+                <h2 className="font-display font-semibold tracking-[-0.02em] text-2xl text-ink border-b border-hairline pb-2">
                   Customer Information
                 </h2>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-sm font-medium text-gray-500">Name:</span>
-                    <span className="text-sm text-gray-900">{orderDetails.userName || "N/A"}</span>
+                    <span className="note text-bark">Name:</span>
+                    <span className="text-sm text-ink">{orderDetails.userName || "N/A"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm font-medium text-gray-500">Email:</span>
-                    <span className="text-sm text-gray-900 break-all">{orderDetails.userEmail || "N/A"}</span>
+                    <span className="note text-bark">Email:</span>
+                    <span className="text-sm text-ink break-all">{orderDetails.userEmail || "N/A"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm font-medium text-gray-500">Phone:</span>
-                    <span className="text-sm text-gray-900">{orderDetails.phoneNumber || "N/A"}</span>
+                    <span className="note text-bark">Phone:</span>
+                    <span className="text-sm text-ink">{orderDetails.phoneNumber || "N/A"}</span>
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-gray-500 block mb-1">Shipping Address:</span>
-                    <span className="text-sm text-gray-900">{orderDetails.shippingAddress || "N/A"}</span>
+                    <span className="note text-bark block mb-1">Shipping Address:</span>
+                    <span className="text-sm text-ink">{orderDetails.shippingAddress || "N/A"}</span>
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-gray-500 block mb-1">Billing Address:</span>
-                    <span className="text-sm text-gray-900">{orderDetails.billingAddress || "N/A"}</span>
+                    <span className="note text-bark block mb-1">Billing Address:</span>
+                    <span className="text-sm text-ink">{orderDetails.billingAddress || "N/A"}</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Financial Summary</h2>
+            <div className="bg-parchment p-6">
+              <h2 className="font-display font-semibold tracking-[-0.02em] text-2xl text-ink mb-4">Financial Summary</h2>
+              {/* The server sends only this store's lines and their total; delivery is charged to the customer, not the seller. */}
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-600">Subtotal:</span>
-                  <span className="text-sm font-medium text-gray-900">Rs. {subtotal}</span>
+                  <span className="text-sm font-medium text-bark">Items from your store</span>
+                  <span className="text-sm font-medium text-ink">
+                    {orderDetails.items?.reduce((n, i) => n + (i.quantity || 0), 0) || 0}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-600">Shipping Cost:</span>
-                  <span className="text-sm font-medium text-gray-900">Rs. 15.00</span>
+                  <span className="text-sm font-medium text-bark">Payment</span>
+                  <span className="text-sm font-medium text-ink">{orderDetails.paymentMethod || "Cash on Delivery"}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-600">Discount:</span>
-                  <span className="text-sm font-medium text-gray-900">Rs. 0.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-600">GST:</span>
-                  <span className="text-sm font-medium text-gray-900">0%</span>
-                </div>
-                <div className="border-t border-gray-200 pt-3">
-                  <div className="flex justify-between">
-                    <span className="text-base font-semibold text-gray-900">Total:</span>
-                    <span className="text-base font-semibold text-gray-900">
-                      Rs. {orderDetails.totalPrice?.toFixed(2) || "0.00"}
-                    </span>
+                <div className="border-t border-hairline pt-3">
+                  <div className="flex justify-between font-display font-semibold tracking-[-0.02em] text-2xl text-ink">
+                    <span>Your total</span>
+                    <span>{formatPrice(orderDetails.totalPrice)}</span>
                   </div>
                 </div>
               </div>
             </div>
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Order Items</h2>
+                <h2 className="font-display font-semibold tracking-[-0.02em] text-2xl text-ink">Order Items</h2>
                 {orderDetails.orderStatus !== 'Delivered' && orderDetails.orderStatus !== 'Cancelled' && (
-                  <button className="px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                  <button className="btn-ink !px-5 !py-2"
                   onClick={()=>{hanldeDispatchOrder(orderDetails._id)}}
                   >
                     Dispatch Order
                   </button>
                 )}
               </div>
-              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                <div className="grid grid-cols-6 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200">
-                  <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Image</div>
-                  <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Product Name</div>
-                  <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Quantity</div>
-                  <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Unit Price</div>
-                  <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Color</div>
-                  <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Total</div>
+              <div className="bg-paper border-t-2 border-ink overflow-hidden">
+                <div className="grid grid-cols-6 gap-4 px-6 py-4 bg-parchment border-b border-hairline">
+                  <div className="note text-bark">Image</div>
+                  <div className="note text-bark">Product Name</div>
+                  <div className="note text-bark">Quantity</div>
+                  <div className="note text-bark">Unit Price</div>
+                  <div className="note text-bark">Color</div>
+                  <div className="note text-bark">Total</div>
                 </div>
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-hairline">
                   {orderDetails.items && orderDetails.items.length > 0 ? (
                     orderDetails.items.map((order, index) => (
                       <OrderDetailCard key={order._id || index} order={order} />
                     ))
                   ) : (
-                    <div className="px-6 py-12 text-center text-gray-500">
-                      <div className="text-lg font-medium">No items found</div>
+                    <div className="px-6 py-12 text-center text-bark">
+                      <div className="font-display font-semibold tracking-[-0.02em] text-2xl">No items found</div>
                       <div className="text-sm mt-1">This order appears to have no items</div>
                     </div>
                   )}

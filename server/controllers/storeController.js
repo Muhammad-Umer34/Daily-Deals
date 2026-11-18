@@ -1,5 +1,11 @@
+const crypto = require("crypto");
 const {check, validationResult}=require("express-validator")
-const productSchema = require("../models/store.js").default;
+const productStore = require("../models/store.js");
+const productSchema = productStore.default;
+const { buildVariants } = productStore;
+const Label = require("../models/label");
+const taxonomy = require("../services/catalog/taxonomy");
+const { embedProducts } = require("../services/catalog/embeddings");
 const storeOrderSchema=require("../models/storeOrders.js").default;
 const Order = require("../models/order.js");
 const User = require("../models/user");
@@ -74,33 +80,36 @@ exports.postProductController = [
     }
 
     try {
-      const { name, description, price, quantity, category, images,size,color } = req.body;
+      const { name, description, price, quantity, category, images, size, color } = req.body;
       const owner = await User.findById(req.user.id);
+      const label = await Label.findOne({ sellerId: req.user.id });
 
       const product = await productSchema.create({
         name,
         description,
         price,
-        stock: quantity,
-        category:category.toLowerCase(),
+        category: String(category).toLowerCase(),
+        // Free text from the form ("Pants", "Frock") lands on the shared vocabulary.
+        subcategory: taxonomy.categoryForWord(req.body.subcategory) || String(req.body.subcategory).toLowerCase(),
+        genre: String(req.body.genre).toLowerCase(),
+        material: req.body.material,
         images,
-        size,
-        color,
+        variants: Array.isArray(req.body.variants) && req.body.variants.length
+          ? req.body.variants
+          : buildVariants({ sizes: [].concat(size || []), colors: [].concat(color || []), stock: Number(quantity) || 0, skuPrefix: `${(label?.slug || "mf").slice(0, 4)}-${crypto.randomBytes(2).toString("hex")}` }),
+        ...pickAttributes(req.body),
+        labelId: label?._id,
         storeId: req.user.id,
-        brand: owner?.brand_name || '',
-        brand_logo: owner?.brand_logo || '',
-        reviewsCount: 0,
-        views: 0,
-        purchasedCount: 0,
-        ratings: 0,
-        isAvailable: true,
-        subcategory:req.body.subcategory.toLowerCase(),
-        genre:req.body.genre.toLowerCase(),
-        material:req.body.material,
-
+        brand: label?.name || owner?.brand_name || '',
+        brand_logo: label?.logo || owner?.brand_logo || '',
       });
+      // Best effort: a product without a meaning vector is still found by keywords.
+      embedProducts([product._id]).catch((e) => console.warn('[catalog] embedding skipped:', e.message));
       res.status(201).json({ message: 'Product created successfully', product });
     } catch (error) {
+      if (error.name === "ValidationError") {
+        return res.status(400).json({ errors: Object.values(error.errors).map((e) => ({ msg: e.message, path: e.path })) });
+      }
       console.error("Error creating product:", error);
       res.status(500).json({ error: 'Internal server error' });
     }
@@ -134,21 +143,55 @@ exports.deleteProductController = async (req, res) => {
 
 exports.updateProductController = async (req, res) => {
   const productId = req.params.id;
-  const { name, description, price, stock, category, images, size, color,subcategory } = req.body;
+  const { name, description, price, stock, category, images, size, color, subcategory, variants, status } = req.body;
   try {
-    const product = await productSchema.findOneAndUpdate(
-      { _id: productId, storeId: req.user.id },
-      { name, description, price, stock, category,subcategory, images, size, color },
-      { new: true }
-    );
+    // Loaded and saved (not updated in place) so variants and derived fields stay consistent.
+    const product = await productSchema.findOne({ _id: productId, storeId: req.user.id });
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
+    if (name !== undefined) product.name = name;
+    if (description !== undefined) product.description = description;
+    if (price !== undefined) product.price = price;
+    if (category !== undefined) product.category = String(category).toLowerCase();
+    if (subcategory !== undefined) product.subcategory = taxonomy.categoryForWord(subcategory) || String(subcategory).toLowerCase();
+    if (images !== undefined) product.images = images;
+    if (status !== undefined) product.status = status;
+    Object.assign(product, pickAttributes(req.body));
+
+    if (Array.isArray(variants) && variants.length) {
+      product.variants = variants;
+    } else if (size !== undefined || color !== undefined || stock !== undefined) {
+      // The edit form sends sizes, colours and one stock number: rebuild the variants from them.
+      product.variants = buildVariants({
+        sizes: [].concat(size ?? product.size),
+        colors: [].concat(color ?? product.color),
+        stock: stock !== undefined ? Number(stock) : product.stock,
+        skuPrefix: `${taxonomy.slugify(product.brand || "mf").slice(0, 4)}-${String(product._id).slice(-4)}`,
+      });
+    }
+    await product.save();
+    embedProducts([product._id]).catch((e) => console.warn('[catalog] embedding skipped:', e.message));
     res.status(200).json({ message: 'Product updated successfully', product });
   } catch (error) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ errors: Object.values(error.errors).map((e) => ({ msg: e.message, path: e.path })) });
+    }
     console.error("Error updating product:", error);
     res.status(500).json({ error: 'Internal server error' });
   }
+}
+
+// The optional descriptive fields a seller may send; anything else is ignored.
+function pickAttributes(body = {}) {
+  const out = {};
+  const list = (v) => [].concat(v || []).map((x) => String(x).toLowerCase().trim()).filter(Boolean);
+  if (body.occasions !== undefined) out.occasions = list(body.occasions);
+  if (body.seasons !== undefined) out.seasons = list(body.seasons);
+  if (body.tags !== undefined) out.tags = list(body.tags).slice(0, 12);
+  for (const key of ["fit", "pattern", "fabricWeight"]) if (body[key] !== undefined) out[key] = String(body[key]).toLowerCase();
+  if (body.compareAtPrice !== undefined) out.compareAtPrice = body.compareAtPrice === null ? null : Number(body.compareAtPrice);
+  return out;
 }
 
 exports.getStoreOrdersController = async (req,res)=>{

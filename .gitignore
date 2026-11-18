@@ -12,3 +12,7 @@ chatbot/.env
 __pycache__/
 *.pyc
 DEMO_ACCOUNTS.md
+
+# Database backups made by server/scripts/migrateToUsd.js (they hold customer data)
+server/backups/
+server/catalogue-review.md

@@ -8,12 +8,15 @@ const Order = require("../models/order.js");
 const StoreOrder = require("../models/storeOrders.js").default;
 const mongoose = require("mongoose");
 
-// Free delivery from Rs 2,000 (the policy the chatbot quotes); keep in sync with deliveryFee in client/src/lib/utils.js.
-const deliveryFee = (subtotal) => (subtotal >= 2000 ? 0 : 200);
+// Free delivery from $50, otherwise $5 (services/pricing.js). Shared with the
+// assistant's cart tools; the client mirrors it in src/lib/utils.js for display.
+const { deliveryFee } = require("../services/pricing");
+const { findVariant } = require("../services/catalog/stock");
+const { placeOrder, OrderError } = require("../services/orders");
 
 exports.getAllProductForCustomer = async (req, res) => {
   try {
-    const products = await productSchema.find({});
+    const products = await productSchema.find({ status: "active" });
     res.status(200).json(products);
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -44,17 +47,28 @@ exports.postCart = async (req, res) => {
   try {
     // Name, image and price come from the product record, not the client.
     const product = await productSchema.findById(productId);
-    if (!product) {
+    if (!product || product.status !== "active") {
       return res.status(404).json({ message: "Product not found" });
     }
-    // Same product, colour and size already in the cart: add to that line instead of duplicating it.
-    const existing = await Cart.findOneAndUpdate(
-      { productId, userId: req.user.id, color, size },
-      { $inc: { quantity } },
-      { new: true }
-    );
-    if (existing) {
-      return res.status(200).json({ message: "Cart updated", cartItem: existing });
+    // Stock is per size and colour: find that exact variant and check it.
+    const variant = findVariant(product, { size, color });
+    if (!variant) {
+      return res.status(400).json({ message: `Choose one of the sizes and colours this item comes in.` });
+    }
+    const inCart = await Cart.findOne({ productId, userId: req.user.id, sku: variant.sku });
+    const wanted = quantity + (inCart?.quantity || 0);
+    if (wanted > variant.stock) {
+      return res.status(400).json({
+        message: variant.stock > 0
+          ? `Only ${variant.stock} left in ${variant.color}, size ${variant.size}.`
+          : `Sold out in ${variant.color}, size ${variant.size}.`,
+      });
+    }
+    // Same variant already in the cart: add to that line instead of duplicating it.
+    if (inCart) {
+      inCart.quantity = wanted;
+      await inCart.save();
+      return res.status(200).json({ message: "Cart updated", cartItem: inCart });
     }
     const cartItem = new Cart({
       productId,
@@ -63,8 +77,9 @@ exports.postCart = async (req, res) => {
       image: product.images?.[0],
       price: product.price,
       quantity,
-      color,
-      size,
+      color: variant.color,
+      size: variant.size,
+      sku: variant.sku,
     });
 
     await cartItem.save();
@@ -227,7 +242,9 @@ exports.getProductsByCategory = async (req, res) => {
   const term = req.params.genre?.toLowerCase();
   try {
     // "all" lists everything; otherwise match a gender (genre) or a style (category, e.g. "casual").
-    const products = await productSchema.find(term === "all" ? {} : { $or: [{ genre: term }, { category: term }] });
+    const products = await productSchema.find(
+      term === "all" ? { status: "active" } : { status: "active", $or: [{ genre: term }, { category: term }] }
+    );
     return res.status(200).json(products);
   } catch (error) {
     console.error("Error fetching products by category:", error);
@@ -244,15 +261,19 @@ exports.updateQuantity = async (req, res) => {
     return res.status(400).json({ message: "Quantity must be at least 1" });
   }
   try {
-    const cartItem = await Cart.findOneAndUpdate(
-      { _id: itemId, userId },
-      { $set: { quantity } },
-      { new: true }
-    );
-
+    const cartItem = await Cart.findOne({ _id: itemId, userId });
     if (!cartItem) {
       return res.status(404).json({ message: "Cart item not found" });
     }
+    // Never more than that size and colour has left.
+    const product = await productSchema.findById(cartItem.productId);
+    const variant = product && findVariant(product, { sku: cartItem.sku, size: cartItem.size, color: cartItem.color });
+    if (variant && quantity > variant.stock) {
+      return res.status(400).json({ message: `Only ${variant.stock} left in ${variant.color}, size ${variant.size}.` });
+    }
+    cartItem.quantity = quantity;
+    if (variant && !cartItem.sku) cartItem.sku = variant.sku;
+    await cartItem.save();
 
     res.status(200).json(cartItem);
   } catch (error) {
@@ -295,73 +316,29 @@ exports.updateUserInfo = async (req, res) => {
 };
 
 exports.postOrder = async (req, res) => {
-  // Items, prices and statuses are built here from the user's cart and the
-  // product records; the client only supplies delivery details.
-  const userId = req.user.id;
+  // Items, prices and statuses are built by services/orders.placeOrder from the
+  // user's cart and the product records; the client only supplies delivery
+  // details. The assistant's confirm-order endpoint runs the same function.
   const { shippingAddress, paymentMethod, phoneNumber, userName } = req.body;
   if (!shippingAddress?.trim() || !phoneNumber?.trim() || !paymentMethod) {
     return res.status(400).json({ message: "Phone number, shipping address and payment method are required" });
   }
   try {
-    const cartItems = await Cart.find({ userId });
-    if (cartItems.length === 0) {
-      return res.status(400).json({ message: "Cart is empty" });
-    }
-    const products = await productSchema.find({ _id: { $in: cartItems.map((i) => i.productId) } });
-    const productsById = new Map(products.map((p) => [p.id, p]));
-
-    const items = [];
-    const wanted = new Map(); // productId -> total quantity across sizes/colours
-    for (const cartItem of cartItems) {
-      const product = productsById.get(cartItem.productId);
-      if (!product || !Number.isInteger(cartItem.quantity) || cartItem.quantity < 1) {
-        return res.status(400).json({ message: `Invalid cart item: ${cartItem.name}` });
-      }
-      wanted.set(cartItem.productId, (wanted.get(cartItem.productId) || 0) + cartItem.quantity);
-      if (wanted.get(cartItem.productId) > product.stock) {
-        return res.status(400).json({ message: `Only ${product.stock} left of ${product.name}` });
-      }
-      items.push({ ...cartItem.toObject(), price: product.price, storeId: product.storeId });
-    }
-    const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-
-    const order = await Order.create({
-      items,
-      totalPrice: subtotal + deliveryFee(subtotal),
-      shippingAddress,
-      paymentMethod,
-      phoneNumber,
-      orderStatus: "Pending",
-      paymentStatus: "Pending",
-      expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      userId,
+    const { order } = await placeOrder({
+      userId: req.user.id,
       userName,
       userEmail: req.user.email,
+      shippingAddress,
+      phoneNumber,
+      paymentMethod,
     });
-
-    await StoreOrder.insertMany(
-      items.map((i) => ({
-        productId: i.productId,
-        userId,
-        storeId: i.storeId,
-        productName: i.name,
-        productImage: i.image,
-        price: i.price,
-        quantity: i.quantity,
-        color: i.color,
-        size: i.size,
-        parentOrderId: order.id,
-      }))
-    );
-    await productSchema.bulkWrite(
-      items.map((i) => ({
-        updateOne: { filter: { _id: i.productId }, update: { $inc: { purchasedCount: i.quantity, stock: -i.quantity } } },
-      }))
-    );
-    await Cart.deleteMany({ userId });
-
     res.status(201).json(order);
   } catch (error) {
+    // "Cart is empty", "Only 3 left of X", "Invalid cart item: X" — the
+    // checkout page prints these, so they keep their 400 as before.
+    if (error instanceof OrderError) {
+      return res.status(400).json({ message: error.userMessage });
+    }
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
@@ -404,9 +381,9 @@ exports.increaseOrderViews = async (req, res) => {
 exports.getTopSellingProducts = async (req, res) => {
   try {
     const [topProducts, newArrival, topViewed] = await Promise.all([
-      productSchema.find().sort({ purchasedCount: -1 }).limit(4),
-      productSchema.find().sort({ createdAt: -1 }).limit(4),
-      productSchema.find().sort({ views: -1 }).limit(4)
+      productSchema.find({ status: "active" }).sort({ purchasedCount: -1 }).limit(12),
+      productSchema.find({ status: "active" }).sort({ createdAt: -1 }).limit(12),
+      productSchema.find({ status: "active" }).sort({ views: -1 }).limit(12)
     ]);
 
     res.status(200).json({
@@ -417,6 +394,56 @@ exports.getTopSellingProducts = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching top selling products:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// The catalogue's vocabulary, for filters, the seller form and the assistant.
+const taxonomy = require("../services/catalog/taxonomy");
+exports.getCatalogOptions = (_req, res) => {
+  res.status(200).json({
+    departments: taxonomy.DEPARTMENTS,
+    styles: taxonomy.STYLES,
+    occasions: taxonomy.OCCASIONS,
+    seasons: taxonomy.SEASONS,
+    fits: taxonomy.FITS,
+    patterns: taxonomy.PATTERNS,
+    fabricWeights: taxonomy.FABRIC_WEIGHTS,
+    colorFamilies: Object.keys(taxonomy.COLOR_FAMILIES),
+    categories: taxonomy.CATEGORIES.map(({ slug, name, departments }) => ({ slug, name, departments })),
+  });
+};
+
+// The shopper's opt-in profile: saved sizes, colours, departments and budget.
+const cleanPreferences = (body = {}) => {
+  const str = (v) => (typeof v === "string" ? v.trim().slice(0, 12) : "");
+  const sizes = body.sizes || {};
+  return {
+    sizes: { top: str(sizes.top), bottom: str(sizes.bottom), shoe: str(sizes.shoe), kids: str(sizes.kids) },
+    colors: (Array.isArray(body.colors) ? body.colors : []).filter((c) => Object.keys(taxonomy.COLOR_FAMILIES).includes(c)).slice(0, 8),
+    departments: (Array.isArray(body.departments) ? body.departments : []).filter((d) => taxonomy.DEPARTMENTS.includes(d)),
+    budget: Number.isFinite(Number(body.budget)) && Number(body.budget) > 0 ? Math.min(Number(body.budget), 100000) : null,
+  };
+};
+exports.cleanPreferences = cleanPreferences;
+
+exports.getPreferences = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("preferences").lean();
+    res.status(200).json(user?.preferences || cleanPreferences());
+  } catch (error) {
+    console.error("Error loading preferences:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.updatePreferences = async (req, res) => {
+  try {
+    const preferences = cleanPreferences(req.body);
+    await User.updateOne({ _id: req.user.id }, { $set: { preferences } });
+    res.status(200).json(preferences);
+  } catch (error) {
+    console.error("Error saving preferences:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -41,7 +41,7 @@ export default function DisplayWishlist() {
       {items.length > 0 ? (
         items.map((item) => <WishListItem key={item._id} item={item} onDelete={onDelete} />)
       ) : (
-        <div className="text-center text-gray-500 mt-10">No items in wishlist.</div>
+        <div className="text-center text-bark mt-10">No items in wishlist.</div>
       )}
     </div>
   );

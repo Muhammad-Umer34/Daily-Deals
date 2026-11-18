@@ -47,7 +47,7 @@ const fetchProducts = async () => {
   }, [user, accessToken]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       <div className="max-w-7xl mx-auto">
         {/* Content Section */}
         <div className="px-8 py-8">
@@ -65,9 +65,9 @@ const fetchProducts = async () => {
             </div>
           ) : (
             <div className="text-center py-20">
-              <div className="mx-auto h-24 w-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+              <div className="mx-auto h-24 w-24 bg-parchment border border-hairline flex items-center justify-center mb-6">
                 <svg
-                  className="h-12 w-12 text-gray-400"
+                  className="h-12 w-12 text-bark"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -80,16 +80,16 @@ const fetchProducts = async () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium text-gray-900 mb-3">
+              <h3 className="font-display font-semibold tracking-[-0.02em] text-3xl text-ink mb-3">
                 No products available
               </h3>
-              <p className="text-gray-500 mb-6 max-w-md mx-auto">
+              <p className="text-bark mb-6 max-w-md mx-auto">
                 Get started by adding your first product to the inventory
                 system.
               </p>
-              <button className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors">
+              <button className="btn-ink !px-6">
                 <svg
-                  className="h-4 w-4 mr-2"
+                  className="h-4 w-4 mr-2 inline"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

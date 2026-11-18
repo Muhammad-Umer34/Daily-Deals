@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
+import { formatPrice } from "@/lib/utils";
 
 const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
   const [chartState, setChartState] = useState({
@@ -94,7 +95,7 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
             }
           }
         },
-        colors: ['#008FFB', '#00E396'],
+        colors: ['#0a0a0a', '#a3a3a3'],
         dataLabels: { 
           enabled: false 
         },
@@ -113,7 +114,7 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
         },
         grid: {
           row: {
-            colors: ["#f3f3f3", "transparent"],
+            colors: ["#f4f4f2", "transparent"],
             opacity: 0.5,
           },
         },
@@ -133,15 +134,15 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
             min: 0,
             forceNiceScale: true,
             title: {
-              text: "Revenue (Rs.)",
+              text: "Revenue (USD)",
               style: {
-                color: '#008FFB',
+                color: '#0a0a0a',
                 fontSize: '14px'
               }
             },
             labels: {
               formatter: function (val) {
-                return `Rs ${Math.round(val || 0).toLocaleString("en-PK")}`;
+                return formatPrice(Math.round(val || 0));
               }
             }
           },
@@ -152,7 +153,7 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
             title: {
               text: "Orders",
               style: {
-                color: '#00E396',
+                color: '#737373',
                 fontSize: '14px'
               }
             },
@@ -169,7 +170,7 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
           y: [
             {
               formatter: function (y) {
-                return y ? `Rs. ${y.toLocaleString()}` : 'Rs. 0';
+                return formatPrice(y);
               }
             },
             {
@@ -210,16 +211,16 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-oxblood"></div>
       </div>
     );
   }
   if (!data || data.length === 0) {
     return (
-      <div className="flex justify-center items-center h-96 bg-gray-50 rounded-lg">
+      <div className="flex justify-center items-center h-96 bg-parchment">
         <div className="text-center">
-          <div className="text-gray-500 text-lg mb-2">No Data Available</div>
-          <div className="text-gray-400 text-sm">
+          <div className="font-display font-semibold tracking-[-0.02em] text-2xl text-bark mb-2">No Data Available</div>
+          <div className="text-bark text-sm">
             No orders found for the selected time period
           </div>
         </div>
@@ -228,7 +229,7 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="bg-paper p-6 border-t-2 border-ink">
       <ReactApexChart
         options={chartState.options}
         series={chartState.series}
@@ -236,25 +237,25 @@ const ApexChart = ({ data = [], period = "Last 30 Days", loading = false }) => {
         height={350}
       />
       <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <div className="text-blue-600 text-sm font-medium">Total Revenue</div>
-          <div className="text-2xl font-bold text-blue-800">
-            Rs. {data.reduce((sum, item) => sum + (item.totalRevenue || 0), 0).toLocaleString()}
+        <div className="border border-hairline p-4">
+          <div className="note text-bark">Total Revenue</div>
+          <div className="font-display font-semibold tracking-[-0.02em] text-3xl text-ink">
+            {formatPrice(data.reduce((sum, item) => sum + (item.totalRevenue || 0), 0))}
           </div>
         </div>
-        <div className="bg-green-50 p-4 rounded-lg">
-          <div className="text-green-600 text-sm font-medium">Total Orders</div>
-          <div className="text-2xl font-bold text-green-800">
+        <div className="border border-hairline p-4">
+          <div className="note text-bark">Total Orders</div>
+          <div className="font-display font-semibold tracking-[-0.02em] text-3xl text-ink">
             {data.reduce((sum, item) => sum + (item.totalOrders || 0), 0).toLocaleString()}
           </div>
         </div>
-        <div className="bg-purple-50 p-4 rounded-lg">
-          <div className="text-purple-600 text-sm font-medium">Average Order Value</div>
-          <div className="text-2xl font-bold text-purple-800">
-            Rs. {(() => {
+        <div className="border border-hairline p-4">
+          <div className="note text-bark">Average Order Value</div>
+          <div className="font-display font-semibold tracking-[-0.02em] text-3xl text-ink">
+            {(() => {
               const totalRevenue = data.reduce((sum, item) => sum + (item.totalRevenue || 0), 0);
               const totalOrders = data.reduce((sum, item) => sum + (item.totalOrders || 0), 0);
-              return totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2) : '0.00';
+              return formatPrice(totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0);
             })()}
           </div>
         </div>

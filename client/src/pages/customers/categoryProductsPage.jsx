@@ -31,7 +31,7 @@ const CategoryProductPage = () => {
   }, [category, subcategory, q, dispatch]);
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-white">
+    <div className="flex flex-col min-h-screen w-full bg-paper">
       <Header />
       <div className="pt-16 flex-1">
         <div className="w-full max-w-screen-xl mx-auto px-4 sm:px-6">

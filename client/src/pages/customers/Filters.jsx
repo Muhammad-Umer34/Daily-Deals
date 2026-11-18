@@ -130,13 +130,13 @@ const applyFilters = () => {
       <div className="flex flex-col gap-4 mt-4">
         <button
           onClick={applyFilters}
-          className="bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-200 cursor-pointer"
+          className="bg-ink text-paper py-2 px-4 rounded-md hover:opacity-80 transition duration-200 cursor-pointer"
         >
           Apply Filters
         </button>
         <button
           onClick={ResetFilters}
-          className="bg-white text-black border border-black py-2 px-4 rounded-md hover:bg-gray-100 transition duration-200 cursor-pointer"
+          className="bg-paper text-ink border border-ink py-2 px-4 rounded-md hover:bg-parchment transition duration-200 cursor-pointer"
         >
           Reset Filters
         </button>

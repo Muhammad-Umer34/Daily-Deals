@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_CHATBOT_URL || "https://monofitchatbot-b0wosey85-muhammad-umer34s-projects.vercel.app";
+// The stable production alias, not a one-off preview deployment URL (those go stale).
+const BASE_URL = import.meta.env.VITE_CHATBOT_URL || "https://monofitchatbot.vercel.app";
 const cleanBaseUrl = BASE_URL.replace(/\/+$/, "");
 
 export const getAnswer = async (question="what is your delivery charges?") => {

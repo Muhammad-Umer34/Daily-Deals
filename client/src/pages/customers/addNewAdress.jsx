@@ -45,11 +45,11 @@ const AddAddress = ({setAddAddressForm}) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4 p-4 border rounded bg-white shadow-lg"
+      className="space-y-4 p-4 border rounded bg-paper"
     >
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-bold">Add New Address</h1>
-        <IoClose className="w-6 h-6 text-gray-700 cursor-pointer" onClick={()=>{setAddAddressForm(false)}}/>
+        <IoClose className="w-6 h-6 text-ink cursor-pointer" onClick={()=>{setAddAddressForm(false)}}/>
       </div>
 
       <div>
@@ -59,11 +59,11 @@ const AddAddress = ({setAddAddressForm}) => {
         <textarea
           id="addAddress"
           rows="3"
-          className="border-2 border-gray-300 focus:border-black w-full p-2 rounded"
+          className="border-2 border-hairline focus:border-ink w-full p-2 rounded"
           {...register("addAddress", { required: "Address is required" })}
         ></textarea>
         {errors.addAddress && (
-          <p className="text-red-500 text-sm mt-1">
+          <p className="text-oxblood text-sm mt-1">
             {errors.addAddress.message}
           </p>
         )}
@@ -83,7 +83,7 @@ const AddAddress = ({setAddAddressForm}) => {
       <div>
         <button
           type="submit"
-          className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+          className="bg-ink text-paper px-4 py-2 rounded hover:opacity-80"
         >
           Save
         </button>

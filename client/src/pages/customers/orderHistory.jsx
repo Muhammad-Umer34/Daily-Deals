@@ -30,7 +30,7 @@ const OrderHistory = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900">Order History</h1>
+      <h1 className="font-display font-semibold tracking-[-0.02em] text-4xl text-ink">Order history</h1>
       <div className="mt-4 mb-6 flex flex-wrap gap-3 items-center justify-between">
         <div className="flex flex-wrap gap-2">
           {FILTERS.map((f) => (
@@ -38,7 +38,7 @@ const OrderHistory = () => {
               key={f}
               onClick={() => setFilter(f)}
               aria-pressed={filter === f}
-              className={`px-3 py-1 border rounded-full text-sm font-semibold cursor-pointer ${filter === f ? "bg-black text-white border-black" : "bg-white text-black border-gray-300"}`}
+              className={`px-3 py-1 border rounded-full text-sm font-semibold cursor-pointer ${filter === f ?"bg-ink text-paper border-ink":"bg-paper text-ink border-hairline"}`}
             >
               {f}
             </button>
@@ -51,14 +51,14 @@ const OrderHistory = () => {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search orders..."
             aria-label="Search orders"
-            className="border border-gray-300 rounded-full pl-4 pr-8 py-1.5 text-sm focus:outline-none focus:border-black w-52"
+            className="border border-hairline rounded-full pl-4 pr-8 py-1.5 text-sm focus:outline-none focus:border-ink w-52"
           />
-          <BiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" aria-hidden="true" />
+          <BiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-bark" aria-hidden="true" />
         </div>
       </div>
 
       {orders === null ? (
-        <p className="text-gray-500 py-12 text-center">Loading your orders…</p>
+        <p className="text-bark py-12 text-center">Loading your orders…</p>
       ) : shown.length ? (
         <div className="space-y-4">
           {shown.map((order) => (
@@ -67,9 +67,9 @@ const OrderHistory = () => {
         </div>
       ) : (
         <div className="text-center py-16">
-          <p className="text-gray-600 mb-4">{orders.length ? "No orders match this filter." : "You haven't placed any orders yet."}</p>
+          <p className="text-bark mb-4">{orders.length ? "No orders match this filter." : "You haven't placed any orders yet."}</p>
           {!orders.length && (
-            <Link to="/home/all" className="px-6 py-2.5 bg-black text-white rounded-lg font-medium">Start Shopping</Link>
+            <Link to="/home/all" className="px-6 py-2.5 bg-ink text-paper rounded-lg font-medium">Start Shopping</Link>
           )}
         </div>
       )}

@@ -24,14 +24,14 @@ const NewHeader = () => {
 
   // Active tab comes from the URL, so deep links and refreshes highlight correctly.
   const linkClass = ({ isActive }) =>
-    `font-medium transition-colors ${isActive ? "text-black" : "text-gray-500 hover:text-black"}`;
+    `note link-draw transition-colors ${isActive ? "text-ink" : "text-bark hover:text-ink"}`;
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="bg-paper/90 backdrop-blur-md border-b border-hairline">
       <div className="h-16 px-4 sm:px-8 flex items-center justify-between gap-4">
-        <Link to="/store/dashboard" className="text-xl sm:text-2xl font-bold text-black whitespace-nowrap">
-          Daily <span className="text-blue-600">Deals</span>
-          <span className="ml-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Seller</span>
+        <Link to="/store/dashboard" className="font-display font-semibold tracking-[-0.02em] text-2xl text-ink whitespace-nowrap">
+          MONOFIT
+          <span className="ml-2 note text-bark">Seller</span>
         </Link>
 
         <nav className="hidden md:flex gap-6" aria-label="Store">
@@ -43,12 +43,12 @@ const NewHeader = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          <span className="hidden lg:flex items-center gap-2 text-gray-700 font-medium">
+          <span className="hidden lg:flex items-center gap-2 text-ink font-medium">
             <FiUser aria-hidden="true" /> {user?.brand_name || user?.name}
           </span>
           <button
             onClick={handleLogout}
-            className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-black text-white rounded-lg hover:bg-gray-900 cursor-pointer"
+            className="hidden md:flex items-center gap-2 btn-ink !px-5 !py-1.5 cursor-pointer"
           >
             <FiLogOut aria-hidden="true" /> Logout
           </button>
@@ -56,7 +56,7 @@ const NewHeader = () => {
             onClick={() => setOpen((o) => !o)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            className="md:hidden p-1 text-gray-800 cursor-pointer"
+            className="md:hidden p-1 text-ink cursor-pointer"
           >
             {open ? <FiX size={24} /> : <FiMenu size={24} />}
           </button>
@@ -64,13 +64,13 @@ const NewHeader = () => {
       </div>
 
       {open && (
-        <div className="md:hidden border-t border-gray-100 px-4 py-3 flex flex-col">
+        <div className="md:hidden border-t border-hairline px-4 py-3 flex flex-col">
           {LINKS.map(([label, to]) => (
             <NavLink key={to} to={to} end={to === "/store/order"} onClick={() => setOpen(false)} className={({ isActive }) => `py-2.5 ${linkClass({ isActive })}`}>
               {label}
             </NavLink>
           ))}
-          <button onClick={handleLogout} className="mt-2 py-2.5 rounded-lg border border-gray-300 font-semibold text-red-600 cursor-pointer">
+          <button onClick={handleLogout} className="mt-2 py-2.5 border border-hairline font-semibold text-oxblood cursor-pointer">
             Log out
           </button>
         </div>

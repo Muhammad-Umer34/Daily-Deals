@@ -1,23 +1,26 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { customerregisterForm } from "./authAPI";
 import {
-  AuthLayout, AuthHeading, Field, FormError, GoogleButton, Divider, useOAuthReturn,
+  AuthLayout, AuthHeading, Field, FormError, GoogleButton, Divider, useOAuthReturn, safeNextPath,
   inputClass, primaryButtonClass,
 } from "./authLayout";
 
 const UserSignupCard = () => {
   const navigate = useNavigate();
+  const { search } = useLocation();
   const [formError, setFormError] = useState("");
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+  const next = safeNextPath(search);
+  const loginPath = next ? `/login?next=${encodeURIComponent(next)}` : "/login";
   useOAuthReturn();
 
   const onSubmit = async (data) => {
     setFormError("");
     try {
       await customerregisterForm(data);
-      navigate("/login");
+      navigate(loginPath);
     } catch (error) {
       setFormError(error.userMessage);
     }
@@ -51,11 +54,11 @@ const UserSignupCard = () => {
       </form>
       <Divider />
       <GoogleButton label="Sign up with Google" redirectPath="/signup" />
-      <p className="mt-8 text-center text-sm text-slate-600">
-        Already have an account? <Link to="/login" className="font-semibold text-blue-600 hover:underline">Log in</Link>
+      <p className="mt-8 text-center text-sm text-bark">
+        Already have an account? <Link to={loginPath} className="font-semibold text-ink underline underline-offset-4 hover:opacity-70">Log in</Link>
       </p>
-      <p className="mt-2 text-center text-sm text-slate-600">
-        Own a brand? <Link to="/brand-signup" className="font-semibold text-blue-600 hover:underline">Register as a seller</Link>
+      <p className="mt-2 text-center text-sm text-bark">
+        Own a brand? <Link to="/brand-signup" className="font-semibold text-ink underline underline-offset-4 hover:opacity-70">Register as a seller</Link>
       </p>
     </AuthLayout>
   );

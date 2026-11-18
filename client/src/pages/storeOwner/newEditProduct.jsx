@@ -67,11 +67,11 @@ const NewEditProduct = ({ onClose }) => {
 
   return (
  
-    <div className="w-[30%] m-auto mt-10 border-2 p-5 rounded-lg shadow-lg h-[80vh] flex flex-col bg-white">
-      <div className="flex justify-between items-center text-xl font-bold mb-5">
+    <div className="w-[30%] m-auto mt-10 border-t-2 border-ink p-5 h-[80vh] flex flex-col bg-paper">
+      <div className="flex justify-between items-center font-display font-semibold tracking-[-0.02em] text-2xl text-ink mb-5">
         <div></div>
         <h1>{editProduct ? "Edit Product" : "Add Product"}</h1>
-        <RxCross2 className="cursor-pointer hover:text-red-500" onClick={onClose} />
+        <RxCross2 className="cursor-pointer hover:text-ink" onClick={onClose} />
       </div>
       <div className="flex-1 overflow-y-auto pr-2">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -85,7 +85,7 @@ const NewEditProduct = ({ onClose }) => {
               placeholder="Product Name"
             />
             {errors.name && (
-              <span className="text-red-500 text-sm">{errors.name.message}</span>
+              <span className="text-oxblood text-sm">{errors.name.message}</span>
             )}
           </div>
           
@@ -100,7 +100,7 @@ const NewEditProduct = ({ onClose }) => {
               placeholder="Description"
             />
             {errors.description && (
-              <span className="text-red-500 text-sm">{errors.description.message}</span>
+              <span className="text-oxblood text-sm">{errors.description.message}</span>
             )}
           </div>
           
@@ -118,7 +118,7 @@ const NewEditProduct = ({ onClose }) => {
               placeholder="Price"
             />
             {errors.price && (
-              <span className="text-red-500 text-sm">{errors.price.message}</span>
+              <span className="text-oxblood text-sm">{errors.price.message}</span>
             )}
           </div>
           
@@ -135,7 +135,7 @@ const NewEditProduct = ({ onClose }) => {
               placeholder="Quantity"
             />
             {errors.quantity && (
-              <span className="text-red-500 text-sm">{errors.quantity.message}</span>
+              <span className="text-oxblood text-sm">{errors.quantity.message}</span>
             )}
           </div>
           
@@ -149,7 +149,7 @@ const NewEditProduct = ({ onClose }) => {
               placeholder="Kids, Men, Women, Unisex"
             />
             {errors.genre && (
-              <span className="text-red-500 text-sm">{errors.genre.message}</span>
+              <span className="text-oxblood text-sm">{errors.genre.message}</span>
             )}
           </div>
           
@@ -163,7 +163,7 @@ const NewEditProduct = ({ onClose }) => {
               placeholder="Cotton, Polyester"
             />
             {errors.material && (
-              <span className="text-red-500 text-sm">{errors.material.message}</span>
+              <span className="text-oxblood text-sm">{errors.material.message}</span>
             )}
           </div>
           
@@ -177,7 +177,7 @@ const NewEditProduct = ({ onClose }) => {
               placeholder="Category"
             />
             {errors.category && (
-              <span className="text-red-500 text-sm">{errors.category.message}</span>
+              <span className="text-oxblood text-sm">{errors.category.message}</span>
             )}
           </div>
           
@@ -191,7 +191,7 @@ const NewEditProduct = ({ onClose }) => {
               placeholder="SubCategory"
             />
             {errors.subcategory && (
-              <span className="text-red-500 text-sm">{errors.subcategory.message}</span>
+              <span className="text-oxblood text-sm">{errors.subcategory.message}</span>
             )}
           </div>
           
@@ -205,7 +205,7 @@ const NewEditProduct = ({ onClose }) => {
               placeholder="Red, Blue, Green"
             />
             {errors.color && (
-              <span className="text-red-500 text-sm">{errors.color.message}</span>
+              <span className="text-oxblood text-sm">{errors.color.message}</span>
             )}
           </div>
           
@@ -219,7 +219,7 @@ const NewEditProduct = ({ onClose }) => {
               placeholder="S, M, L, XL"
             />
             {errors.size && (
-              <span className="text-red-500 text-sm">{errors.size.message}</span>
+              <span className="text-oxblood text-sm">{errors.size.message}</span>
             )}
           </div>
           
@@ -231,16 +231,16 @@ const NewEditProduct = ({ onClose }) => {
               multiple
               accept="image/*"
               onChange={() => setImageUpdated(true)}
-              className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+              className="mt-1 p-2 bg-paper border border-hairline focus:outline-none focus:border-ink transition-colors"
               {...register("images", {
                 required: editProduct ? false : "At least one image is required",
               })}
             />
             {errors.images && (
-              <span className="text-red-500 text-sm">{errors.images.message}</span>
+              <span className="text-oxblood text-sm">{errors.images.message}</span>
             )}
             {editProduct && !imageUpdated && (
-              <small className="text-gray-500 mt-1">
+              <small className="text-bark mt-1">
                 Current images will be preserved. Upload new images only if you want to replace them.
               </small>
             )}
@@ -248,7 +248,7 @@ const NewEditProduct = ({ onClose }) => {
           
           <button
             type="submit"
-            className="mt-4 mb-4 w-[60%] bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors self-center"
+            className="mt-4 mb-4 w-[60%] btn-ink self-center"
           >
             {editProduct ? "Update Product" : "Add Product"}
           </button>

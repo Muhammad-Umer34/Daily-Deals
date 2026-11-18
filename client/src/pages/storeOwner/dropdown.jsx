@@ -62,7 +62,7 @@ export default function SortDropdown({ value, onChange }) {
   return (
     <DropdownMenu className="cursor-pointer">
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" className="note bg-paper border-hairline text-bark hover:bg-parchment hover:text-ink rounded-none">
           {value
             ? {
                 stock_desc: "Stock: High to Low",
@@ -79,8 +79,8 @@ export default function SortDropdown({ value, onChange }) {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>Sort By</DropdownMenuLabel>
+      <DropdownMenuContent className="w-56 rounded-none border-hairline bg-paper">
+        <DropdownMenuLabel className="note text-bark">Sort By</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={value} onValueChange={handleSelect}>
           <DropdownMenuRadioItem value="">Default Order</DropdownMenuRadioItem>

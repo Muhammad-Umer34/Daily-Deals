@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { FaHeart, FaStar } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 import {
   removeFromWishList,
   addToWishList,
@@ -24,6 +24,7 @@ const ProductCard = ({ product }) => {
   }, [product, user, accessToken]);
 
   const handleLike = (e) => {
+    e.preventDefault();
     e.stopPropagation();
     if (!user) {
       navigate("/login");
@@ -42,50 +43,40 @@ const ProductCard = ({ product }) => {
   const productUrl = `/home/${product.category}/${product.subcategory}/${product._id}`;
 
   return (
-    <div
-      onClick={() => navigate(productUrl)}
-      className="group relative w-full rounded-xl bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden"
-    >
-      <div className="relative w-full aspect-[4/5] bg-gray-100 overflow-hidden">
-        <img
-          src={imageUrl}
-          alt={product.name}
-          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-          loading="lazy"
-        />
-        <button
-          onClick={handleLike}
-          aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
-          aria-pressed={liked}
-          className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition cursor-pointer"
-        >
-          <FaHeart className={`text-lg ${liked ? "text-red-500" : "text-gray-300 group-hover:text-red-400"}`} />
-        </button>
-        <span className="absolute bottom-2 left-2 bg-white px-2.5 py-1 rounded-full text-xs sm:text-sm font-semibold text-gray-800 shadow-sm">
-          {formatPrice(product.price)}
-        </span>
-      </div>
-
-      <div className="px-3 py-3 sm:px-4 sm:py-4 text-center">
-        <h3 className="text-sm sm:text-base font-semibold text-gray-900 line-clamp-2 mb-1">{product.name}</h3>
-        <div className="flex justify-center items-center gap-1 mb-2 text-xs sm:text-sm text-gray-600">
-          {product.reviewsCount > 0 ? (
-            <>
-              <FaStar className="text-yellow-400" aria-hidden="true" />
-              <span className="font-medium">{Number(product.averageRating).toFixed(1)}</span>
-              <span className="text-gray-400">({product.reviewsCount})</span>
-            </>
+    <article className="group relative w-full min-w-0">
+      <Link to={productUrl} className="block">
+        <div className="relative w-full aspect-[3/4] bg-parchment overflow-hidden">
+          <img
+            src={imageUrl}
+            alt={product.name}
+            className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+            loading="lazy"
+            // A seller photo that no longer exists shows the plain frame, not a broken-image icon.
+            onError={(e) => { e.currentTarget.style.visibility = "hidden"; }}
+          />
+          {product.stock <= 0 ? (
+            <span className="absolute left-3 bottom-3 bg-white px-2.5 py-1 text-[0.8125rem] font-semibold">Sold out</span>
           ) : (
-            <span className="text-gray-400">No reviews yet</span>
+            <span className="absolute left-3 right-3 bottom-3 bg-white py-3 text-center text-sm font-semibold opacity-0 translate-y-1.5 group-hover:opacity-100 group-hover:translate-y-0 transition duration-200">
+              View details
+            </span>
           )}
         </div>
-        {product.stock <= 0 && (
-          <span className="px-3 py-1 rounded-full text-xs font-medium border bg-red-50 text-red-700 border-red-200">
-            Out of Stock
-          </span>
-        )}
-      </div>
-    </div>
+        <div className="pt-3.5">
+          {product.brand && <p className="text-[0.8125rem] text-bark">{product.brand}</p>}
+          <h3 className="text-[0.9375rem] font-medium text-ink leading-snug line-clamp-1 mt-0.5">{product.name}</h3>
+          <p className="text-[0.9375rem] font-semibold text-ink tabular-nums mt-1">{formatPrice(product.price)}</p>
+        </div>
+      </Link>
+      <button
+        onClick={handleLike}
+        aria-label={liked ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
+        aria-pressed={liked}
+        className="absolute top-2.5 right-2.5 w-9 h-9 grid place-items-center bg-white text-ink hover:bg-parchment transition-colors cursor-pointer"
+      >
+        {liked ? <FaHeart className="text-oxblood text-sm" /> : <FaRegHeart className="text-sm" />}
+      </button>
+    </article>
   );
 };
 

@@ -1,12 +1,14 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { Send, MessageCircle, X } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { chatbotActions } from '../../features/customer/chatbotSlice';
 import { getAnswer } from '../../features/customer/chatbotApi';
 
 export default function ChatbotModal() {
   const dispatch = useDispatch();
   const { messages, inputValue, isOpen, isLoading } = useSelector(state => state.chatbot);
+  const { pathname } = useLocation();
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -68,12 +70,16 @@ export default function ChatbotModal() {
     }
   };
 
+  // The Shop Assistant is already a chat, and the home page offers it twice; a floating
+  // button there would cover the send box or the hero's primary action.
+  if (pathname.startsWith('/assistant') || pathname === '/home' || pathname === '/') return null;
+
   if (!isOpen) {
     return (
       <button
         onClick={() => dispatch(chatbotActions.toggleChatbot())}
         aria-label="Open chat assistant"
-        className="fixed bottom-5 right-5 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3.5 shadow-lg transition-all z-40 cursor-pointer"
+        className="fixed bottom-5 right-5 bg-ink hover:opacity-80 text-paper rounded-full p-3.5 transition-all z-40 cursor-pointer"
       >
         <MessageCircle size={24} />
       </button>
@@ -83,17 +89,17 @@ export default function ChatbotModal() {
   return (
     <div className="fixed inset-0 flex items-end justify-end z-50 p-4 pointer-events-none">
       <div
-        className="bg-white rounded-t-lg shadow-2xl flex flex-col w-full max-w-md h-[600px] animate-in fade-in slide-in-from-bottom-4 pointer-events-auto"
+        className="bg-paper rounded-t-lg shadow-2xl flex flex-col w-full max-w-md h-[600px] animate-in fade-in slide-in-from-bottom-4 pointer-events-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
+        <div className="bg-ink text-paper p-4 rounded-t-lg flex justify-between items-center">
           <div className="flex items-center gap-2">
             <MessageCircle size={20} />
             <h2 className="font-semibold">Chat Assistant</h2>
           </div>
           <button
             onClick={() => dispatch(chatbotActions.toggleChatbot())}
-            className="hover:bg-blue-700 p-1 rounded transition-all cursor-pointer"
+            className="hover:opacity-80 p-1 rounded transition-all cursor-pointer"
             title="Close chat"
             aria-label="Close chat"
           >
@@ -101,7 +107,7 @@ export default function ChatbotModal() {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-parchment">
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -109,10 +115,10 @@ export default function ChatbotModal() {
             >
               <div
                 className={`max-w-xs px-4 py-2 rounded-lg ${
-                  msg.sender === 'user'
-                    ? 'bg-blue-500 text-white rounded-br-none'
-                    : 'bg-gray-200 text-gray-800 rounded-bl-none'
-                }`}
+ msg.sender === 'user'
+ ? 'bg-ink text-paper rounded-br-none'
+ : 'bg-hairline text-ink rounded-bl-none'
+ }`}
               >
                 <p className="text-sm whitespace-pre-line">
                   {/* Bot answers use **bold**; render it instead of showing the asterisks. */}
@@ -124,11 +130,11 @@ export default function ChatbotModal() {
               </div>
             </div>
           ))}
-          {isLoading && <div className="text-gray-500 text-sm">Bot is typing...</div>}
+          {isLoading && <div className="text-bark text-sm">Bot is typing...</div>}
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="border-t border-gray-200 p-3 bg-white rounded-b-lg">
+        <div className="border-t border-hairline p-3 bg-paper rounded-b-lg">
           <div className="flex gap-2">
             <input
               type="text"
@@ -136,13 +142,13 @@ export default function ChatbotModal() {
               onChange={(e) => dispatch(chatbotActions.setInputValue(e.target.value))}
               onKeyPress={handleKeyPress}
               placeholder="Type your message..."
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500 text-sm"
+              className="flex-1 border border-hairline rounded-lg px-3 py-2 focus:outline-none focus:border-ink text-sm"
               disabled={isLoading}
             />
             <button
               onClick={handleSendMessage}
               disabled={isLoading}
-              className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-lg p-2 transition-all"
+              className="bg-ink hover:opacity-80 disabled:opacity-50 text-paper rounded-lg p-2 transition-all"
             >
               <Send size={18} />
             </button>

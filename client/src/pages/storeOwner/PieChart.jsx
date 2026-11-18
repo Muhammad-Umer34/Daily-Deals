@@ -9,10 +9,10 @@ const settings = {
 };
 
 const statusColors = {
-  Pending: "#FFBB28",
-  Dispatched: "#0088FE",
-  Delivered: "#00C49F",
-  Cancelled: "#FF8042",
+  Pending: "#d4d4d4",
+  Dispatched: "#0a0a0a",
+  Delivered: "#737373",
+  Cancelled: "#8a3033",
 };
 
 export default function DonutChart({ data = [] }) {
@@ -25,7 +25,7 @@ export default function DonutChart({ data = [] }) {
     orderStatusData.map((item) => ({
       label: item._id,
       value: item.totalOrders,
-      color: statusColors[item._id] || "#8884d8",
+      color: statusColors[item._id] || "#e6e6e6",
     }));
 
   const chartData = formatDataForChart(data);
@@ -34,9 +34,9 @@ export default function DonutChart({ data = [] }) {
   if (chartData.length === 0) return null;
 
   return (
-    <div className="w-[100%] mx-auto bg-white border rounded-2xl shadow-md p-8">
+    <div className="w-[100%] mx-auto bg-paper border-t-2 border-ink p-8">
       {/* Title */}
-      <h2 className="text-lg font-semibold mb-4">
+      <h2 className="font-display font-semibold tracking-[-0.02em] text-2xl text-ink mb-4">
         Order Status - Last 30 Days
       </h2>
 
@@ -56,30 +56,30 @@ export default function DonutChart({ data = [] }) {
 
         {/* Summary Boxes */}
         <div className="grid grid-cols-2 gap-6 flex-1">
-          <div className="bg-green-50 p-6 rounded-xl shadow-sm text-center">
-            <h3 className="text-green-600 font-semibold">Delivered</h3>
-            <p className="text-3xl font-bold text-green-700">
+          <div className="border border-hairline p-6 text-center">
+            <h3 className="note text-bark">Delivered</h3>
+            <p className="font-display font-semibold tracking-[-0.02em] text-4xl text-ink">
               {getCount("Delivered")}
             </p>
           </div>
 
-          <div className="bg-blue-50 p-6 rounded-xl shadow-sm text-center">
-            <h3 className="text-blue-600 font-semibold">Dispatched</h3>
-            <p className="text-3xl font-bold text-blue-700">
+          <div className="border border-hairline p-6 text-center">
+            <h3 className="note text-bark">Dispatched</h3>
+            <p className="font-display font-semibold tracking-[-0.02em] text-4xl text-ink">
               {getCount("Dispatched")}
             </p>
           </div>
 
-          <div className="bg-red-50 p-6 rounded-xl shadow-sm text-center">
-            <h3 className="text-red-600 font-semibold">Cancelled</h3>
-            <p className="text-3xl font-bold text-red-700">
+          <div className="border border-hairline p-6 text-center">
+            <h3 className="note">Cancelled</h3>
+            <p className="font-display font-semibold tracking-[-0.02em] text-4xl text-ink">
               {getCount("Cancelled")}
             </p>
           </div>
 
-          <div className="bg-yellow-50 p-6 rounded-xl shadow-sm text-center">
-            <h3 className="text-yellow-600 font-semibold">Pending</h3>
-            <p className="text-3xl font-bold text-yellow-700">
+          <div className="border border-hairline p-6 text-center">
+            <h3 className="note text-bark">Pending</h3>
+            <p className="font-display font-semibold tracking-[-0.02em] text-4xl text-ink">
               {getCount("Pending")}
             </p>
           </div>

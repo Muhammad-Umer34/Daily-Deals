@@ -33,7 +33,12 @@ const cartSchema = new mongoose.Schema({
     size: {
       type: String,
       required: true,
-    }
+    },
+    // The exact size-and-colour variant; stock is checked against it.
+    sku: {
+      type: String,
+      default: "",
+    },
 })
 
 const Cart = mongoose.model("Cart", cartSchema);

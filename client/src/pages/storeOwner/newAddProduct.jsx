@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Input from "@mui/material/Input";
 import TextField from "@mui/material/TextField";
 import { useForm } from "react-hook-form";
@@ -13,13 +14,25 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
   const [error, setError] = useState("");
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
-  console.log(user);
-  console.log(accessToken);
+  // The shop's vocabulary (departments, categories, occasions…) comes from the server,
+  // so the form can only offer values the catalogue and the AI shopper understand.
+  const [catalog, setCatalog] = useState(null);
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/customer/catalog`)
+      .then((r) => setCatalog(r.data))
+      .catch(() => setError("Couldn't load the category list. Please refresh."));
+  }, []);
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
-  } = useForm();
+  } = useForm({ defaultValues: { occasions: [], seasons: [] } });
+  const department = watch("genre");
+  const categoriesFor = (catalog?.categories || []).filter((c) => !department || c.departments.includes(department));
+  const label = (v) => v.replace(/-/g, " ").replace(/^\w/, (ch) => ch.toUpperCase());
+  const selectClass = "w-full bg-white border border-hairline px-3 py-2.5 text-[0.9375rem] focus:outline-none focus:border-ink";
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -35,6 +48,10 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
       images,
       genre,
       material,
+      occasions,
+      seasons,
+      fit,
+      fabricWeight,
     } = data;
     const imagesArray = Array.from(images);
     const colorArray = color.split(",").map((c) => c.trim().toLowerCase());
@@ -51,6 +68,10 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
       images: imagesArray,
       genre: genre,
       material,
+      occasions: [].concat(occasions || []),
+      seasons: [].concat(seasons || []),
+      fit,
+      fabricWeight,
     };
     setError("");
     try {
@@ -71,21 +92,21 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto mt-10 border border-gray-200 p-5 rounded-xl shadow-lg max-h-[85vh] flex flex-col bg-white">
+    <div className="w-full max-w-lg mx-auto mt-10 border-t-2 border-ink p-5 max-h-[85vh] flex flex-col bg-paper">
       {/* Fixed Header */}
-      <div className="flex justify-between items-center text-xl font-bold mb-5">
+      <div className="flex justify-between items-center font-display font-semibold tracking-[-0.02em] text-2xl text-ink mb-5">
         <div></div>
         <h1>Add Product</h1>
-        <button type="button" aria-label="Close" onClick={onClose || (() => navigate("/store/products"))} className="cursor-pointer hover:text-red-500"><RxCross2 /></button>
+        <button type="button" aria-label="Close" onClick={onClose || (() => navigate("/store/products"))} className="cursor-pointer hover:text-ink"><RxCross2 /></button>
       </div>
 
       {/* Scrollable Form */}
       <div className="flex-1 overflow-y-auto pr-2">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          {error && <p role="alert" className="rounded-md bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">{error}</p>}
+          {error && <p role="alert" className="bg-paper border border-oxblood/40 px-3 py-2 text-sm text-oxblood">{error}</p>}
           {/* Product Name */}
           <div className="flex flex-col">
-            <label htmlFor="name">Product Name</label>
+            <label htmlFor="name" className="font-medium text-ink">Product Name</label>
             <Input
               id="name"
               type="text"
@@ -93,7 +114,7 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
               placeholder="Product Name"
             />
             {errors.name && (
-              <span className="text-red-500 text-sm">This field is required</span>
+              <span className="text-oxblood text-sm">This field is required</span>
             )}
           </div>
 
@@ -108,7 +129,7 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
               placeholder="Description"
             />
             {errors.description && (
-              <span className="text-red-500 text-sm">This field is required</span>
+              <span className="text-oxblood text-sm">This field is required</span>
             )}
           </div>
 
@@ -122,7 +143,7 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
               placeholder="Price"
             />
             {errors.price && (
-              <span className="text-red-500 text-sm">This field is required</span>
+              <span className="text-oxblood text-sm">This field is required</span>
             )}
           </div>
           <div className="flex flex-col">
@@ -134,21 +155,19 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
               placeholder=""
             />
             {errors.genre && (
-              <span className="text-red-500 text-sm">This field is required</span>
+              <span className="text-oxblood text-sm">This field is required</span>
             )}
           </div>
 
           {/* Genre */}
           <div className="flex flex-col">
-            <label htmlFor="genre">Genre</label>
-            <Input
-              id="genre"
-              type="text"
-              {...register("genre", { required: true })}
-              placeholder="Kids, Men, Women, Unisex"
-            />
+            <label htmlFor="genre">Department</label>
+            <select id="genre" className={selectClass} {...register("genre", { required: true })} defaultValue="">
+              <option value="" disabled>Choose a department</option>
+              {(catalog?.departments || []).map((d) => <option key={d} value={d}>{label(d)}</option>)}
+            </select>
             {errors.genre && (
-              <span className="text-red-500 text-sm">This field is required</span>
+              <span className="text-oxblood text-sm">This field is required</span>
             )}
           </div>
 
@@ -162,36 +181,74 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
               placeholder="Cotton, Polyester"
             />
             {errors.material && (
-              <span className="text-red-500 text-sm">This field is required</span>
+              <span className="text-oxblood text-sm">This field is required</span>
             )}
           </div>
 
           {/* Category */}
           <div className="flex flex-col">
-            <label htmlFor="category">Category</label>
-            <Input
-              id="category"
-              type="text"
-              {...register("category", { required: true })}
-              placeholder="Category"
-            />
+            <label htmlFor="category">Style</label>
+            <select id="category" className={selectClass} {...register("category", { required: true })} defaultValue="">
+              <option value="" disabled>Choose a style</option>
+              {(catalog?.styles || []).map((st) => <option key={st} value={st}>{label(st)}</option>)}
+            </select>
             {errors.category && (
-              <span className="text-red-500 text-sm">This field is required</span>
+              <span className="text-oxblood text-sm">This field is required</span>
             )}
           </div>
 
           {/* SubCategory */}
           <div className="flex flex-col">
-            <label htmlFor="subcategory">SubCategory</label>
-            <Input
-              id="subcategory"
-              type="text"
-              {...register("subcategory", { required: true })}
-              placeholder="SubCategory"
-            />
+            <label htmlFor="subcategory">Category</label>
+            <select id="subcategory" className={selectClass} {...register("subcategory", { required: true })} defaultValue="">
+              <option value="" disabled>{department ? "Choose a category" : "Choose a department first"}</option>
+              {categoriesFor.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+            </select>
             {errors.subcategory && (
-              <span className="text-red-500 text-sm">This field is required</span>
+              <span className="text-oxblood text-sm">This field is required</span>
             )}
+          </div>
+
+          {/* What it is for: shoppers and the AI shopper search by these */}
+          <fieldset className="flex flex-col gap-2">
+            <legend className="mb-1">Occasions</legend>
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+              {(catalog?.occasions || []).map((o) => (
+                <label key={o} className="inline-flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" value={o} {...register("occasions")} className="accent-ink w-4 h-4" />
+                  {label(o)}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="flex flex-col gap-2">
+            <legend className="mb-1">Seasons</legend>
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+              {(catalog?.seasons || []).map((se) => (
+                <label key={se} className="inline-flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" value={se} {...register("seasons")} className="accent-ink w-4 h-4" />
+                  {label(se)}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col">
+              <label htmlFor="fit">Fit (optional)</label>
+              <select id="fit" className={selectClass} {...register("fit")} defaultValue="">
+                <option value="">Not set</option>
+                {(catalog?.fits || []).map((x) => <option key={x} value={x}>{label(x)}</option>)}
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="fabricWeight">Fabric weight (optional)</label>
+              <select id="fabricWeight" className={selectClass} {...register("fabricWeight")} defaultValue="">
+                <option value="">Not set</option>
+                {(catalog?.fabricWeights || []).map((x) => <option key={x} value={x}>{label(x)}</option>)}
+              </select>
+            </div>
           </div>
 
           {/* Color */}
@@ -204,13 +261,13 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
               placeholder="Red, Blue, Green"
             />
             {errors.color && (
-              <span className="text-red-500 text-sm">This field is required</span>
+              <span className="text-oxblood text-sm">This field is required</span>
             )}
           </div>
 
           {/* Size */}
           <div className="flex flex-col">
-            <label htmlFor="size">Size (Comma Separated)</label>
+            <label htmlFor="size">Sizes (comma separated; stock is shared across sizes and colours)</label>
             <Input
               id="size"
               type="text"
@@ -218,7 +275,7 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
               placeholder="S, M, L, XL"
             />
             {errors.size && (
-              <span className="text-red-500 text-sm">This field is required</span>
+              <span className="text-oxblood text-sm">This field is required</span>
             )}
           </div>
 
@@ -230,23 +287,23 @@ const NewAddProduct = ({ onClose, onProductAdded }) => {
               type="file"
               multiple
               accept="image/*"
-              className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+              className="mt-1 p-2 bg-paper border border-hairline focus:outline-none focus:border-ink transition-colors"
               {...register("images", {
                 required: "At least one image is required",
               })}
             />
             {errors.images && (
-              <span className="text-red-500 text-sm">{errors.images.message}</span>
+              <span className="text-oxblood text-sm">{errors.images.message}</span>
             )}
           </div>
           <button
             type="submit"
             disabled={loading}
-            className={`mt-4 mb-4 w-[60%] py-2 px-4 rounded-lg text-white self-center transition-colors ${
-              loading 
-                ? "bg-gray-400 cursor-not-allowed" 
-                : "bg-black hover:bg-gray-800 cursor-pointer"
-            }`}
+            className={`mt-4 mb-4 w-[60%] py-2 px-4 note cursor-pointer transition-colors ${
+ loading 
+ ?"bg-bark/40 border border-bark/40 text-paper cursor-not-allowed"
+ :"btn-ink"
+ }`}
           >
             {loading ? "Adding Product..." : "Add Product"}
           </button>

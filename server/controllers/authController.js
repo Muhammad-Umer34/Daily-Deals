@@ -7,9 +7,24 @@ const crypto = require("crypto");
 require("dotenv").config();
 
 const User = require("../models/user");
+const Label = require("../models/label");
+const { slugify } = require("../services/catalog/taxonomy");
 
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+
+// In production the shop and the API sit on different domains, so the refresh
+// cookie has to be SameSite=None — which browsers only accept together with
+// Secure. Locally both are http://localhost, where Strict works and Secure
+// would stop the cookie being stored at all. Without this the 30-minute access
+// token cannot be refreshed cross-site and a shopper is logged out mid-checkout.
+const isProduction = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);
+const REFRESH_COOKIE = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "strict",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
 
 exports.customerPostRegister = [
   check("name")
@@ -139,6 +154,8 @@ exports.storePostRegister = [
       });
 
       await newUser.save();
+      // Every seller gets a label record; their products link to it.
+      await Label.create({ name: brand_name, slug: `${slugify(brand_name)}-${String(newUser._id).slice(-4)}`, sellerId: newUser._id, logo: brand_logo });
 
       const safeUser = {
         id: newUser._id,
@@ -178,12 +195,7 @@ exports.postLogin = async (req, res) => {
         REFRESH_TOKEN_SECRET,
         { expiresIn: "7d" }
       );
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      res.cookie("refreshToken", refreshToken, REFRESH_COOKIE);
 
       res.status(200).json({
         message: "Login successful",
@@ -249,12 +261,7 @@ exports.postSocialLogin = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("refreshToken", refreshToken, REFRESH_COOKIE);
 
     res.status(200).json({
       message: "Login successful",

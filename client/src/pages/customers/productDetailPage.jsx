@@ -23,7 +23,7 @@ const ProductDetailPage = () => {
   }, [id]);
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-white">
+    <div className="flex flex-col min-h-screen w-full bg-paper">
       <Header />
       <main className="flex-1 pt-16 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto mb-6">
@@ -32,7 +32,7 @@ const ProductDetailPage = () => {
         {product ? (
           <ProductInfo product={product} />
         ) : (
-          <p className="text-center text-gray-500 py-24">{failed ? "This product is no longer available." : "Loading product…"}</p>
+          <p className="text-center text-bark py-24 font-meta text-sm">{failed ? "This product is no longer available." : "Loading product…"}</p>
         )}
       </main>
       <Footer />

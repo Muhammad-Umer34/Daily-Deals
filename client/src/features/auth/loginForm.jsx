@@ -1,19 +1,21 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { loginForm } from "./authAPI";
 import { authActions } from "./authSlices";
 import {
-  AuthLayout, AuthHeading, Field, FormError, GoogleButton, Divider, useOAuthReturn,
+  AuthLayout, AuthHeading, Field, FormError, GoogleButton, Divider, useOAuthReturn, safeNextPath,
   inputClass, primaryButtonClass,
 } from "./authLayout";
 
 const SigninCard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { search } = useLocation();
   const [formError, setFormError] = useState("");
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+  const next = safeNextPath(search);
   useOAuthReturn();
 
   const onSubmit = async (data) => {
@@ -21,7 +23,8 @@ const SigninCard = () => {
     try {
       const response = await loginForm(data);
       dispatch(authActions.login({ user: response.user, accessToken: response.accessToken }));
-      navigate(response.user.userType === "storeOwner" ? "/store/dashboard" : "/home");
+      if (response.user.userType === "storeOwner") return navigate("/store/dashboard");
+      navigate(next || "/home");
     } catch (error) {
       setFormError(error.userMessage);
     }
@@ -31,7 +34,7 @@ const SigninCard = () => {
     <AuthLayout
       image="/images/casual.jpg"
       imageAlt="Rack of colourful shirts"
-      headline="Welcome back to Daily Deals"
+      headline="Welcome back to MonoFit"
       blurb="Pick up where you left off: your cart, wishlist and orders are waiting."
     >
       <AuthHeading title="Log in" subtitle="Enter your email and password to continue." />
@@ -45,7 +48,7 @@ const SigninCard = () => {
           id="password"
           label="Password"
           error={errors.password?.message}
-          aside={<Link to="/forgot-password" className="text-xs font-medium text-blue-600 hover:underline">Forgot password?</Link>}
+          aside={<Link to="/forgot-password" className="text-xs font-medium text-ink underline underline-offset-4 hover:opacity-70">Forgot password?</Link>}
         >
           <input id="password" type="password" autoComplete="current-password" placeholder="Your password" className={inputClass}
             {...register("password", { required: "Password is required" })} />
@@ -56,11 +59,11 @@ const SigninCard = () => {
       </form>
       <Divider />
       <GoogleButton label="Continue with Google" redirectPath="/login" />
-      <p className="mt-8 text-center text-sm text-slate-600">
-        New to Daily Deals? <Link to="/signup" className="font-semibold text-blue-600 hover:underline">Create an account</Link>
+      <p className="mt-8 text-center text-sm text-bark">
+        New to MonoFit? <Link to={next ? `/signup?next=${encodeURIComponent(next)}` : "/signup"} className="font-semibold text-ink underline underline-offset-4 hover:opacity-70">Create an account</Link>
       </p>
-      <p className="mt-2 text-center text-sm text-slate-600">
-        Selling on Daily Deals? <Link to="/brand-signup" className="font-semibold text-blue-600 hover:underline">Register your brand</Link>
+      <p className="mt-2 text-center text-sm text-bark">
+        Selling on MonoFit? <Link to="/brand-signup" className="font-semibold text-ink underline underline-offset-4 hover:opacity-70">Register your brand</Link>
       </p>
     </AuthLayout>
   );

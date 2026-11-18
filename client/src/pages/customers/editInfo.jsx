@@ -84,25 +84,25 @@ const EditInfo = ({ onClose }) => {
   };
 
   return (
-    <div className="w-full p-4 bg-white shadow-4xl rounded-lg border border-gray-200 relative">
-      {notice && <p role="status" className="mb-4 rounded-md bg-gray-50 border border-gray-200 px-4 py-2 text-sm text-gray-800">{notice}</p>}
+    <div className="w-full p-4 bg-paper shadow-4xl rounded-lg border border-hairline relative">
+      {notice && <p role="status" className="mb-4 rounded-md bg-parchment border border-hairline px-4 py-2 text-sm text-ink">{notice}</p>}
       <button
         onClick={onClose}
-        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors duration-200 z-10"
+        className="absolute top-2 right-2 text-bark/70 hover:text-bark transition-colors duration-200 z-10"
         aria-label="Close"
       >
         <FaTimes className="text-sm" />
       </button>
       <div className="space-y-4">
-        <div className="text-center pb-3 border-b border-gray-200">
-          <h2 className="text-lg font-bold text-gray-900 mb-1">
+        <div className="text-center pb-3 border-b border-hairline">
+          <h2 className="text-lg font-bold text-ink mb-1">
             Edit Profile
           </h2>
         </div>
 
         <form className="space-y-3" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="fullName" className="block text-xs font-medium text-gray-700 mb-1">
+            <label htmlFor="fullName" className="block text-xs font-medium text-ink mb-1">
               Full Name
             </label>
             <input
@@ -112,13 +112,13 @@ const EditInfo = ({ onClose }) => {
               value={formData.fullName}
               onChange={handleInputChange}
               placeholder="Enter your full name"
-              className="w-full border border-gray-300 rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black"
+              className="w-full border border-hairline rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink"
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-xs font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-xs font-medium text-ink mb-1">
               Email
             </label>
             <input
@@ -128,13 +128,13 @@ const EditInfo = ({ onClose }) => {
               value={formData.email}
               onChange={handleInputChange}
               placeholder="Enter your email"
-              className="w-full border border-gray-300 rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black"
+              className="w-full border border-hairline rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink"
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label htmlFor="phoneNumber" className="block text-xs font-medium text-gray-700 mb-1">
+            <label htmlFor="phoneNumber" className="block text-xs font-medium text-ink mb-1">
               Phone
             </label>
             <input
@@ -143,14 +143,14 @@ const EditInfo = ({ onClose }) => {
               id="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleInputChange}
-              placeholder="03333333333"
-              className="w-full border border-gray-300 rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black"
+              placeholder="+1 212 555 0100"
+              className="w-full border border-hairline rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink"
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label htmlFor="address" className="block text-xs font-medium text-gray-700 mb-1">
+            <label htmlFor="address" className="block text-xs font-medium text-ink mb-1">
               Address
             </label>
             <textarea
@@ -160,7 +160,7 @@ const EditInfo = ({ onClose }) => {
               value={formData.address}
               onChange={handleInputChange}
               placeholder="Enter your address"
-              className="w-full border border-gray-300 rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black resize-none"
+              className="w-full border border-hairline rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink resize-none"
               disabled={isLoading}
             />
           </div>
@@ -169,14 +169,14 @@ const EditInfo = ({ onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-400 text-white py-1.5 px-3 rounded text-xs font-medium hover:bg-gray-500"
+              className="bg-bark text-paper py-1.5 px-3 rounded text-xs font-medium hover:bg-ink"
               disabled={isLoading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-black text-white py-1.5 px-3 rounded text-xs font-medium hover:bg-gray-800"
+              className="bg-ink text-paper py-1.5 px-3 rounded text-xs font-medium hover:opacity-80"
               disabled={isLoading}
             >
               {isLoading ? "Updating..." : "Update"}

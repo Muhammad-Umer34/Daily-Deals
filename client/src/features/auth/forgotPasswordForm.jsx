@@ -58,7 +58,7 @@ const ForgotPasswordForm = () => {
         </form>
       ) : (
         <form onSubmit={handleSubmit(handleResetPassword)} className="space-y-5" noValidate>
-          {notice && <p role="status" className="rounded-md bg-green-50 border border-green-200 px-4 py-2.5 text-sm text-green-800">{notice}</p>}
+          {notice && <p role="status" className="rounded-md bg-parchment border border-hairline px-4 py-2.5 text-sm text-ink">{notice}</p>}
           <FormError message={formError} />
           <Field id="pin" label="Verification PIN" error={errors.pin?.message}>
             <input id="pin" inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="6-digit PIN" className={`${inputClass} tracking-widest`}
@@ -75,13 +75,13 @@ const ForgotPasswordForm = () => {
           <button type="submit" disabled={isSubmitting} className={primaryButtonClass}>
             {isSubmitting ? "Saving…" : "Reset password"}
           </button>
-          <button type="button" onClick={() => setStep(1)} className="w-full text-sm text-slate-600 hover:text-black cursor-pointer">
+          <button type="button" onClick={() => setStep(1)} className="w-full text-sm text-bark hover:text-ink cursor-pointer">
             Use a different email
           </button>
         </form>
       )}
-      <p className="mt-8 text-center text-sm text-slate-600">
-        Remembered it? <Link to="/login" className="font-semibold text-blue-600 hover:underline">Log in</Link>
+      <p className="mt-8 text-center text-sm text-bark">
+        Remembered it? <Link to="/login" className="font-semibold text-ink underline underline-offset-4 hover:opacity-70">Log in</Link>
       </p>
     </AuthLayout>
   );

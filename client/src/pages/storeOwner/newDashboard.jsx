@@ -159,7 +159,7 @@ const DashBoard = () => {
       <div>
         <NewHeader />
         <div className="flex justify-center items-center h-64">
-          <div className="text-xl">Loading dashboard data...</div>
+          <div className="font-display font-semibold tracking-[-0.02em] text-2xl text-bark">Loading dashboard data...</div>
         </div>
       </div>
     );
@@ -170,7 +170,7 @@ const DashBoard = () => {
       <div>
         <NewHeader />
         <div className="flex justify-center items-center h-64">
-          <div className="text-xl text-red-500">Error: {error}</div>
+          <div className="text-xl text-oxblood">Error: {error}</div>
         </div>
       </div>
     );
@@ -180,16 +180,15 @@ const DashBoard = () => {
     <div>
       <NewHeader />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-5 flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <h1 className="display-2 text-ink">Dashboard</h1>
       </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-5 flex items-center gap-3">
         <button
-          className="bg-gray-200 text-black rounded-sm p-2 font-bold cursor-pointer transition-colors duration-200 hover:bg-gray-300"
-          style={
-            dashboardField === "Last 30 Days"
-              ? { backgroundColor: "black", color: "white" }
-              : {}
-          }
+          className={`note p-2 cursor-pointer transition-colors duration-200 ${
+ dashboardField ==="Last 30 Days"
+ ?"bg-ink text-paper"
+ :"border border-hairline text-bark hover:border-ink/40"
+ }`}
           onClick={() => {
             dispatch(uiActions.changeDashboardField("Last 30 Days"));
           }}
@@ -197,12 +196,11 @@ const DashBoard = () => {
           Last 30 Days
         </button>
         <button
-          className="bg-gray-200 text-black rounded-sm p-2 font-bold cursor-pointer transition-colors duration-200 hover:bg-gray-300"
-          style={
-            dashboardField === "Last 6 Months"
-              ? { backgroundColor: "black", color: "white" }
-              : {}
-          }
+          className={`note p-2 cursor-pointer transition-colors duration-200 ${
+ dashboardField ==="Last 6 Months"
+ ?"bg-ink text-paper"
+ :"border border-hairline text-bark hover:border-ink/40"
+ }`}
           onClick={() => {
             dispatch(uiActions.changeDashboardField("Last 6 Months"));
           }}
@@ -210,12 +208,11 @@ const DashBoard = () => {
           Last 6 Months
         </button>
         <button
-          className="bg-gray-200 text-black rounded-sm p-2 font-bold cursor-pointer transition-colors duration-200 hover:bg-gray-300"
-          style={
-            dashboardField === "Last 1 Year"
-              ? { backgroundColor: "black", color: "white" }
-              : {}
-          }
+          className={`note p-2 cursor-pointer transition-colors duration-200 ${
+ dashboardField ==="Last 1 Year"
+ ?"bg-ink text-paper"
+ :"border border-hairline text-bark hover:border-ink/40"
+ }`}
           onClick={() => {
             dispatch(uiActions.changeDashboardField("Last 1 Year"));
           }}
@@ -234,23 +231,23 @@ const DashBoard = () => {
         <DonutChart data={getCurrentSummary()} />
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-8 flex flex-col ">
-        <h1 className="text-3xl font-bold text-gray-900">Recent Orders</h1> 
-         <div className=" mt-10 grid grid-cols-5 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-8 flex flex-col">
+        <h1 className="display-2 text-ink mb-6">Recent Orders</h1> 
+         <div className="mt-4 grid grid-cols-5 gap-4 px-6 py-4 bg-parchment border-b border-hairline note text-bark">
             <div>Order ID</div>
             <div>Product Name</div>
             <div>Total Amount</div>
             <div>Status</div>
             <div>Actions</div>
           </div>
-           <div className="divide-y divide-gray-200">
+           <div className="divide-y divide-hairline">
             {orders.length > 0 ? (
               orders.map((order) => (
                 <OrderCard key={order._id} order={order} />
               ))
             ) : (
-              <div className="px-6 py-12 text-center text-gray-500">
-                <div className="text-lg font-medium">No orders found</div>
+              <div className="px-6 py-12 text-center text-bark">
+                <div className="font-display font-semibold tracking-[-0.02em] text-2xl">No orders found</div>
                 <div className="text-sm mt-1">
                   Orders will appear here when available
                 </div>

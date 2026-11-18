@@ -8,12 +8,14 @@ import appStore from "./store.js";
 import "./index.css";
 import App from "./App.jsx";
 import { ShopLayout, RequireAuth, NotFound, RouteError } from "./components/layout.jsx";
-import { authActions } from "./features/auth/authSlices";
+import { authActions, tokenExpired } from "./features/auth/authSlices";
+import { refreshSession } from "./features/auth/session";
 import SigninCard from "./features/auth/loginForm.jsx";
 import UserSignupCard from "./features/auth/userSignupForm.jsx";
 import ForgotPasswordForm from "./features/auth/forgotPasswordForm.jsx";
 import StoreSignupCard from "./features/auth/store.jsx";
 import CustomerHome from "./pages/customers/home.jsx";
+import AssistantPage from "./pages/customers/assistant.jsx";
 import ProductDetailPage from "./pages/customers/productDetailPage.jsx";
 import CartPage from "./pages/customers/cart.jsx";
 import CategoryProductPage from "./pages/customers/categoryProductsPage.jsx";
@@ -27,16 +29,31 @@ import Profile from "./pages/storeOwner/Profile.jsx";
 import NewAddProduct from "./pages/storeOwner/newAddProduct.jsx";
 import OrderDetails from "./pages/storeOwner/orderDetails.jsx";
 
-// An expired or rejected session logs the user out instead of leaving every request failing silently.
-axios.interceptors.response.use(undefined, (error) => {
+// An expired access token is renewed from the refresh cookie and the request retried once.
+// Only when renewal fails is the user logged out and sent to log in (and back here after).
+axios.interceptors.response.use(undefined, async (error) => {
   const { status, data } = error.response || {};
   const msg = data?.message || "";
-  if ((status === 403 && /token/i.test(msg)) || (status === 401 && /no access token/i.test(msg))) {
-    appStore.dispatch(authActions.logout());
-    window.location.assign("/login");
+  const config = error.config || {};
+  const tokenRejected = (status === 403 && /token/i.test(msg)) || (status === 401 && /no access token/i.test(msg));
+  if (!tokenRejected || config._noRefresh) return Promise.reject(error);
+
+  if (!config._retried && appStore.getState().auth.user) {
+    const token = await refreshSession();
+    if (token) {
+      config._retried = true;
+      config.headers = { ...config.headers, Authorization: `Bearer ${token}` };
+      return axios(config);
+    }
   }
+  appStore.dispatch(authActions.logout());
+  const here = window.location.pathname + window.location.search;
+  window.location.assign(`/login?next=${encodeURIComponent(here)}`);
   return Promise.reject(error);
 });
+
+// Coming back after the 30-minute token ran out: renew it before anything asks.
+if (appStore.getState().auth.user && tokenExpired(appStore.getState().auth.accessToken || "")) refreshSession();
 
 const store = (page) => <RequireAuth role="storeOwner">{page}</RequireAuth>;
 const shop = (page, needsLogin) => (
@@ -49,6 +66,8 @@ const routes = [
     element: <App />,
     children: [{ path: "home", element: <CustomerHome /> }],
   },
+  // Chat-led shopping. Open to guests: searching needs no account.
+  { path: "/assistant", element: <AssistantPage /> },
   { path: "/login", element: <SigninCard /> },
   { path: "/signup", element: <UserSignupCard /> },
   { path: "/brand-signup", element: <StoreSignupCard /> },

@@ -138,6 +138,41 @@ cd Daily-Deals
 
 ---
 
+## 🤖 Shop Assistant (`/assistant`)
+
+A chat page where a customer describes what they want instead of browsing. It searches the live catalogue, shows real products as cards, narrows the search on request, builds the cart, and places the order only after the customer presses **Confirm order** on a summary card. Open to logged-out visitors for search; the cart and checkout need an account. Separate from the help chatbot in `chatbot/` (which stays as it is).
+
+Lives in the Express backend: `server/services/assistant/` (OpenRouter client, tools, agent loop), `server/controllers/assistantController.js`, and `client/src/pages/customers/assistant.jsx`. Placing an order runs the same `placeOrder` as the normal checkout (`server/services/orders.js`); the chat can never order on its own — the confirmation token is signed, bound to one user/c/address/cart state, expires in 10 minutes, and is single-use.
+
+### Settings (Vercel backend project + `server/.env`)
+
+| Name | Purpose |
+| --- | --- |
+| `ASSISTANT_API_KEY` | OpenRouter key, **separate** from the help chatbot's key |
+| `ASSISTANT_MODEL` | Main model id (e.g. `openai/gpt-6-luna`) |
+| `ASSISTANT_FALLBACK_MODEL` | OpenRouter switches here automatically if the main model fails |
+| `ASSISTANT_ORDER_SECRET` | Long random string; signs order-confirmation tokens |
+| `ASSISTANT_RATE_GUEST` / `ASSISTANT_RATE_USER` | Messages per hour, per IP / per account (default 30 / 100) |
+
+Also set a **monthly credit limit** on the key in the OpenRouter dashboard — out of credit shows a friendly "assistant is unavailable" reply, never an error page.
+
+### Changing the model
+
+1. `npm run test:models` — probes candidate models with a fixed tool-calling prompt and prints pass/fail, latency and argument quality.
+2. Set `ASSISTANT_MODEL` / `ASSISTANT_FALLBACK_MODEL` from the result. No code change needed.
+
+### Tests and reports
+
+```bash
+npm test                    # offline unit tests: filter escaping, order token, phone, pricing
+npm run test:conversations  # ~25 scripted chats through the real model + database; saves a results file
+npm run report:assistant    # 7-day token cost + searches that found nothing
+```
+
+Run `npm run test:conversations` again after any model or prompt change and compare with the saved result files.
+
+---
+
 ## 🌐 Deployment Configuration
 
 * **Frontend & Backend:** Hosted on **Vercel**. The Express server routes are serverless-compatible and utilize the configuration in `server/vercel.json`.

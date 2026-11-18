@@ -39,6 +39,18 @@ const userSchema = new mongoose.Schema(
     createdAt : {
         type : Date ,
         default : Date.now
+    },
+    // Opt-in shopping profile the assistant can use ("in my size").
+    preferences : {
+        sizes : {
+            top : { type : String , default : "" },
+            bottom : { type : String , default : "" },
+            shoe : { type : String , default : "" },
+            kids : { type : String , default : "" }
+        },
+        colors : { type : [String] , default : [] },
+        departments : { type : [String] , default : [] },
+        budget : { type : Number , default : null , min : 0 }
     }
 },
 { strict: false }

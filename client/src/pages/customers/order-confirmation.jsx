@@ -1,4 +1,5 @@
 import { useLocation, Link } from "react-router-dom";
+import { formatPrice } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { CheckCircle, Package, MapPin, Phone, Calendar, CreditCard, ArrowRight } from "lucide-react";
 
@@ -15,11 +16,11 @@ export default function OrderConfirmation() {
 
   if (!order) {
     return (
-      <div className="bg-gray-50 flex items-center justify-center py-24 px-4">
+      <div className="bg-paper flex items-center justify-center py-24 px-4">
         <div className="text-center">
-          <CheckCircle className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-          <p className="text-gray-800 text-lg mb-6">Your orders are listed in your account.</p>
-          <Link to="/home/profile" className="px-6 py-3 bg-black text-white rounded-lg font-semibold">
+          <CheckCircle className="w-12 h-12 mx-auto mb-4 text-bark" strokeWidth={1} />
+          <p className="text-ink text-lg mb-6 font-display font-semibold tracking-[-0.02em] text-2xl">Your orders are listed in your account.</p>
+          <Link to="/home/profile" className="btn-ink">
             View Order History
           </Link>
         </div>
@@ -31,83 +32,78 @@ export default function OrderConfirmation() {
   const fee = order.totalPrice - subtotal;
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-paper">
       <div className="relative z-10 p-6 py-12">
         <div className={`max-w-4xl mx-auto transition-all duration-1000 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}>
+ isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+ }`}>
           
           {/* Success Header */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-black rounded-full animate-bounce mb-6">
-              <CheckCircle className="w-12 h-12 text-white " />
-            </div>
-            <h1 className="text-5xl font-bold text-black mb-4">
-              Order Confirmed!
+            <p className="note mb-3">Order Confirmed</p>
+            <h1 className="display-1 text-ink mb-4">
+              Thank You
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Thank you for choosing us! Your order has been successfully placed and will be processed shortly.
+            <p className="text-bark text-lg max-w-2xl mx-auto">
+              Your order has been placed and will be prepared with care. A confirmation email is on its way.
             </p>
           </div>
 
-          {/* Order Card */}
-          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
+          {/* Order Panel */}
+          <div className="bg-parchment border-t-2 border-ink">
             
             {/* Order Header */}
-            <div className="bg-black text-white p-8">
-              <div className="flex items-center justify-between">
+            <div className="p-8 border-b border-hairline">
+              <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold mb-2">Order Details</h2>
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <Package className="w-5 h-5" />
+                  <h2 className="font-display font-semibold tracking-[-0.02em] text-2xl text-ink mb-2">Order Details</h2>
+                  <div className="flex items-center gap-2 font-meta text-xs text-bark">
+                    <Package className="w-4 h-4" strokeWidth={1.5} />
                     <span>Order ID: {order._id}</span>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="bg-white/10 px-4 py-2 rounded-full">
-                    <span className="text-sm font-semibold">Status: {order.orderStatus || "Pending"}</span>
-                  </div>
+                <div className="font-meta text-xs border border-hairline bg-paper px-4 py-2 text-ink">
+                  Status: {order.orderStatus || "Pending"}
                 </div>
               </div>
             </div>
 
-            <div className="p-8">
+            <div className="p-8 bg-paper">
               {/* Order Items */}
               <div className="mb-10">
-                <h3 className="text-2xl font-bold text-black mb-6 flex items-center gap-2">
-                  <Package className="w-6 h-6 text-black" />
-                  Items Ordered
-                </h3>
-                <div className="space-y-4">
+                <h3 className="note text-bark mb-6">Items Ordered</h3>
+                <div className="divide-y divide-hairline border-t border-hairline">
                   {order.items.map((item, index) => (
                     <div 
                       key={item._id} 
-                      className={`bg-gray-50 p-6 rounded-2xl border border-gray-200 transition-all duration-300 transform hover:scale-[1.02] ${
-                        isVisible ? 'animate-fade-in-up' : ''
-                      }`}
+                      className={`py-6 transition-colors duration-300 ${
+ isVisible ? 'animate-fade-in-up' : ''
+ }`}
                       style={{ animationDelay: `${index * 200}ms` }}
                     >
                       <div className="flex items-center gap-6">
-                        <div className="relative">
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-24 h-24 object-cover rounded-xl shadow"
-                          />
-                          <div className="absolute -top-2 -right-2 bg-black text-white text-sm font-bold w-8 h-8 rounded-full flex items-center justify-center">
+                        <div className="relative shrink-0">
+                          <div className="w-24 h-24 bg-parchment overflow-hidden">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="absolute -top-2 -right-2 bg-ink text-paper font-meta text-xs w-7 h-7 flex items-center justify-center">
                             {item.quantity}
                           </div>
                         </div>
                         <div className="flex-grow">
-                          <h4 className="font-bold text-lg text-black mb-2">{item.name}</h4>
-                          <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
-                            <span className="bg-white px-3 py-1 rounded-full border">Color: {item.color}</span>
-                            <span className="bg-white px-3 py-1 rounded-full border">Size: {item.size}</span>
+                          <h4 className="font-display font-semibold tracking-[-0.02em] text-xl text-ink mb-2">{item.name}</h4>
+                          <div className="flex items-center gap-4 font-meta text-xs text-bark mb-2">
+                            <span>Color: {item.color}</span>
+                            <span>Size: {item.size}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-500">Unit Price: Rs {item.price.toLocaleString()}</span>
-                            <span className="text-xl font-bold text-black">
-                              Rs {(item.price * item.quantity).toLocaleString()}
+                            <span className="font-meta text-xs text-bark">Unit price: {formatPrice(item.price)}</span>
+                            <span className="font-display font-semibold tracking-[-0.02em] text-xl text-ink">
+                              {formatPrice(item.price * item.quantity)}
                             </span>
                           </div>
                         </div>
@@ -121,50 +117,47 @@ export default function OrderConfirmation() {
               <div className="grid lg:grid-cols-2 gap-8">
                 
                 {/* Order Summary */}
-                <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200">
-                  <h3 className="text-xl font-bold text-black mb-4 flex items-center gap-2">
-                    <CreditCard className="w-5 h-5 text-black" />
-                    Order Summary
-                  </h3>
+                <div className="bg-parchment border-t-2 border-ink p-6">
+                  <h3 className="font-display font-semibold tracking-[-0.02em] text-2xl text-ink mb-4">Order Summary</h3>
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                      <span className="text-gray-600">Subtotal</span>
-                      <span className="font-semibold">Rs {subtotal.toLocaleString("en-PK")}</span>
+                    <div className="flex justify-between items-center py-2 border-b border-hairline">
+                      <span className="font-meta text-xs text-bark">Subtotal</span>
+                      <span className="text-ink">{formatPrice(subtotal)}</span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                      <span className="text-gray-600">Shipping</span>
-                      <span className="font-semibold">{fee ? `Rs ${fee.toLocaleString("en-PK")}` : "Free"}</span>
+                    <div className="flex justify-between items-center py-2 border-b border-hairline">
+                      <span className="font-meta text-xs text-bark">Shipping</span>
+                      <span className="text-ink">{fee ? formatPrice(fee) : "Free"}</span>
                     </div>
-                    <div className="flex justify-between items-center py-3 bg-gray-100 px-4 rounded-xl">
-                      <span className="font-bold text-lg">Total Amount</span>
-                      <span className="font-bold text-2xl text-black">Rs {order.totalPrice.toLocaleString()}</span>
+                    <div className="flex justify-between items-center py-3">
+                      <span className="font-meta text-xs text-ink">Total Amount</span>
+                      <span className="font-display font-semibold tracking-[-0.02em] text-2xl text-ink">{formatPrice(order.totalPrice)}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Delivery Info */}
-                <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200">
-                  <h3 className="text-xl font-bold text-black mb-4">Delivery Information</h3>
-                  <div className="space-y-4 text-gray-800">
+                <div className="bg-parchment border-t-2 border-ink p-6">
+                  <h3 className="font-display font-semibold tracking-[-0.02em] text-2xl text-ink mb-4">Delivery Information</h3>
+                  <div className="space-y-4 text-ink">
                     <div className="flex items-start gap-3">
-                      <MapPin className="w-5 h-5 text-black mt-1" />
+                      <MapPin className="w-5 h-5 text-oxblood mt-1 shrink-0" strokeWidth={1.5} />
                       <div>
                         <p className="font-medium">Shipping Address</p>
-                        <p className="text-sm text-gray-600">{order.shippingAddress}</p>
+                        <p className="text-sm text-bark">{order.shippingAddress}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Phone className="w-5 h-5 text-black" />
+                      <Phone className="w-5 h-5 text-oxblood shrink-0" strokeWidth={1.5} />
                       <div>
                         <p className="font-medium">Phone Number</p>
-                        <p className="text-sm text-gray-600">{order.phoneNumber}</p>
+                        <p className="text-sm text-bark">{order.phoneNumber}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Calendar className="w-5 h-5 text-black" />
+                      <Calendar className="w-5 h-5 text-oxblood shrink-0" strokeWidth={1.5} />
                       <div>
                         <p className="font-medium">Expected Delivery</p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-bark">
                           {new Date(order.expectedDeliveryDate).toLocaleDateString('en-US', {
                             weekday: 'long',
                             year: 'numeric',
@@ -175,10 +168,10 @@ export default function OrderConfirmation() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <CreditCard className="w-5 h-5 text-black" />
+                      <CreditCard className="w-5 h-5 text-oxblood shrink-0" strokeWidth={1.5} />
                       <div>
                         <p className="font-medium">Payment Method</p>
-                        <p className="text-sm text-gray-600">{order.paymentMethod}</p>
+                        <p className="text-sm text-bark">{order.paymentMethod}</p>
                       </div>
                     </div>
                   </div>
@@ -189,19 +182,19 @@ export default function OrderConfirmation() {
               <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   to="/home"
-                  className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-black text-white rounded-2xl font-semibold hover:bg-gray-900 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                  className="btn-ink group inline-flex items-center justify-center gap-2"
                 >
                   Continue Shopping
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
-                <button className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-black border-2 border-black rounded-2xl font-semibold hover:bg-gray-100 transform hover:scale-105 transition-all duration-200">
+                <button className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-paper text-ink border border-hairline text-sm font-semibold hover:border-ink transition-colors duration-300 cursor-pointer">
                   Track Order
                 </button>
               </div>
 
               {/* Thank You */}
-              <div className="mt-8 text-center p-6 border bg-green-100 border-green-300 text-green-700 rounded-2xl border border-gray-200">
-                <p className="text-gray-700 italic">
+              <div className="mt-8 text-center p-6 border-t border-hairline">
+                <p className="font-display font-semibold tracking-[-0.02em] text-xl text-bark max-w-2xl mx-auto">
                   "We appreciate your trust in us. Your order will be carefully packed and delivered with love. 
                   A confirmation email has been sent to your registered email address."
                 </p>

@@ -41,17 +41,17 @@ const ProfileForm = () => {
       <div className="pt-16 px-4 sm:px-10">
         <BreadcrumbWithCustomSeparator />
         {/* Tabs scroll sideways on phones so every tab, including Sign Out, stays reachable. */}
-        <div className="border-b border-gray-300 mt-6 overflow-x-auto">
+        <div className="border-b border-hairline mt-6 overflow-x-auto">
           <div className="flex md:justify-between min-w-max md:min-w-0 max-w-5xl mx-auto">
             {tabItems.map(({ name, icon, isDanger }) => (
               <button
                 key={name}
                 onClick={() => handleOnClick(name)}
                 className={`flex items-center gap-2 py-4 text-sm font-medium relative cursor-pointer px-4
-                  ${name === active ? 'after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-black' : ''}
-                  ${isDanger ? 'text-red-500 hover:text-red-600' : 'text-gray-800 hover:text-black'}`}
+ ${name === active ? 'after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-black' : ''}
+ ${isDanger ? 'text-oxblood hover:text-ink' : 'text-ink hover:text-ink'}`}
               >
-                <span className={`flex items-center ${isDanger ? 'text-red-500' : ''}`}>
+                <span className={`flex items-center ${isDanger ? 'text-oxblood' : ''}`}>
                   {icon}
                 </span>
                 {name}

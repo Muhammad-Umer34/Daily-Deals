@@ -24,14 +24,14 @@ const StoreSignupCard = () => {
     <AuthLayout
       image="/images/4706264.jpg"
       imageAlt="Illustration of an online storefront"
-      headline="Partner with Daily Deals"
-      blurb="List your products on Pakistan's growing fashion marketplace and reach new customers every day."
+      headline="Sell with MonoFit"
+      blurb="Join a small group of independent labels and reach shoppers around the world."
     >
       <AuthHeading title="Register your brand" subtitle="Set up your store to start listing products." />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
         <FormError message={formError} />
         <Field id="name" label="Store name" error={errors.name?.message}>
-          <input id="name" placeholder="e.g. Nike Pakistan" className={inputClass}
+          <input id="name" placeholder="e.g. Noor Atelier" className={inputClass}
             {...register("name", { required: "Store name is required" })} />
         </Field>
         <Field id="email" label="Store email" error={errors.email?.message}>
@@ -39,9 +39,9 @@ const StoreSignupCard = () => {
             {...register("email", { required: "Email is required", pattern: { value: /^\S+@\S+\.\S+$/, message: "Enter a valid email" } })} />
         </Field>
         <Field id="brand_logo" label="Brand logo" error={errors.brand_logo?.message}>
-          <label htmlFor="brand_logo" className="flex items-center gap-3 h-11 px-4 rounded-lg border border-dashed border-slate-300 hover:border-blue-600 cursor-pointer text-sm">
-            <span className="px-3 py-1 rounded-md bg-slate-100 font-medium text-slate-700">Choose image</span>
-            <span className="text-slate-500 truncate">{logoFile?.name || "PNG or JPG"}</span>
+          <label htmlFor="brand_logo" className="flex items-center gap-3 h-11 px-4 rounded-lg border border-dashed border-hairline hover:border-ink cursor-pointer text-sm">
+            <span className="px-3 py-1 rounded-md bg-parchment font-medium text-ink">Choose image</span>
+            <span className="text-bark truncate">{logoFile?.name || "PNG or JPG"}</span>
           </label>
           <input id="brand_logo" type="file" accept="image/*" className="sr-only"
             {...register("brand_logo", { required: "Brand logo is required" })} />
@@ -62,8 +62,8 @@ const StoreSignupCard = () => {
           {isSubmitting ? "Registering…" : "Register brand"}
         </button>
       </form>
-      <p className="mt-8 text-center text-sm text-slate-600">
-        Already registered? <Link to="/login" className="font-semibold text-blue-600 hover:underline">Log in</Link>
+      <p className="mt-8 text-center text-sm text-bark">
+        Already registered? <Link to="/login" className="font-semibold text-ink underline underline-offset-4 hover:opacity-70">Log in</Link>
       </p>
     </AuthLayout>
   );
