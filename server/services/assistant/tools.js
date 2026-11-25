@@ -64,7 +64,7 @@ const TEXT_FIELDS = ["name", "description", "brand", "subcategory", "material", 
  * fabricWeight, minPrice, maxPrice, inStockOnly, terms (keyword fallback).
  */
 const buildFilter = (f) => {
-  const and = [{ status: "active" }];
+  const and = [{ isAvailable: true }];
 
   // Size and colour are checked on the same variant, so "M in navy" means a navy M exists.
   if (f.size || (f.inStockOnly && f.colorFamily)) {
@@ -265,14 +265,14 @@ async function compareProducts(args = {}) {
   if (ids.length) {
     const validIds = ids.filter((id) => /^[a-f\d]{24}$/i.test(String(id)));
     if (validIds.length) {
-      products = await Product.find({ _id: { $in: validIds }, status: "active" }).select(CARD_FIELDS + " description material fit pattern fabricWeight seasons").lean();
+      products = await Product.find({ _id: { $in: validIds }, isAvailable: true }).select(CARD_FIELDS + " description material fit pattern fabricWeight seasons").lean();
     }
   }
 
   // If no IDs or couldn't find enough, search by names/keywords
   if (products.length < 2 && names.length) {
     const matched = await Product.find({
-      status: "active",
+      isAvailable: true,
       $or: names.map((n) => ({ name: containsIgnoreCase(n) })),
     }).select(CARD_FIELDS + " description material fit pattern fabricWeight seasons").limit(4).lean();
     products = [...products, ...matched.filter((m) => !products.some((p) => String(p._id) === String(m._id)))];
@@ -318,7 +318,7 @@ async function getProduct(args = {}) {
   const id = cleanText(args.product_id);
   if (!/^[a-f\d]{24}$/i.test(id)) return { result: { error: "Unknown product." } };
 
-  const product = await Product.findOne({ _id: id, status: "active" }).lean();
+  const product = await Product.findOne({ _id: id, isAvailable: true }).lean();
   if (!product) return { result: { error: "That product isn't available." } };
 
   const byColor = {};
@@ -347,7 +347,7 @@ async function getProduct(args = {}) {
 
 /** What the shop actually stocks, so the assistant only offers real choices. */
 async function getFilterOptions(args = {}) {
-  const scope = { status: "active" };
+  const scope = { isAvailable: true };
   const genre = oneOf(args.department || args.genre, taxonomy.DEPARTMENTS);
   const subcategory = taxonomy.categoryForWord(args.category);
   if (genre) scope.genre = genre;
@@ -390,9 +390,9 @@ async function getLabel(args = {}) {
     return { result: { error: `No label called "${name}".`, labels: all.map((l) => l.name) } };
   }
   const [count, categories, priceRange] = await Promise.all([
-    Product.countDocuments({ labelId: label._id, status: "active" }),
-    Product.distinct("subcategory", { labelId: label._id, status: "active" }),
-    Product.aggregate([{ $match: { labelId: label._id, status: "active" } }, { $group: { _id: null, min: { $min: "$price" }, max: { $max: "$price" } } }]),
+    Product.countDocuments({ labelId: label._id, isAvailable: true }),
+    Product.distinct("subcategory", { labelId: label._id, isAvailable: true }),
+    Product.aggregate([{ $match: { labelId: label._id, isAvailable: true } }, { $group: { _id: null, min: { $min: "$price" }, max: { $max: "$price" } } }]),
   ]);
   return {
     result: {
