@@ -61,7 +61,7 @@ async function addToCart(args = {}, ctx = {}) {
   const productId = clean(args.product_id);
   if (!OBJECT_ID.test(productId)) return { result: { error: "Unknown product. Search again and use an id from the results." } };
 
-  const product = await Product.findOne({ _id: productId, status: "active" }).lean();
+  const product = await Product.findOne({ _id: productId, isAvailable: true }).lean();
   if (!product) return { result: { error: "That product isn't available any more." } };
 
   const sizes = (product.size || []).filter(Boolean);

@@ -16,7 +16,7 @@ const { placeOrder, OrderError } = require("../services/orders");
 
 exports.getAllProductForCustomer = async (req, res) => {
   try {
-    const products = await productSchema.find({ status: "active" });
+    const products = await productSchema.find({ isAvailable: true });
     res.status(200).json(products);
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -243,7 +243,7 @@ exports.getProductsByCategory = async (req, res) => {
   try {
     // "all" lists everything; otherwise match a gender (genre) or a style (category, e.g. "casual").
     const products = await productSchema.find(
-      term === "all" ? { status: "active" } : { status: "active", $or: [{ genre: term }, { category: term }] }
+      term === "all" ? { isAvailable: true } : { isAvailable: true, $or: [{ genre: term }, { category: term }] }
     );
     return res.status(200).json(products);
   } catch (error) {
@@ -381,9 +381,9 @@ exports.increaseOrderViews = async (req, res) => {
 exports.getTopSellingProducts = async (req, res) => {
   try {
     const [topProducts, newArrival, topViewed] = await Promise.all([
-      productSchema.find({ status: "active" }).sort({ purchasedCount: -1 }).limit(12),
-      productSchema.find({ status: "active" }).sort({ createdAt: -1 }).limit(12),
-      productSchema.find({ status: "active" }).sort({ views: -1 }).limit(12)
+      productSchema.find({ isAvailable: true }).sort({ purchasedCount: -1 }).limit(12),
+      productSchema.find({ isAvailable: true }).sort({ createdAt: -1 }).limit(12),
+      productSchema.find({ isAvailable: true }).sort({ views: -1 }).limit(12)
     ]);
 
     res.status(200).json({
